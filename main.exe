@@ -7,7 +7,7 @@
 	.eabi_attribute 24, 1
 	.eabi_attribute 25, 1
 	.eabi_attribute 26, 2
-	.eabi_attribute 30, 6
+	.eabi_attribute 30, 2
 	.eabi_attribute 18, 4
 	.file	"main.c"
 	.text
@@ -16,25 +16,16 @@
 	.type	main, %function
 main:
 	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 24
-	@ frame_needed = 1, uses_anonymous_args = 0
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	str	fp, [sp, #-4]!
-	add	fp, sp, #0
-	sub	sp, sp, #28
 	ldr	r3, .L3
+	ldr	r2, .L3+4
 	fldd	d17, [r3, #0]
-	ldr	r3, .L3+4
-	fldd	d16, [r3, #0]
-	fstd	d17, [fp, #-12]
-	fstd	d16, [fp, #-20]
-	fldd	d17, [fp, #-12]
-	fldd	d16, [fp, #-20]
-	vadd.i32	d16, d17, d16
+	fldd	d16, [r2, #0]
 	ldr	r3, .L3+8
-	fstd	d16, [r3, #0]
-	add	sp, fp, #0
-	ldmfd	sp!, {fp}
+	vadd.i32	d17, d17, d16
+	fstd	d17, [r3, #0]
 	bx	lr
 .L4:
 	.align	2
