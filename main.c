@@ -10,7 +10,7 @@ int main( void )
     const uint32_t init_aa[4] = {1, 2, 3, 4};
     const uint32_t init_bb[4] = {5, 6, 7, 8};
     aa = vld1q_u32((uint32_t*)&init_aa);
-    aa = vld1q_u32((uint32_t*)&init_bb);
+    bb = vld1q_u32((uint32_t*)&init_bb);
 
     ss = vaddq_u32( aa, bb);
     int32_t* res_ptr = (int32_t*)&ss;
