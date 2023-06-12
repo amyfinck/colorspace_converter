@@ -11,9 +11,9 @@ int main( void )
     bb = {5, 6, 7, 8};
 
     ss = vadd_u32( aa, bb);
-    int32_t* res_ptr = (int32_t*)&result;
+    int32_t* res_ptr = (int32_t*)&ss;
 
-    printf("Result: %d, %d, %d, %d", res_ptr[0], res_ptr[1], res_ptr[2], res_ptr[3]);
+    printf("Result: %d, %d, %d, %d\n", res_ptr[0], res_ptr[1], res_ptr[2], res_ptr[3]);
 
     return 0;
 }
