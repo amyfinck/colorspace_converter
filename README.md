@@ -1,4 +1,4 @@
-# compiling
+# How to use
 
 ## compiling on ugls linux machine
 - `ssh ugls1.ece.uvic.ca` (or any of the ugls machines)
@@ -19,4 +19,6 @@
 - `q6coHjd7P`
 - `chmod +x main.exe`
 - `./main.exe`
-If you get a strange error such as 
+- If you get a strange error, try deleting everything from the device and try again
+- You can also compile with the arm emulator `qemu-arm main.exe` directly on the machine, but I've noticed differences
+in what works on both.
