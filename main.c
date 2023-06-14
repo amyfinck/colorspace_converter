@@ -9,12 +9,18 @@ int main( void )
 {
     printf("hello\n");
     const uint32_t init_aa[4] = {1, 2, 3, 4};
+    printf("1");
     const uint32_t init_bb[4] = {5, 6, 7, 8};
+    printf("2");
     aa = vld1q_u32((uint32_t*)&init_aa);
     bb = vld1q_u32((uint32_t*)&init_bb);
 
+    printf("1234");
+
     ss = vaddq_u32( aa, bb);
     int32_t* res_ptr = (int32_t*)&ss;
+ 
+    printf("5678");
 
     printf("Result: %u, %u, %u, %u\n", res_ptr[0], res_ptr[1], res_ptr[2], res_ptr[3]);
 
