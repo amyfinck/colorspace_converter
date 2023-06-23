@@ -2,13 +2,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include<sys/mman.h>
+#include<string.h>
 
 // struct for BMP header info
 typedef struct BMP_header_t
 {
     // TODO fill with information contained in a BMP header
-    int height;
-    int width;
+    uint32_t height;
+    uint32_t width;
 }BMP_header_t;
 
 typedef struct RGB_pixel_t
@@ -28,7 +33,6 @@ typedef struct YCC_pixel_t
 
 BMP_header_t* getHeaderBMP(FILE* fp, BMP_header_t* header)
 {
-    // TODO extract all the information and pass back a pointer to the filled in header
     return header;
 }
 
@@ -36,28 +40,53 @@ int main( int argc, char* argv[] )
 {
     if(argc != 2)
     {
-        // TODO add usage statement
-        printf("Not a valid command\n");
+        printf("Not a valid command. Usage: ./colorspace_converter <img_name>.bmp\n");
         exit(1);
     }
+
     // TODO check bitmap format
 
     // open input image
-    FILE * input;
-    input = fopen(argv[1], "r");
-    if (input==NULL)
+    int file_descriptor;
+    file_descriptor = open(argv[1], O_RDWR);
+    if (file_descriptor == -1)
     {
+        close(file_descriptor);
         printf("Input File error");
         exit(1);
     }
 
-    // get struct for header of the image
+    // fstat gets the file status, and puts all the relevant information in sb
+    struct stat statbuf;
+    fstat(file_descriptor, &statbuf);
+
+    // mmap the file to pointer p
+    char * p = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+    if (p == MAP_FAILED)
+    {
+        printf("Error: failed to map memory\n");
+        close(file_descriptor);
+        exit(1);
+    }
+
     BMP_header_t* BMPHeader = malloc(sizeof(BMP_header_t));
-    BMPHeader = getHeaderBMP(input, BMPHeader);
+    if(BMPHeader == NULL)
+    {
+        printf("error - malloc failed\n");
+        close(file_descriptor);
+        munmap(p, statbuf.st_size);
+        exit(1);
+    }
+
+    memcpy(&BMPHeader->width, (p + 18), 4);
+    memcpy(&BMPHeader->height, (p + 22), 4);
+
+    printf("I received a picture with a height of %d and a width of %d\n", BMPHeader->height, BMPHeader->width);
+
+    // todo make this a function call
+   // BMPHeader = getHeaderBMP(file_descriptor, BMPHeader);
     // TODO maybe check header is valid
-
     // TODO determine whether image is RGB or YCC so we can work both ways. For now assume start with RGB.
-
     // TODO get array of pixels, and convert to correct colorspace
 }
 
