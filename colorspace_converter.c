@@ -157,9 +157,10 @@ int main( int argc, char* argv[] )
         {
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
-            memcpy(&inputImage->pixels[pixel_index].R, (p + BMPHeader->offset + pixel_offset ), sizeof(uint8_t));
+            // Pixels are stored in BGR order
+            memcpy(&inputImage->pixels[pixel_index].B, (p + BMPHeader->offset + pixel_offset ), sizeof(uint8_t));
             memcpy(&inputImage->pixels[pixel_index].G, (p + BMPHeader->offset + pixel_offset + 1), sizeof(uint8_t));
-            memcpy(&inputImage->pixels[pixel_index].B, (p + BMPHeader->offset + pixel_offset + 2), sizeof(uint8_t));
+            memcpy(&inputImage->pixels[pixel_index].R, (p + BMPHeader->offset + pixel_offset + 2), sizeof(uint8_t));
 
             pixel_index++;
             inputImage->pixel_count++;
@@ -170,26 +171,18 @@ int main( int argc, char* argv[] )
     printf("There are %d pixels total\n", inputImage->pixel_count);
     printf("The file size is %d, header size is %d, so there are %d pixels\n", (int)file_size, inputImage->header.offset, (int)file_size - inputImage->header.offset);
 
-
     int i, j;
     for(i = 0; i < inputImage->header.height; i++)
     {
         for(j = 0; j < inputImage->header.width; j++)
         {
-            print_pixel(j, i);
+            if((i == 0) && (j == 0) || (i == 0) && (j == inputImage->header.width - 1) || (i == inputImage->header.height - 1) && (j == 0) || (i == inputImage->header.height - 1) && (j == inputImage->header.width - 1))
+            {
+                print_pixel(j, i);
+            }
         }
     }
 
-    /*
-     * 0 - 127 is green
-     * 128 - 255 is black
-     * 256 - 383 is green
-     * 384 - 511 is black
-     * ect...
-     *
-     * 65408 is red
-     * 65535 is blue
-     */
 
     // todo make this a function call
     // BMPHeader = getHeaderBMP(file_descriptor, BMPHeader);
