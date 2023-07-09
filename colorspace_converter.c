@@ -62,8 +62,8 @@ void getChroma()
 {
     for(uint32_t i = 0; i < inputImage->pixel_count; i++)
     {
-        outputImage->pixels[i].Cb = inputImage->pixels[i].B - outputImage->pixels[i].Y;
-        outputImage->pixels[i].Cr = inputImage->pixels[i].R - outputImage->pixels[i].Y;
+        outputImage->pixels[i].Cb = (inputImage->pixels[i].B - outputImage->pixels[i].Y);
+        outputImage->pixels[i].Cr = (inputImage->pixels[i].R - outputImage->pixels[i].Y);
     }
 }
 
@@ -256,14 +256,16 @@ int main( int argc, char* argv[] )
             memcpy((p_l + outputImage->offset + pixel_offset + 2), &outputImage->pixels[pixel_index].Y, sizeof(uint8_t));
 
             uint8_t baseColor = 128;
+            uint8_t Cb = outputImage->pixels[pixel_index].Cb + 128;
+            uint8_t Cr = outputImage->pixels[pixel_index].Cr + 128;
 
-            memcpy((p_cb + outputImage->offset + pixel_offset), &outputImage->pixels[pixel_index].Cb, sizeof(uint8_t));
+            memcpy((p_cb + outputImage->offset + pixel_offset), &Cb, sizeof(uint8_t));
             memcpy((p_cb + outputImage->offset + pixel_offset + 1), &baseColor, sizeof(uint8_t));
             memcpy((p_cb + outputImage->offset + pixel_offset + 2), &baseColor, sizeof(uint8_t));
 
             memcpy((p_cr + outputImage->offset + pixel_offset), &baseColor, sizeof(uint8_t));
             memcpy((p_cr + outputImage->offset + pixel_offset + 1), &baseColor, sizeof(uint8_t));
-            memcpy((p_cr + outputImage->offset + pixel_offset + 2), &outputImage->pixels[pixel_index].Cr, sizeof(uint8_t));
+            memcpy((p_cr + outputImage->offset + pixel_offset + 2), &Cr, sizeof(uint8_t));
 
             pixel_index++;
             inputImage->pixel_count++;
@@ -279,6 +281,4 @@ int main( int argc, char* argv[] )
     close(cr_fd);
 
     return 0;
-
 }
-
