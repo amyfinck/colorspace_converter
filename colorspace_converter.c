@@ -43,7 +43,7 @@ typedef struct YCC_image_t
 }YCC_image_t;
 
 RGB_image_t *inputImage;
-YCC_image_t *lumaImage;
+YCC_image_t *outputImage;
 
 void getLuma()
 {
@@ -54,9 +54,16 @@ void getLuma()
         double B = (double)(inputImage->pixels[i].B);
         double Y = 0.299*R + 0.587*G + 0.114*B;
 
-        lumaImage->pixels[i].Y = (uint8_t)Y;
+        outputImage->pixels[i].Y = (uint8_t)Y;
+    }
+}
 
-        //printf("Y: %d\n", lumaImage->pixels[i].Y);
+void getChroma()
+{
+    for(uint32_t i = 0; i < inputImage->pixel_count; i++)
+    {
+        outputImage->pixels[i].Cb = inputImage->pixels[i].B - outputImage->pixels[i].Y;
+        outputImage->pixels[i].Cr = inputImage->pixels[i].R - outputImage->pixels[i].Y;
     }
 }
 
@@ -159,19 +166,42 @@ int main( int argc, char* argv[] )
     }
     munmap(p, statbuf.st_size);
 
-    int out_fd;
-    chdir("output");
-    out_fd = open(argv[1], O_RDWR | O_CREAT, 0666);
-    if (out_fd == -1)
+    int luma_fd;
+    int cb_fd;
+    int cr_fd;
+
+    chdir("luma");
+    luma_fd = open(argv[1], O_RDWR | O_CREAT, 0666);
+    if (luma_fd == -1)
     {
-        close(out_fd);
+        close(luma_fd);
+        printf("output File error\n");
+        exit(1);
+    }
+    chdir("..");
+    chdir("cb");
+    cb_fd = open(argv[1], O_RDWR | O_CREAT, 0666);
+    if (cb_fd == -1)
+    {
+        close(cb_fd);
+        printf("output File error\n");
+        exit(1);
+    }
+    chdir("..");
+    chdir("cr");
+    cr_fd = open(argv[1], O_RDWR | O_CREAT, 0666);
+    if (cr_fd == -1)
+    {
+        close(cb_fd);
         printf("output File error\n");
         exit(1);
     }
     chdir("..");
 
     while ((bytesRead = read(in_fd, buffer, file_size)) > 0) {
-        bytesWritten = write(out_fd, buffer, bytesRead);
+        bytesWritten = write(luma_fd, buffer, bytesRead);
+        write(cb_fd, buffer, bytesRead);
+        write(cr_fd, buffer, bytesRead);
         if (bytesWritten == -1) {
             printf("Error writing to output file.\n");
             close(in_fd);
@@ -180,9 +210,9 @@ int main( int argc, char* argv[] )
         }
     }
 
-    lumaImage = malloc(sizeof(YCC_image_t));
-    lumaImage->pixel_count = 0;
-    if(lumaImage == NULL)
+    outputImage = malloc(sizeof(YCC_image_t));
+    outputImage->pixel_count = 0;
+    if(outputImage == NULL)
     {
         printf("error - malloc failed\n");
         close(in_fd);
@@ -190,52 +220,63 @@ int main( int argc, char* argv[] )
         exit(1);
     }
 
-    lumaImage->offset = inputImage->offset;
-    lumaImage->width = inputImage->width;
-    lumaImage->height = inputImage->height;
+    outputImage->offset = inputImage->offset;
+    outputImage->width = inputImage->width;
+    outputImage->height = inputImage->height;
 
-    lumaImage->pixels = malloc(sizeof(YCC_pixel_t) * lumaImage->height * lumaImage->width);
-    if(inputImage->pixels == NULL)
+    outputImage->pixels = malloc(sizeof(YCC_pixel_t) * outputImage->height * outputImage->width);
+    if(outputImage->pixels == NULL)
     {
         printf("error - malloc failed\n");
         close(in_fd);
-        close(out_fd);
+        close(luma_fd);
         munmap(p, statbuf.st_size);
         exit(1);
     }
 
-    printf("first pixel is %d\n", lumaImage->pixels[0].Y);
     getLuma();
-    printf("first pixel is %d\n", lumaImage->pixels[0].Y);
+    getChroma();
 
-
-    char * p_o = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, out_fd, 0);
+    char * p_l = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, luma_fd, 0);
+    char * p_cb = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, cb_fd, 0);
+    char * p_cr = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, cr_fd, 0);
 
     pixel_offset = 0;
     pixel_index = 0;
 
-    for(uint32_t y = 0; y < lumaImage->height; y++)
+    for(uint32_t y = 0; y < outputImage->height; y++)
     {
-        for (uint32_t x = 0; x < lumaImage->width; x++)
+        for (uint32_t x = 0; x < outputImage->width; x++)
         {
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
             // Pixels are stored in BGR order
-            printf("%d %d %d\n", lumaImage->pixels[pixel_index].Y, lumaImage->pixels[pixel_index].Y, lumaImage->pixels[pixel_index].Y);
-            memcpy((p_o + lumaImage->offset + pixel_offset), &lumaImage->pixels[pixel_index].Y, sizeof(uint8_t));
-            memcpy((p_o + lumaImage->offset + pixel_offset + 1), &lumaImage->pixels[pixel_index].Y, sizeof(uint8_t));
-            memcpy((p_o + lumaImage->offset + pixel_offset + 2), &lumaImage->pixels[pixel_index].Y, sizeof(uint8_t));
+            memcpy((p_l + outputImage->offset + pixel_offset), &outputImage->pixels[pixel_index].Y, sizeof(uint8_t));
+            memcpy((p_l + outputImage->offset + pixel_offset + 1), &outputImage->pixels[pixel_index].Y, sizeof(uint8_t));
+            memcpy((p_l + outputImage->offset + pixel_offset + 2), &outputImage->pixels[pixel_index].Y, sizeof(uint8_t));
+
+            uint8_t baseColor = 128;
+
+            memcpy((p_cb + outputImage->offset + pixel_offset), &outputImage->pixels[pixel_index].Cb, sizeof(uint8_t));
+            memcpy((p_cb + outputImage->offset + pixel_offset + 1), &baseColor, sizeof(uint8_t));
+            memcpy((p_cb + outputImage->offset + pixel_offset + 2), &baseColor, sizeof(uint8_t));
+
+            memcpy((p_cr + outputImage->offset + pixel_offset), &baseColor, sizeof(uint8_t));
+            memcpy((p_cr + outputImage->offset + pixel_offset + 1), &baseColor, sizeof(uint8_t));
+            memcpy((p_cr + outputImage->offset + pixel_offset + 2), &outputImage->pixels[pixel_index].Cr, sizeof(uint8_t));
 
             pixel_index++;
             inputImage->pixel_count++;
         }
     }
 
-    munmap(p_o, statbuf.st_size);
-    msync(p_o, statbuf.st_size, MS_SYNC);
+    munmap(p_l, statbuf.st_size);
+    msync(p_l, statbuf.st_size, MS_SYNC);
 
     close(in_fd);
-    close(out_fd);
+    close(luma_fd);
+    close(cb_fd);
+    close(cr_fd);
 
     return 0;
 
