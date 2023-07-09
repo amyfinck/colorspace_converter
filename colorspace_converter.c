@@ -134,42 +134,42 @@ int main( int argc, char* argv[] )
 
     printf("Header size is %d\n", BMPHeader->offset);
 
+
     uint32_t bytesPerRow = inputImage->header.width * 3; // there are 3 bytes per pixel
+    printf("bytesperiteration is %d\n", bytesPerRow);
+
+    uint32_t padding = 0;
     if (bytesPerRow % 4 != 0)
     {
-        inputImage->padding = 4 - (bytesPerRow % 4);
+        padding = 4 - (bytesPerRow % 4);
+        printf("padding id %d\n", padding);
     }
-    else
-    {
-        inputImage->padding = 0;
-    }
+    bytesPerRow += padding;
 
-    uint32_t bytesPerIteration = inputImage->padding + inputImage->padding;
-    int totalBytes = inputImage->header.width * bytesPerIteration;
+    printf("padding is %d -> %d bytes per pixel\n", padding, bytesPerRow);
     inputImage->pixel_count = 0;
 
-    for(int i = 0; i < (inputImage->header.width + inputImage->padding) * inputImage->header.height; i++)
+    uint32_t pixel_offset = 0;
+    uint32_t pixel_index = 0;
+    for(uint32_t y = 0; y < inputImage->header.height; y++)
     {
+        for (uint32_t x = 0; x < inputImage->header.width; x++)
+        {
+            pixel_offset = (y * bytesPerRow) + (x * 3);
 
-            // TODO should this be a 2D array?
-            memcpy(&inputImage->pixels[i].R, (p + BMPHeader->offset + (i * 3)), sizeof(uint8_t));
-            memcpy(&inputImage->pixels[i].G, (p + BMPHeader->offset + (i * 3) + 1), sizeof(uint8_t));
-            memcpy(&inputImage->pixels[i].B, (p + BMPHeader->offset + (i * 3) + 2), sizeof(uint8_t));
+            memcpy(&inputImage->pixels[pixel_index].R, (p + BMPHeader->offset + pixel_offset ), sizeof(uint8_t));
+            memcpy(&inputImage->pixels[pixel_index].G, (p + BMPHeader->offset + pixel_offset + 1), sizeof(uint8_t));
+            memcpy(&inputImage->pixels[pixel_index].B, (p + BMPHeader->offset + pixel_offset + 2), sizeof(uint8_t));
+
+            pixel_index++;
             inputImage->pixel_count++;
-
+        }
     }
 
     printf("I received a picture with a height of %d and a width of %d\n", BMPHeader->height, BMPHeader->width);
     printf("There are %d pixels total\n", inputImage->pixel_count);
-
     printf("The file size is %d, header size is %d, so there are %d pixels\n", (int)file_size, inputImage->header.offset, (int)file_size - inputImage->header.offset);
 
-    /* To get the pixel number from the x and y coordinates, use the formula:
-     * pixel_number = y * width + x
-     * To get the x and y coordinates from the pixel number, use the formula:
-     * x = pixel_number % width
-     * y = pixel_number / width
-     */
 
     int i, j;
     for(i = 0; i < inputImage->header.height; i++)
