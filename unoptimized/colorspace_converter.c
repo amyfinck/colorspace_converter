@@ -1,8 +1,7 @@
-#include "colorspace_converter.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include<sys/mman.h>
@@ -51,7 +50,8 @@ RGB_image_t *outputRGBImage;
  */
 void getLuma()
 {
-    for(uint32_t i = 0; i < inputRGBImage->pixel_count; i++)
+    uint32_t i;
+    for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
         double R = (double)(inputRGBImage->pixels[i].R);
         double G = (double)(inputRGBImage->pixels[i].G);
@@ -69,7 +69,8 @@ void getLuma()
  */
 void getChroma()
 {
-    for(uint32_t i = 0; i < inputRGBImage->pixel_count; i++)
+    uint32_t i;
+    for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
         // Cb and Cr are signed from -128 to 127
         double R = (double)(inputRGBImage->pixels[i].R);
@@ -89,9 +90,11 @@ void getChroma()
 void downsampleChroma()
 {
     // TODO this should probably be a scaled down image
-    for(uint32_t y = 0; y < inputRGBImage->height; y+=2)
+    uint32_t y;
+    for(y = 0; y < inputRGBImage->height; y+=2)
     {
-        for(uint32_t x = 0; x < inputRGBImage->width; x+=2)
+        uint32_t x;
+        for(x = 0; x < inputRGBImage->width; x+=2)
         {
             uint32_t bottom_left = y * inputRGBImage->width + x;
             uint32_t bottom_right = bottom_left + 1;
@@ -124,8 +127,8 @@ void downsampleChroma()
  */
 void YCCToRGB()
 {
-    printf("pixel count: %d\n", inputRGBImage->pixel_count);
-    for(uint32_t i = 0; i < inputRGBImage->pixel_count; i++)
+    uint32_t i;
+    for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
         double Y = (double)(outputYCCImage->pixels[i].Y);
         double Cb = (double)(outputYCCImage->pixels[i].Cb);
@@ -200,7 +203,6 @@ int main(int argc, char* argv[] )
 
     // calculate padding
     uint32_t bytesPerRow = inputRGBImage->width * 3; // 3 bytes per pixel
-    uint32_t padding = 0;
     if (bytesPerRow % 4 != 0)
     {
         padding = 4 - (bytesPerRow % 4);
@@ -210,9 +212,11 @@ int main(int argc, char* argv[] )
     // read in pixels
     uint32_t pixel_offset = 0;
     uint32_t pixel_index = 0;
-    for(uint32_t y = 0; y < inputRGBImage->height; y++)
+    uint32_t y;
+    for(y = 0; y < inputRGBImage->height; y++)
     {
-        for (uint32_t x = 0; x < inputRGBImage->width; x++)
+        uint32_t x;
+        for (x = 0; x < inputRGBImage->width; x++)
         {
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
@@ -317,9 +321,10 @@ int main(int argc, char* argv[] )
     // write YCC values to RBG from YCC files
     pixel_offset = 0;
     pixel_index = 0;
-    for(uint32_t y = 0; y < outputYCCImage->height; y++)
+    for(y = 0; y < outputYCCImage->height; y++)
     {
-        for (uint32_t x = 0; x < outputYCCImage->width; x++)
+        uint32_t x;
+        for (x = 0; x < outputYCCImage->width; x++)
         {
             // Pixels are stored in BGR order
             pixel_offset = (y * bytesPerRow) + (x * 3);
