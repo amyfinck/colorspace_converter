@@ -28,8 +28,8 @@ typedef struct RGB_image_t
 typedef struct YCC_pixel_t
 {
     uint8_t Y; // luma
-    int8_t Cb; // blue-difference
-    int8_t Cr; // red-difference
+    uint8_t Cb; // blue-difference
+    uint8_t Cr; // red-difference
 }YCC_pixel_t;
 
 typedef struct YCC_image_t
@@ -46,6 +46,9 @@ RGB_image_t *inputRGBImage;
 YCC_image_t *outputYCCImage;
 RGB_image_t *outputRGBImage;
 
+/*
+ * y = 16.0 + 0.257 R + 0.504 G + 0.098 B
+ */
 void getLuma()
 {
     for(uint32_t i = 0; i < inputRGBImage->pixel_count; i++)
@@ -53,26 +56,33 @@ void getLuma()
         double R = (double)(inputRGBImage->pixels[i].R);
         double G = (double)(inputRGBImage->pixels[i].G);
         double B = (double)(inputRGBImage->pixels[i].B);
-        double Y = 0.299*R + 0.587*G + 0.114*B;
+        double Y = 16 + 0.257*R + 0.504*G + 0.098*B;
 
         outputYCCImage->pixels[i].Y = (uint8_t)Y;
     }
 }
 
+/*
+ * cb = 128.0 - 0.148 R - 0.291 G + 0.439 B
+ * cr = 128.0 + 0.439 R - 0.368 G - 0.071 B
+ * Both Cb and Cr are unsigned with value is unsigned from 0 to 255
+ */
 void getChroma()
 {
     for(uint32_t i = 0; i < inputRGBImage->pixel_count; i++)
     {
         // Cb and Cr are signed from -128 to 127
-        int32_t Cb = inputRGBImage->pixels[i].B - outputYCCImage->pixels[i].Y;
-        int32_t Cr = inputRGBImage->pixels[i].R - outputYCCImage->pixels[i].Y;
-        if(Cb > 127) Cb = 127;
-        if(Cb < -128) Cb = -128;
-        if(Cr > 127) Cr = 127;
-        if(Cr < -128) Cr = -128;
+        double R = (double)(inputRGBImage->pixels[i].R);
+        double G = (double)(inputRGBImage->pixels[i].G);
+        double B = (double)(inputRGBImage->pixels[i].B);
+        double Cb = 128 - 0.148*R - 0.291*G + 0.439*B;
+        double Cr = 128 + 0.439*R - 0.368*G - 0.071*B;
 
-        outputYCCImage->pixels[i].Cb = (int8_t)Cb;
-        outputYCCImage->pixels[i].Cr = (int8_t)Cr;
+        if(Cb < 0) Cb = 0;
+        if(Cb > 255) Cb = 255;
+
+        outputYCCImage->pixels[i].Cb = (uint8_t)Cb;
+        outputYCCImage->pixels[i].Cr = (uint8_t)Cr;
     }
 }
 
@@ -106,6 +116,12 @@ void downsampleChroma()
     }
 }
 
+
+/*
+ * R′ = 1.164(Y′ − 16) + 1.596(CR − 128)
+ * G′ = 1.164(Y′ − 16) − 0.813(CR − 128) − 0.391(CB − 128)
+ * B′ = 1.164(Y′ − 16) + 2.018(CB − 128)
+ */
 void YCCToRGB()
 {
     printf("pixel count: %d\n", inputRGBImage->pixel_count);
@@ -115,9 +131,9 @@ void YCCToRGB()
         double Cb = (double)(outputYCCImage->pixels[i].Cb);
         double Cr = (double)(outputYCCImage->pixels[i].Cr);
 
-        double R = Y + 1.402 * Cr;
-        double G = Y - 0.344136 * Cb - 0.714136 * Cr;
-        double B = Y + 1.772 * Cb;
+        double R = 1.164*(Y-16) + 1.596*(Cr - 128);
+        double G = 1.164*(Y-16) - 0.813*(Cr-128) - 0.391*(Cb-128);
+        double B = 1.164*(Y-16) + 2.018*(Cb-128);
 
         if(R > 255) R = 255;
         if(R < 0) R = 0;
@@ -141,14 +157,13 @@ void print_pixel( uint32_t x, uint32_t y)
 
 int main(int argc, char* argv[] )
 {
-    // TODO clear some stuff out of main
-    // TODO check bitmap format
     if(argc != 2)
     {
         printf("Not a valid command. Usage: ./colorspace_converter <img_name>.bmp\n"); exit(1);
     }
 
     // open input image
+    chdir("input");
     int in_fd;
     in_fd = open(argv[1], O_RDWR);
     if (in_fd == -1)
@@ -157,6 +172,7 @@ int main(int argc, char* argv[] )
     }
     struct stat sb;
     fstat(in_fd, &sb);
+    chdir("..");
 
     // map contents of file to memory pointer p
     char * p = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, in_fd, 0);
@@ -210,11 +226,12 @@ int main(int argc, char* argv[] )
         }
     }
 
-    // create a file for all 4 output types
+    // create a file for all 4 RBG from YCC types
     int luma_fd;
     int cb_fd;
     int cr_fd;
     int o_fd;
+    chdir("output");
     chdir("luma");
     luma_fd = open(argv[1], O_RDWR | O_CREAT, 0666);
     if (luma_fd == -1)
@@ -233,16 +250,16 @@ int main(int argc, char* argv[] )
     {
         close(in_fd); close(luma_fd); close(cb_fd); close(cr_fd); munmap(p, sb.st_size); printf("error creating cr/%s\n", argv[1]); exit(1);
     }
-    chdir(".."); chdir("output");
+    chdir(".."); chdir("RBG from YCC");
     o_fd = open(argv[1], O_RDWR | O_CREAT, 0666);
     if (o_fd == -1)
     {
-        close(in_fd); close(luma_fd); close(cb_fd); close(cr_fd); close(o_fd); munmap(p, sb.st_size); printf("error creating output/%s\n", argv[1]); exit(1);
+        close(in_fd); close(luma_fd); close(cb_fd); close(cr_fd); close(o_fd); munmap(p, sb.st_size); printf("error creating RBG from YCC/%s\n", argv[1]); exit(1);
     }
     chdir("..");
+    chdir("..");
 
-
-    // copy input file to output locations
+    // copy input file to RBG from YCC locations
     char buffer[file_size];
     ssize_t bytesRead, bytesWritten;
     while ((bytesRead = read(in_fd, buffer, file_size)) > 0) {
@@ -251,13 +268,13 @@ int main(int argc, char* argv[] )
         write(cr_fd, buffer, bytesRead);
         write(o_fd, buffer, bytesRead);
         if (bytesWritten == -1) {
-            printf("Error writing to output file.\n");
+            printf("Error writing to RBG from YCC file.\n");
             close(in_fd);
             return 1;
         }
     }
 
-    // create output image struct and fill in info
+    // create RBG from YCC image struct and fill in info
     outputYCCImage = malloc(sizeof(YCC_image_t));
     outputRGBImage = malloc(sizeof(RGB_image_t));
     if(outputYCCImage == NULL)
@@ -291,13 +308,13 @@ int main(int argc, char* argv[] )
     // use downsampled YCC image to create new RGB image
     YCCToRGB();
 
-    // create mappings for output files
+    // create mappings for RBG from YCC files
     char * p_l = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, luma_fd, 0);
     char * p_cb = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, cb_fd, 0);
     char * p_cr = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, cr_fd, 0);
     char * p_o = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, o_fd, 0);
 
-    // write YCC values to output files
+    // write YCC values to RBG from YCC files
     pixel_offset = 0;
     pixel_index = 0;
     for(uint32_t y = 0; y < outputYCCImage->height; y++)
@@ -307,27 +324,27 @@ int main(int argc, char* argv[] )
             // Pixels are stored in BGR order
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
-            // Write luma output file (grayscale)
+            // Write luma RBG from YCC file (grayscale)
             memcpy((p_l + outputYCCImage->offset + pixel_offset), &outputYCCImage->pixels[pixel_index].Y, sizeof(uint8_t));
             memcpy((p_l + outputYCCImage->offset + pixel_offset + 1), &outputYCCImage->pixels[pixel_index].Y, sizeof(uint8_t));
             memcpy((p_l + outputYCCImage->offset + pixel_offset + 2), &outputYCCImage->pixels[pixel_index].Y, sizeof(uint8_t));
 
             // Convert Cb and Cr to unsigned for use in RGB representation
             uint8_t baseColor = 128;
-            uint8_t Cb = outputYCCImage->pixels[pixel_index].Cb + 128;
-            uint8_t Cr = outputYCCImage->pixels[pixel_index].Cr + 128;
+            uint8_t Cb = outputYCCImage->pixels[pixel_index].Cb;
+            uint8_t Cr = outputYCCImage->pixels[pixel_index].Cr;
 
-            // Write blue difference output file
+            // Write blue difference RBG from YCC file
             memcpy((p_cb + outputYCCImage->offset + pixel_offset), &Cb, sizeof(uint8_t));
             memcpy((p_cb + outputYCCImage->offset + pixel_offset + 1), &baseColor, sizeof(uint8_t));
             memcpy((p_cb + outputYCCImage->offset + pixel_offset + 2), &baseColor, sizeof(uint8_t));
 
-            // Write red difference output file
+            // Write red difference RBG from YCC file
             memcpy((p_cr + outputYCCImage->offset + pixel_offset), &baseColor, sizeof(uint8_t));
             memcpy((p_cr + outputYCCImage->offset + pixel_offset + 1), &baseColor, sizeof(uint8_t));
             memcpy((p_cr + outputYCCImage->offset + pixel_offset + 2), &Cr, sizeof(uint8_t));
 
-            // Write output file
+            // Write RBG from YCC file
             memcpy((p_o + outputRGBImage->offset + pixel_offset), &outputRGBImage->pixels[pixel_index].B, sizeof(uint8_t));
             memcpy((p_o + outputRGBImage->offset + pixel_offset + 1), &outputRGBImage->pixels[pixel_index].G, sizeof(uint8_t));
             memcpy((p_o + outputRGBImage->offset + pixel_offset + 2), &outputRGBImage->pixels[pixel_index].R, sizeof(uint8_t));
