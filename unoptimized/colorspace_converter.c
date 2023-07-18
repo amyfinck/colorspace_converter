@@ -7,6 +7,7 @@
 #include<string.h>
 #include <sys/stat.h>
 
+#define K 8
 
 typedef struct RGB_pixel_t
 {
@@ -49,18 +50,22 @@ RGB_image_t *outputRGBImage;
 
 /*
  * y = 16.0 + 0.257 R + 0.504 G + 0.098 B
+ * 2^8 * 0.257 = 66
+ * 2^8 * 0.504 = 129
+ * 2^8 * 0.098 = 25
  */
 void getLuma()
 {
     uint32_t i;
     for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
-        double R = (double)(inputRGBImage->pixels[i].R);
-        double G = (double)(inputRGBImage->pixels[i].G);
-        double B = (double)(inputRGBImage->pixels[i].B);
-        double Y = 16 + 0.257*R + 0.504*G + 0.098*B;
+        uint8_t R = inputRGBImage->pixels[i].R;
+        uint8_t G = inputRGBImage->pixels[i].G;
+        uint8_t B = inputRGBImage->pixels[i].B;
+        uint32_t Y_temp = (16 << K) + (66 * R) + (129 * G) + (25 * B);
+        uint8_t Y = (uint8_t)(( Y_temp + (1 << (K -1))) >> K);
 
-        outputYCCImage->pixels[i].Y = (uint8_t)Y;
+        outputYCCImage->pixels[i].Y = Y;
     }
 }
 
@@ -68,6 +73,12 @@ void getLuma()
  * cb = 128.0 - 0.148 R - 0.291 G + 0.439 B
  * cr = 128.0 + 0.439 R - 0.368 G - 0.071 B
  * Both Cb and Cr are unsigned with value is unsigned from 0 to 255
+ *
+ * 0.148 * 2^8 = 38
+ * 0.291 * 2^8 = 74
+ * 0.439 * 2^8 = 112
+ * 0.368 * 2^8 = 94
+ * 0.071 * 2^8 = 18
  */
 void getChroma()
 {
@@ -75,11 +86,15 @@ void getChroma()
     for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
         // Cb and Cr are signed from -128 to 127
-        double R = (double)(inputRGBImage->pixels[i].R);
-        double G = (double)(inputRGBImage->pixels[i].G);
-        double B = (double)(inputRGBImage->pixels[i].B);
-        double Cb = 128 - 0.148*R - 0.291*G + 0.439*B;
-        double Cr = 128 + 0.439*R - 0.368*G - 0.071*B;
+        uint8_t R = inputRGBImage->pixels[i].R;
+        uint8_t G = inputRGBImage->pixels[i].G;
+        uint8_t B = inputRGBImage->pixels[i].B;
+
+        uint32_t Cb_temp = (128 << K) - (38 * R) - (74 * G) + (112 * B);
+        uint32_t Cr_temp = (128 << K) + (112 * R) - (94 * G) - (18 * B);
+
+        uint8_t Cb = (uint8_t)(( Cb_temp + (1 << (K -1))) >> K);
+        uint8_t Cr = (uint8_t)(( Cr_temp + (1 << (K -1))) >> K);
 
         if(Cb < 0) Cb = 0;
         if(Cb > 255) Cb = 255;
@@ -126,31 +141,52 @@ void downsampleChroma()
  * R′ = 1.164(Y′ − 16) + 1.596(CR − 128)
  * G′ = 1.164(Y′ − 16) − 0.813(CR − 128) − 0.391(CB − 128)
  * B′ = 1.164(Y′ − 16) + 2.018(CB − 128)
+ *
+ * 2^6 * 1.164 = 74
+ * 2^6 * 1.596 = 102
+ * 2^6 * 0.813 = 52
+ * 2^6 * 0.391 = 25
+ * 2^6 * 2.018 = 129
  */
 void YCCToRGB()
 {
     uint32_t i;
+    uint32_t max = 0;
     for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
-        double Y = (double)(outputYCCImage->pixels[i].Y);
-        double Cb = (double)(outputYCCImage->pixels[i].Cb);
-        double Cr = (double)(outputYCCImage->pixels[i].Cr);
+        uint8_t Y = outputYCCImage->pixels[i].Y;
+        uint8_t Cb = outputYCCImage->pixels[i].Cb;
+        uint8_t Cr = outputYCCImage->pixels[i].Cr;
 
-        double R = 1.164*(Y-16) + 1.596*(Cr - 128);
-        double G = 1.164*(Y-16) - 0.813*(Cr-128) - 0.391*(Cb-128);
-        double B = 1.164*(Y-16) + 2.018*(Cb-128);
+        int64_t R_temp = (74 * (Y-16)) + (102 * (Cr-128));
+        if(R_temp > max) max = R_temp;
+        if(R_temp < 0) R_temp = 0;
 
-        if(R > 255) R = 255;
-        if(R < 0) R = 0;
-        if(G > 255) G = 255;
-        if(G < 0) G = 0;
-        if(B > 255) B = 255;
-        if(B < 0) B = 0;
+        int64_t G_temp = (74 * (Y-16)) - (52 * (Cr-128)) - (25 * (Cb-128));
+        if(G_temp > max) max = G_temp;
+        if(G_temp < 0) R_temp = 0;
+
+        int64_t B_temp = (74 * (Y-16)) + (129 * (Cb-128));
+        // max B_temp value is 74*(235-16) + 129*(240-128) = 19230
+
+        //double R = 1.164*(Y-16) + 1.596*(Cr - 128);
+        //double G = 1.164*(Y-16) - 0.813*(Cr-128) - 0.391*(Cb-128);
+        //double B = 1.164*(Y-16) + 2.018*(Cb-128);
+
+//        if(R_temp > (255*K)) R_temp = 255*K;
+//        if(G_temp > 255*K) G_temp = 255*K;
+//        if(B_temp > 255*K) B_temp = 255*K;
+
+
+        uint8_t R = (uint8_t)(( R_temp + (1 << (K-1))) >> K) ;
+        uint8_t G = (uint8_t)(( G_temp + (1 << (K-1))) >> K);
+        uint8_t B = (uint8_t)(( B_temp + (1 << (K-1))) >> K);
 
         outputRGBImage->pixels[i].R = (uint8_t)R;
         outputRGBImage->pixels[i].G = (uint8_t)G;
         outputRGBImage->pixels[i].B = (uint8_t)B;
     }
+    printf("max is %d\n", max);
 }
 
 void print_pixel( uint32_t x, uint32_t y)
