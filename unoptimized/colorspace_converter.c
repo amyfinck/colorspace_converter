@@ -164,9 +164,12 @@ void YCCToRGB()
 
         int64_t G_temp = (74 * (Y-16)) - (52 * (Cr-128)) - (25 * (Cb-128));
         if(G_temp > max) max = G_temp;
-        if(G_temp < 0) R_temp = 0;
+        if(G_temp < 0) G_temp = 0;
 
         int64_t B_temp = (74 * (Y-16)) + (129 * (Cb-128));
+        if(B_temp > max) max =B_temp;
+        if(B_temp < 0) B_temp = 0;
+
         // max B_temp value is 74*(235-16) + 129*(240-128) = 19230
 
         //double R = 1.164*(Y-16) + 1.596*(Cr - 128);
