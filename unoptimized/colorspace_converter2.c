@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     // Run processes
     set_img_header_from_file(rgb_in_img, in_file_rgb);
     allocate_rgb_pixels_memory(rgb_in_img);
-    set_img_pixels_from_file(rgb_in_img, in_file_rgb);
+    rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
     // Copy info from input file to output files
     copy_file(in_file_rgb, out_file_cb);
@@ -42,7 +42,13 @@ int main(int argc, char *argv[])
 
     // Compute and allocate conversions
     compute_ycc_from_rgb(rgb_in_img, ycc_out_img);
+    downsample_ycc_chroma(ycc_out_img);
     compute_rgb_from_ycc(ycc_out_img, rgb_out_img);
+
+    ycc_pixels_file_handler(ycc_out_img, out_file_luma, write_luma);
+    ycc_pixels_file_handler(ycc_out_img, out_file_cb, write_cb);
+    ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
+    rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
 
     // Free memory
     free(rgb_in_img->pixels);
