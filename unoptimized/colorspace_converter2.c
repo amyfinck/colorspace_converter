@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     FILE *out_file_rgb;
 
     printf(".\\input\\parrot10.bmp\n");
-    char cwd[_MAX_PATH];
+    char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {
         printf("Current working dir: %s\n", cwd);
