@@ -19,38 +19,40 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    // Open files
-    in_file_rgb = fopen(argv[1], "r");
-    out_file_cb = fopen(argv[1], "w+");
-    out_file_cr = fopen(argv[1], "w+");
-    out_file_luma = fopen(argv[1], "w+");
-    out_file_rgb = fopen(argv[1], "w+");
+    // printf(argv[1]);
 
-    // Run processes
-    set_img_header_from_file(rgb_in_img, in_file_rgb);
-    allocate_rgb_pixels_memory(rgb_in_img);
-    rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
+    // // Open files
+    // in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
+    // out_file_cb = fopen(argv[1], "w+");
+    // out_file_cr = fopen(argv[1], "w+");
+    // out_file_luma = fopen(argv[1], "w+");
+    // out_file_rgb = fopen(argv[1], "w+");
 
-    // Copy info from input file to output files
-    copy_file(in_file_rgb, out_file_cb);
-    copy_file(in_file_rgb, out_file_cr);
-    copy_file(in_file_rgb, out_file_luma);
-    copy_file(in_file_rgb, out_file_rgb);
+    // // Run processes
+    // set_img_header_from_file(rgb_in_img, in_file_rgb);
+    // allocate_rgb_pixels_memory(rgb_in_img);
+    // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
-    // Copy info from input image to output imagess
-    copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
-    copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
+    // // Copy info from input file to output files
+    // copy_file(in_file_rgb, out_file_cb);
+    // copy_file(in_file_rgb, out_file_cr);
+    // copy_file(in_file_rgb, out_file_luma);
+    // copy_file(in_file_rgb, out_file_rgb);
 
-    // Compute and allocate conversions
-    compute_ycc_from_rgb(rgb_in_img, ycc_out_img);
-    downsample_ycc_chroma(ycc_out_img);
-    compute_rgb_from_ycc(ycc_out_img, rgb_out_img);
+    // // Copy info from input image to output imagess
+    // copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
+    // copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
 
-    // Write the images to output files
-    ycc_pixels_file_handler(ycc_out_img, out_file_luma, write_luma);
-    ycc_pixels_file_handler(ycc_out_img, out_file_cb, write_cb);
-    ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
-    rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
+    // // Compute and allocate conversions
+    // compute_ycc_from_rgb(rgb_in_img, ycc_out_img);
+    // downsample_ycc_chroma(ycc_out_img);
+    // compute_rgb_from_ycc(ycc_out_img, rgb_out_img);
+
+    // // Write the images to output files
+    // ycc_pixels_file_handler(ycc_out_img, out_file_luma, write_luma);
+    // ycc_pixels_file_handler(ycc_out_img, out_file_cb, write_cb);
+    // ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
+    // rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
 
     // Free memory
     free(rgb_in_img->pixels);
