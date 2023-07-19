@@ -8,16 +8,16 @@
 int main(int argc, char *argv[])
 {
     // Image declarations
-    RGB_image_t *rgb_in_img;
-    RGB_image_t *rgb_out_img;
-    YCC_image_t *ycc_out_img;
+    // RGB_image_t *rgb_in_img;
+    // RGB_image_t *rgb_out_img;
+    // YCC_image_t *ycc_out_img;
 
-    // File declarations
-    FILE *in_file_rgb;
-    FILE *out_file_cb;
-    FILE *out_file_cr;
-    FILE *out_file_luma;
-    FILE *out_file_rgb;
+    // // File declarations
+    // FILE *in_file_rgb;
+    // FILE *out_file_cb;
+    // FILE *out_file_cr;
+    // FILE *out_file_luma;
+    // FILE *out_file_rgb;
 
     // printf(argv[1]);
 
@@ -55,18 +55,18 @@ int main(int argc, char *argv[])
     // rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
 
     // Free memory
-    free(rgb_in_img->pixels);
-    free(ycc_out_img->pixels);
-    free(rgb_in_img);
-    free(rgb_out_img);
-    free(ycc_out_img);
+    // free(rgb_in_img->pixels);
+    // free(ycc_out_img->pixels);
+    // free(rgb_in_img);
+    // free(rgb_out_img);
+    // free(ycc_out_img);
 
-    // Close files
-    fclose(in_file_rgb);
-    fclose(out_file_cb);
-    fclose(out_file_cr);
-    fclose(out_file_luma);
-    fclose(out_file_rgb);
+    // // Close files
+    // fclose(in_file_rgb);
+    // fclose(out_file_cb);
+    // fclose(out_file_cr);
+    // fclose(out_file_luma);
+    // fclose(out_file_rgb);
 
     return 0;
 }
