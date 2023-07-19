@@ -19,18 +19,18 @@ void compute_ycc_from_rgb(RGB_image_t *rgb_in_img, YCC_image_t *yyc_out_img)
     }
 }
 
-void compute_rgb_from_ycc(YCC_image_t *yyc_out_img, RGB_image_t *rgb_in_img)
+void compute_rgb_from_ycc(YCC_image_t *yyc_in_img, RGB_image_t *rgb_out_img)
 {
     uint32_t index;
-    for (index = 0; index < rgb_in_img->pixel_count; index++)
+    for (index = 0; index < rgb_out_img->pixel_count; index++)
     {
-        uint8_t Y = yyc_out_img->pixels[index].Y;
-        uint8_t Cb = yyc_out_img->pixels[index].Cb;
-        uint8_t Cr = yyc_out_img->pixels[index].Cr;
+        uint8_t Y = yyc_in_img->pixels[index].Y;
+        uint8_t Cb = yyc_in_img->pixels[index].Cb;
+        uint8_t Cr = yyc_in_img->pixels[index].Cr;
 
-        rgb_in_img->pixels[index].R = compute_rgb_r(Y, Cb, Cr);
-        rgb_in_img->pixels[index].G = compute_rgb_g(Y, Cb, Cr);
-        rgb_in_img->pixels[index].B = compute_rgb_b(Y, Cb, Cr);
+        rgb_out_img->pixels[index].R = compute_rgb_r(Y, Cb, Cr);
+        rgb_out_img->pixels[index].G = compute_rgb_g(Y, Cb, Cr);
+        rgb_out_img->pixels[index].B = compute_rgb_b(Y, Cb, Cr);
     }
 }
 
