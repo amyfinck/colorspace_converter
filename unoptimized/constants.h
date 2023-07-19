@@ -1,5 +1,5 @@
-#ifndef PROG_CONSTS_H
-#define PROG_CONSTS_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -40,5 +40,14 @@ typedef struct YCC_image_t
     uint32_t file_size;
     YCC_pixel_t *pixels;
 } YCC_image_t;
+
+void exit_on_error(int condition, char *msg)
+{
+    if (condition)
+    {
+        printf(msg);
+        exit(1);
+    }
+}
 
 #endif
