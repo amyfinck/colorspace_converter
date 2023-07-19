@@ -18,7 +18,8 @@ char *get_abs_path(char *rel_path)
     // char *abs_path = realpath(rel_path, NULL);
     // printf("Concatenated String: %s\n", rel_path);
     // return "HELLO";
-    char abs_path[PATH_MAX];
+    char *abs_path = (char *)malloc(PATH_MAX);
+    exit_on_error(abs_path == NULL, "Error: Unable to allocate memory for path")
     exit_on_error(realpath(rel_path, abs_path) == NULL, "Error: Cannot find absolute path");
     return abs_path;
 }
