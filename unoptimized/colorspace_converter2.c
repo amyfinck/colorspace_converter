@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     downsample_ycc_chroma(ycc_out_img);
     compute_rgb_from_ycc(ycc_out_img, rgb_out_img);
 
+    // Write the images to output files
     ycc_pixels_file_handler(ycc_out_img, out_file_luma, write_luma);
     ycc_pixels_file_handler(ycc_out_img, out_file_cb, write_cb);
     ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
