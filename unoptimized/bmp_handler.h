@@ -13,10 +13,10 @@
 
 char *get_abs_path(char *rel_path)
 {
-    char cwd[PATH_MAX];
-    exit_on_error(getcwd(cwd, sizeof(cwd)) == NULL, "Error: Unable to get current directory");
-    printf("Concatenated String: %s\n", strcat(cwd, rel_path));
-    return strcat(cwd, rel_path);
+    char *abs_path = (char *)malloc(PATH_MAX);
+    exit_on_error(getcwd(abs_path, sizeof(abs_path)) == NULL, "Error: Unable to get current directory");
+    printf("Concatenated String: %s\n", strcat(abs_path, rel_path));
+    return abs_path;
 }
 
 void copy_file_header(FILE *src_file, FILE *dest_file)
