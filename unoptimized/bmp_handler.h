@@ -18,17 +18,9 @@ char *get_abs_path(char *rel_path)
     // char *abs_path = realpath(rel_path, NULL);
     // printf("Concatenated String: %s\n", rel_path);
     // return "HELLO";
-    char absolutePath[PATH_MAX];
-
-    if (realpath(rel_path, absolutePath) != NULL)
-    {
-        printf("Absolute path: %s\n", absolutePath);
-    }
-    else
-    {
-        perror("Error obtaining absolute path");
-        return 1;
-    }
+    char abs_path[PATH_MAX];
+    exit_on_error(realpath(rel_path, abs_path) == NULL, "Error: Cannot find absolute path");
+    return abs_path;
 }
 
 void copy_file_header(FILE *src_file, FILE *dest_file)
