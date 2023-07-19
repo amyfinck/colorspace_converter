@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 #include "converters.h"
 #include "bmp_parser.h"
 #include "bmp_handler.h"
@@ -23,14 +21,7 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    printf(".\\input\\parrot10.bmp\n");
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-    {
-        printf("Current working dir: %s\n", cwd);
-    }
-
-    printf("Concatenated String: %s\n", strcat(cwd, "/input/parrot10.bmp"));
+    printf("Concatenated String: %s\n", get_abs_path("/input/parrot10.bmp"));
     // // Open files
     in_file_rgb = fopen(cwd, "r");
 

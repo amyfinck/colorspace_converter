@@ -3,10 +3,21 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include "constants.h"
 
+#define PATH_MAX 256
 #define CHUNK_SIZE 4096
 #define BMP_HEADER_SIZE 54
+
+char *get_abs_path(char *rel_path)
+{
+    char cwd[PATH_MAX];
+    exit_on_error(getcwd(cwd, sizeof(cwd)) == NULL, "Error: Unable to get current directory");
+    strcat(cwd, rel_path);
+    return cwd;
+}
 
 void copy_file_header(FILE *src_file, FILE *dest_file)
 {
