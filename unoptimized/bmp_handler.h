@@ -14,7 +14,6 @@
 char *get_abs_path(char *rel_path)
 {
     static char abs_path[PATH_MAX];
-    exit_on_error(abs_path == NULL, "Unable to allocate memory for path");
     exit_on_error(realpath(rel_path, abs_path) == NULL, "Cannot find absolute path");
     return abs_path;
 }
