@@ -8,9 +8,9 @@
 int main(int argc, char *argv[])
 {
     // Image declarations
-    // RGB_image_t *rgb_in_img;
-    // RGB_image_t *rgb_out_img;
-    // YCC_image_t *ycc_out_img;
+    RGB_image_t *rgb_in_img;
+    RGB_image_t *rgb_out_img;
+    YCC_image_t *ycc_out_img;
 
     // // File declarations
     // FILE *in_file_rgb;
