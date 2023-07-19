@@ -1,5 +1,5 @@
-#ifndef BMP_PARSER_H
-#define BMP_PARSER_H
+#ifndef BMP_HANDLER_H
+#define BMP_HANDLER_H
 
 #include <stdint.h>
 #include <stdio.h>
