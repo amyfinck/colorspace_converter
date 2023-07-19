@@ -15,6 +15,7 @@ char *get_abs_path(char *rel_path)
 {
     char cwd[PATH_MAX];
     exit_on_error(getcwd(cwd, sizeof(cwd)) == NULL, "Error: Unable to get current directory");
+    printf(cwd);
     return strcat(cwd, rel_path);
 }
 
