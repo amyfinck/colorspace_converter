@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
 
     printf("Concatenated String: %s\n", strcat(cwd, "/input/parrot10.bmp"));
     // // Open files
-    in_file_rgb = fopen(strcat(cwd, "/input/parrot10.bmp"), "r");
+    in_file_rgb = fopen(cwd, "r");
 
     if (in_file_rgb == NULL)
     {
-        printf("Could not open %s\n", strcat(cwd, "/input/parrot10.bmp"));
+        printf("Could not open %s\n", cwd);
         exit(1);
     }
     // out_file_cb = fopen(argv[1], "w+");
