@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         printf("Current working dir: %s\n", cwd);
     }
 
-    char path[] = strcat(cwd, "/input/parrot10.bmp")
+    char path[] = strcat(cwd, "/input/parrot10.bmp");
 
     printf("Concatenated String: %s\n", path);
     // // Open files
