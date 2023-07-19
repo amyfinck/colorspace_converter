@@ -13,7 +13,7 @@
 
 char *get_abs_path(char *rel_path)
 {
-    char *abs_path = "";
+    char *abs_path;
     exit_on_error(realpath(rel_path, abs_path) == NULL, "Cannot find absolute path");
     return abs_path;
 }
