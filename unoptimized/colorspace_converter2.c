@@ -6,6 +6,8 @@
 #include "bmp_handler.h"
 #include "utilities.h"
 
+#define PATH_MAX 256
+
 int main(int argc, char *argv[])
 {
     // Image declarations
