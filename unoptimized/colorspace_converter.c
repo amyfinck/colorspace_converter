@@ -7,8 +7,6 @@
 #include<string.h>
 #include <sys/stat.h>
 
-#define K 8
-
 typedef struct RGB_pixel_t
 {
     uint8_t R;
@@ -23,7 +21,6 @@ typedef struct RGB_image_t
     uint32_t offset;
     RGB_pixel_t *pixels;
     uint32_t pixel_count;
-    uint32_t padding;
     uint32_t file_size;
 }RGB_image_t;
 
@@ -56,6 +53,7 @@ RGB_image_t *outputRGBImage;
  */
 void getLuma()
 {
+    uint8_t K = 8;
     uint32_t i;
     for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
@@ -63,7 +61,7 @@ void getLuma()
         uint8_t G = inputRGBImage->pixels[i].G;
         uint8_t B = inputRGBImage->pixels[i].B;
         uint32_t Y_temp = (16 << K) + (66 * R) + (129 * G) + (25 * B);
-        uint8_t Y = (uint8_t)(( Y_temp + (1 << (K -1))) >> K);
+        uint8_t Y = (uint8_t)(( Y_temp + (1 << (K-1))) >> K);
 
         outputYCCImage->pixels[i].Y = Y;
     }
@@ -85,6 +83,8 @@ void getChroma()
     uint32_t i;
     for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
+        uint8_t K = 8;
+
         // Cb and Cr are signed from -128 to 127
         uint8_t R = inputRGBImage->pixels[i].R;
         uint8_t G = inputRGBImage->pixels[i].G;
@@ -138,9 +138,9 @@ void downsampleChroma()
 
 
 /*
- * R′ = 1.164(Y′ − 16) + 1.596(CR − 128)
- * G′ = 1.164(Y′ − 16) − 0.813(CR − 128) − 0.391(CB − 128)
- * B′ = 1.164(Y′ − 16) + 2.018(CB − 128)
+ * R′ = 1.164(Y′−16) + 1.596(Cr−128)
+ * G′ = 1.164(Y′−16) − 0.813(Cr-128) − 0.391(Cb−128)
+ * B′ = 1.164(Y′−16) + 2.018(Cb−b128)
  *
  * 2^6 * 1.164 = 74
  * 2^6 * 1.596 = 102
@@ -151,23 +151,21 @@ void downsampleChroma()
 void YCCToRGB()
 {
     uint32_t i;
-    uint32_t max = 0;
     for(i = 0; i < inputRGBImage->pixel_count; i++)
     {
+        uint8_t K = 6;
+
         uint8_t Y = outputYCCImage->pixels[i].Y;
         uint8_t Cb = outputYCCImage->pixels[i].Cb;
         uint8_t Cr = outputYCCImage->pixels[i].Cr;
 
-        int64_t R_temp = (74 * (Y-16)) + (102 * (Cr-128));
-        if(R_temp > max) max = R_temp;
+        int64_t R_temp = (74 * (Y -16)) + (102 * (Cr-128));
         if(R_temp < 0) R_temp = 0;
 
         int64_t G_temp = (74 * (Y-16)) - (52 * (Cr-128)) - (25 * (Cb-128));
-        if(G_temp > max) max = G_temp;
         if(G_temp < 0) G_temp = 0;
 
         int64_t B_temp = (74 * (Y-16)) + (129 * (Cb-128));
-        if(B_temp > max) max =B_temp;
         if(B_temp < 0) B_temp = 0;
 
         // max B_temp value is 74*(235-16) + 129*(240-128) = 19230
@@ -181,15 +179,14 @@ void YCCToRGB()
 //        if(B_temp > 255*K) B_temp = 255*K;
 
 
-        uint8_t R = (uint8_t)(( R_temp + (1 << (K-1))) >> K) ;
-        uint8_t G = (uint8_t)(( G_temp + (1 << (K-1))) >> K);
-        uint8_t B = (uint8_t)(( B_temp + (1 << (K-1))) >> K);
+        uint8_t R = (uint8_t)(( R_temp + (1 << (6-1))) >> 6) ;
+        uint8_t G = (uint8_t)(( G_temp + (1 << (6-1))) >> 6);
+        uint8_t B = (uint8_t)(( B_temp + (1 << (6-1))) >> 6);
 
         outputRGBImage->pixels[i].R = (uint8_t)R;
         outputRGBImage->pixels[i].G = (uint8_t)G;
         outputRGBImage->pixels[i].B = (uint8_t)B;
     }
-    printf("max is %d\n", max);
 }
 
 void print_pixel( uint32_t x, uint32_t y)
@@ -217,8 +214,7 @@ int main(int argc, char* argv[] )
 
     // create input image struct and fill in info from header
     inputRGBImage = malloc(sizeof(RGB_image_t));
-    if(inputRGBImage == NULL)
-    {
+    if(inputRGBImage == NULL) {
         printf("error - image malloc failed\n"); fclose(in_fp); exit(1);
     }
 
@@ -245,8 +241,7 @@ int main(int argc, char* argv[] )
     // allocate memory for pixels
     inputRGBImage->pixel_count = 0;
     inputRGBImage->pixels = malloc(sizeof(RGB_pixel_t) * inputRGBImage->height * inputRGBImage->width);
-    if(inputRGBImage->pixels == NULL)
-    {
+    if(inputRGBImage->pixels == NULL) {
         printf("error - pixel malloc failed\n"); fclose(in_fp); exit(1);
     }
 
@@ -259,14 +254,13 @@ int main(int argc, char* argv[] )
     }
 
     // read in pixels
-    printf("hello\n");
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
     uint32_t y;
     for(y = 0; y < inputRGBImage->height; y++)
     {
         uint32_t x;
-        for (x = 0; x < inputRGBImage->width; x++)
+        for(x = 0; x < inputRGBImage->width; x++)
         {
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
@@ -289,6 +283,7 @@ int main(int argc, char* argv[] )
 
     FILE* luma_fp = fopen(argv[1], "w+");
     if (luma_fp == NULL) {
+        // TODO free
         fclose(in_fp); printf("error creating luma/%s\n", argv[1]); exit(1);
     }
 
