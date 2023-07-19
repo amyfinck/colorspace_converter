@@ -15,7 +15,7 @@ char *get_abs_path(char *rel_path)
 {
     char cwd[PATH_MAX];
     // exit_on_error(getcwd(cwd, sizeof(cwd)) == NULL, "Error: Unable to get current directory");
-    char *abs_path = realpath(rel_path, cwd)
+    char *abs_path = realpath(rel_path, cwd);
     printf("Concatenated String: %s\n", abs_path);
     return "HELLO";
 }
