@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     printf("Concatenated String: %s\n", strcat(cwd, "/input/parrot10.bmp"));
     // // Open files
-    in_file_rgb = fopen(strcat(cwd, "/input/parrot10.bmp"));
+    in_file_rgb = fopen(strcat(cwd, "/input/parrot10.bmp"), "r");
 
     if (in_file_rgb == NULL)
     {
