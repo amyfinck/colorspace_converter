@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     printf(".\\input\\parrot10.bmp\n");
 
     // // Open files
-    in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
+    in_file_rgb = fopen("..\\input\\parrot10.bmp", "r");
 
     if (in_file_rgb == NULL)
     {
