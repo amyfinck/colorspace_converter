@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "converters.h"
 #include "bmp_parser.h"
 #include "bmp_handler.h"
@@ -20,6 +21,11 @@ int main(int argc, char *argv[])
     FILE *out_file_rgb;
 
     printf(".\\input\\parrot10.bmp\n");
+    char cwd[_MAX_PATH];
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+    {
+        printf("Current working dir: %s\n", cwd);
+    }
 
     // // Open files
     in_file_rgb = fopen("..\\input\\parrot10.bmp", "r");
