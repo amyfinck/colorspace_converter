@@ -47,8 +47,7 @@ void downsample_ycc_chroma(RGB_image_t *rgb_in_img, YCC_image_t *yyc_out_img)
                 index,
                 index + 1,
                 index + rgb_in_img->width,
-                index + rgb_in_img->width + 1
-            };
+                index + rgb_in_img->width + 1};
 
             int32_t cb_total = 0;
             int32_t cr_total = 0;

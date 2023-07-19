@@ -21,7 +21,7 @@ uint32_t *get_file_offset(FILE *in_file)
     return buffer;
 }
 
-uint32_t *get_file_width(FILE *in_file) 
+uint32_t *get_file_width(FILE *in_file)
 {
     uint32_t *buffer;
     exit_on_error(fseek(in_file, 18, SEEK_SET) != 0, "Error: Seeking width position failed");
@@ -29,7 +29,7 @@ uint32_t *get_file_width(FILE *in_file)
     return buffer;
 }
 
-uint32_t* get_file_height(FILE *in_file)
+uint32_t *get_file_height(FILE *in_file)
 {
     uint32_t *buffer;
     exit_on_error(fseek(in_file, 22, SEEK_SET) != 0, "Error: Seeking height position failed");
@@ -62,7 +62,7 @@ void set_img_pixels_from_file(RGB_image_t *in_img, FILE *in_file)
     uint32_t row_pixels_byte_count = in_img->width * PIXEL_M;
     uint32_t buffer_row_bytes = row_byte_count - row_pixels_byte_count;
     uint32_t row, column;
-    for (row = 0; row < in_img->height; row++) 
+    for (row = 0; row < in_img->height; row++)
     {
         for (column = 0; column < in_img->width; column++)
         {
