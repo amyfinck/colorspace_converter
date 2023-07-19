@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    printf(argv[1]);
+    printf(".\\input\\parrot10.bmp");
 
     // // Open files
     // in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
