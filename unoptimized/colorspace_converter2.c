@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "converters.h"
 #include "bmp_parser.h"
 #include "bmp_handler.h"
@@ -29,6 +30,9 @@ int main(int argc, char *argv[])
         printf("Current working dir: %s\n", cwd);
     }
 
+    char path[] = strcat(cwd, "/input/parrot10.bmp")
+
+    printf("Concatenated String: %s\n", path);
     // // Open files
     in_file_rgb = fopen("..\\input\\parrot10.bmp", "r");
 
