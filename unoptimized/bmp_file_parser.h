@@ -67,7 +67,8 @@ void set_pixels(RGB_image_t *in_img, FILE *in_file)
     uint32_t buffer_row_bytes = row_byte_count - row_pixels_byte_count;
 
     uint32_t row, column;
-    for (row = 0; row < in_img->height; row++)
+    for (row = 0; row < in_img->height; row++) 
+    {
         for (column = 0; column < in_img->width; column++)
         {
             uint32_t index = row * in_img->width + column;
@@ -76,9 +77,10 @@ void set_pixels(RGB_image_t *in_img, FILE *in_file)
             fread(&in_img->pixels[index].R, 1, 1, in_file);
             if (column == in_img->width - 1 && buffer_row_bytes != 0)
                 fseek(in_file, buffer_row_bytes, SEEK_CUR);
-            
+
             ++in_img->pixel_count;
         }
+    }
 }
 
 void copy_file_header(FILE *src_file, FILE *dest_file)
