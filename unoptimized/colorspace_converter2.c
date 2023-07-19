@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    printf(".\\input\\parrot10.bmp");
+    printf(".\\input\\parrot10.bmp\n");
 
     // // Open files
-    // in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
+    in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
     // out_file_cb = fopen(argv[1], "w+");
     // out_file_cr = fopen(argv[1], "w+");
     // out_file_luma = fopen(argv[1], "w+");
