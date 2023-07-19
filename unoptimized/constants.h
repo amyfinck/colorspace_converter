@@ -45,7 +45,7 @@ void exit_on_error(int condition, char *msg)
 {
     if (condition)
     {
-        printf(msg);
+        printf("Error: %s\n", msg);
         exit(1);
     }
 }
