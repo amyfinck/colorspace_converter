@@ -23,13 +23,13 @@ int main(int argc, char *argv[])
 
     printf("Concatenated String: %s\n", get_abs_path("/input/parrot10.bmp"));
     // // Open files
-    in_file_rgb = fopen(cwd, "r");
+    // in_file_rgb = fopen(cwd, "r");
 
-    if (in_file_rgb == NULL)
-    {
-        printf("Could not open %s\n", cwd);
-        exit(1);
-    }
+    // if (in_file_rgb == NULL)
+    // {
+    //     printf("Could not open %s\n", cwd);
+    //     exit(1);
+    // }
     // out_file_cb = fopen(argv[1], "w+");
     // out_file_cr = fopen(argv[1], "w+");
     // out_file_luma = fopen(argv[1], "w+");
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     // free(ycc_out_img);
 
     // Close files
-    fclose(in_file_rgb);
+    // fclose(in_file_rgb);
     // fclose(out_file_cb);
     // fclose(out_file_cr);
     // fclose(out_file_luma);
