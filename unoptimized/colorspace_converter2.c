@@ -23,6 +23,12 @@ int main(int argc, char *argv[])
 
     // // Open files
     in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
+
+    if (in_file_rgb == NULL)
+    {
+        printf("Could not open %s\n", argv[1]);
+        exit(1);
+    }
     // out_file_cb = fopen(argv[1], "w+");
     // out_file_cr = fopen(argv[1], "w+");
     // out_file_luma = fopen(argv[1], "w+");
