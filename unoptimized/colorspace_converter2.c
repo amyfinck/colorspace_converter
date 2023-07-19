@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     FILE *out_file_cr;
     FILE *out_file_luma;
     FILE *out_file_rgb;
-    char a[] = get_abs_path("input/parrot10.bmp");
+    char a* = get_abs_path("input/parrot10.bmp");
 
     printf("Concatenated String: %s\n", a);
         // // Open files
