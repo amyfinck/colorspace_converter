@@ -63,4 +63,6 @@ int main(int argc, char *argv[])
     fclose(out_file_cr);
     fclose(out_file_luma);
     fclose(out_file_rgb);
+
+    return 0;
 }
