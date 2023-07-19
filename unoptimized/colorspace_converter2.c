@@ -12,14 +12,14 @@ int main(int argc, char *argv[])
     RGB_image_t *rgb_out_img;
     YCC_image_t *ycc_out_img;
 
-    // // File declarations
-    // FILE *in_file_rgb;
-    // FILE *out_file_cb;
-    // FILE *out_file_cr;
-    // FILE *out_file_luma;
-    // FILE *out_file_rgb;
+    // File declarations
+    FILE *in_file_rgb;
+    FILE *out_file_cb;
+    FILE *out_file_cr;
+    FILE *out_file_luma;
+    FILE *out_file_rgb;
 
-    // printf(argv[1]);
+    printf(argv[1]);
 
     // // Open files
     // in_file_rgb = fopen(".\\input\\parrot10.bmp", "r");
