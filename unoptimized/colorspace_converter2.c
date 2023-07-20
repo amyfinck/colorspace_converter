@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     out_file_rgb = fopen(of_rgb_path, "w+");
 
     int a = fseek(in_file_rgb, 10, SEEK_SET);
-
+    exit_on_error(fseek(in_file, 10, SEEK_SET) != 0, "Seeking offset position failed");
     printf("%d\n", a);
 
     // // Run processes
