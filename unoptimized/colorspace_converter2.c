@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
     allocate_rgb_memory(rgb_out_img);
 
     // Read rgb input file
-    set_img_header_from_file(rgb_in_img, in_file_rgb);
-    printf("%d\n", rgb_in_img->height);
+    // set_img_header_from_file(rgb_in_img, in_file_rgb);
+    // printf("%d\n", rgb_in_img->height);
 
     // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
