@@ -16,7 +16,6 @@ uint32_t get_file_size(FILE *in_file)
 uint32_t *get_file_offset(FILE *in_file)
 {
     uint32_t *buffer;
-    printf("%s\n", fseek(in_file, 10, SEEK_SET));
     exit_on_error(fseek(in_file, 10, SEEK_SET) != 0, "Seeking offset position failed");
     exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Reading file offset failed");
     return buffer;
