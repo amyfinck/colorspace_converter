@@ -16,24 +16,25 @@ uint32_t get_file_size(FILE *in_file)
 uint32_t *get_file_offset(FILE *in_file)
 {
     uint32_t *buffer;
-    exit_on_error(fseek(in_file, 10, SEEK_SET) != 0, "Error: Seeking offset position failed");
-    exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Error: Reading file offset failed");
+    printf("%s\n", fseek(in_file, 10, SEEK_SET));
+    exit_on_error(fseek(in_file, 10, SEEK_SET) != 0, "Seeking offset position failed");
+    exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Reading file offset failed");
     return buffer;
 }
 
 uint32_t *get_file_width(FILE *in_file)
 {
     uint32_t *buffer;
-    exit_on_error(fseek(in_file, 18, SEEK_SET) != 0, "Error: Seeking width position failed");
-    exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Error: Reading file width failed");
+    exit_on_error(fseek(in_file, 18, SEEK_SET) != 0, "Seeking width position failed");
+    exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Reading file width failed");
     return buffer;
 }
 
 uint32_t *get_file_height(FILE *in_file)
 {
     uint32_t *buffer;
-    exit_on_error(fseek(in_file, 22, SEEK_SET) != 0, "Error: Seeking height position failed");
-    exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Error: Reading file height failed");
+    exit_on_error(fseek(in_file, 22, SEEK_SET) != 0, "Seeking height position failed");
+    exit_on_error(fread(buffer, 4, 1, in_file) == 0, "Reading file height failed");
     return buffer;
 }
 
