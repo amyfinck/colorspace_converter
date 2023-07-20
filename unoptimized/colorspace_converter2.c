@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
     out_file_luma = fopen(of_lum_path, "w+");
     out_file_rgb = fopen(of_rgb_path, "w+");
 
-    uint32_t *buffer;
-    fread(buffer, 4, 1, in_file_rgb);
-    printf("%d\n", buffer);
+    int a = fseek(in_file_rgb, 10, SEEK_SET);
+
+    printf("%d\n", a);
 
     // // Run processes
     // set_img_header_from_file(rgb_in_img, in_file_rgb);
