@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     // Read rgb input file
     set_img_header_from_file(rgb_in_img, in_file_rgb);
-    printf("%u\n", rgb_in_img->height);
+    printf("%i\n", (int)rgb_in_img->height);
 
     // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
