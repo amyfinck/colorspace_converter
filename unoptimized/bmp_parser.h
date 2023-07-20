@@ -19,13 +19,13 @@ void get_file_offset(RGB_image_t *in_img, FILE *in_file)
     exit_on_error(fread(&in_img->offset, 4, 1, in_file) == 0, "Reading file offset failed");
 }
 
-uint32_t *get_file_width(RGB_image_t *in_img, FILE *in_file)
+void get_file_width(RGB_image_t *in_img, FILE *in_file)
 {
     exit_on_error(fseek(in_file, 18, SEEK_SET) != 0, "Seeking width position failed");
     exit_on_error(fread(&in_img->width, 4, 1, in_file) == 0, "Reading file width failed");
 }
 
-uint32_t *get_file_height(RGB_image_t *in_img, FILE *in_file)
+void get_file_height(RGB_image_t *in_img, FILE *in_file)
 {
     exit_on_error(fseek(in_file, 22, SEEK_SET) != 0, "Seeking height position failed");
     exit_on_error(fread(&in_img->height, 4, 1, in_file) == 0, "Reading file height failed");
