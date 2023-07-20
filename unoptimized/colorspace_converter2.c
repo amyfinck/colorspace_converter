@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     out_file_rgb = fopen(of_rgb_path, "w+");
 
     uint32_t *buffer;
-    fread(buffer, 4, 1, in_file);
+    fread(buffer, 4, 1, in_file_rgb);
     printf("%d\n", buffer);
 
     // // Run processes
