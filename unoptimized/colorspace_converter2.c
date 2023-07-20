@@ -36,11 +36,12 @@ int main(int argc, char *argv[])
     allocate_rgb_memory(rgb_in_img);
     allocate_ycc_memory(ycc_out_img);
     allocate_rgb_memory(rgb_out_img);
-    allocate_rgb_pixels_memory(rgb_in_img);
 
     // // Read rgb input file
     // set_img_header_from_file(rgb_in_img, in_file_rgb);
     // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
+
+    // allocate_rgb_pixels_memory(rgb_in_img);
 
     // // Copy info from input file to output files
     // copy_file(in_file_rgb, out_file_cb);
@@ -67,9 +68,9 @@ int main(int argc, char *argv[])
     // free(rgb_in_img->pixels);
     // free(ycc_out_img->pixels);
     // free(rgb_out_img->pixels)
-    // free(rgb_in_img);
-    // free(rgb_out_img);
-    // free(ycc_out_img);
+    free(rgb_in_img);
+    free(rgb_out_img);
+    free(ycc_out_img);
 
     // Close files
     fclose(in_file_rgb);
