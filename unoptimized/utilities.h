@@ -6,7 +6,7 @@
 void allocate_rgb_memory(RGB_image_t *rgb_img)
 {
     rgb_img = (RGB_image_t *)malloc(sizeof(RGB_image_t));
-    exit_on_error(rgb_img == NULL, "Cannot allocate memory to rgb image")
+    exit_on_error(rgb_img == NULL, "Cannot allocate memory to rgb image");
 }
 
 void allocate_rgb_pixels_memory(RGB_image_t *rgb_img)
