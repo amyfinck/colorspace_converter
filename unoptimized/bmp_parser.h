@@ -13,12 +13,10 @@ uint32_t get_file_size(FILE *in_file)
     return ftell(in_file);
 }
 
-uint32_t *get_file_offset(FILE *in_file)
+void get_file_offset(RGB_image_t *in_img, FILE *in_file)
 {
-    uint32_t buffer;
     exit_on_error(fseek(in_file, 10, SEEK_SET) != 0, "Seeking offset position failed");
-    exit_on_error(fread(&buffer, 4, 1, in_file) == 0, "Reading file offset failed");
-    return &buffer;
+    exit_on_error(fread(&in_img->offset, 4, 1, in_file) == 0, "Reading file offset failed");
 }
 
 uint32_t *get_file_width(FILE *in_file)
@@ -57,9 +55,10 @@ uint32_t get_buffer_row_bytes(uint32_t img_width)
 
 void set_img_header_from_file(RGB_image_t *in_img, FILE *in_file)
 {
-    in_img->offset = *get_file_offset(in_file);
-    in_img->width = *get_file_width(in_file);
-    in_img->height = *get_file_height(in_file);
+    get_file_offset(in_img, in_file);
+    // in_img->offset = *get_file_offset(in_file);
+    // in_img->width = *get_file_width(in_file);
+    // in_img->height = *get_file_height(in_file);
 }
 
 void read_rgb(RGB_image_t *in_img, FILE *in_file, uint32_t index)
