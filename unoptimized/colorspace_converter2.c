@@ -65,7 +65,8 @@ int main(int argc, char *argv[])
 
     // Free memory
     free(rgb_in_img->pixels);
-    free(ycc_out_img->pixels);
+    // free(ycc_out_img->pixels);
+    // free(rgb_out_img->pixels)
     free(rgb_in_img);
     free(rgb_out_img);
     free(ycc_out_img);
