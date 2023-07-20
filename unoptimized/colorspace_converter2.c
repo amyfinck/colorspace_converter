@@ -5,8 +5,6 @@
 #include "bmp_handler.h"
 #include "utilities.h"
 
-#define PATH_MAX 256
-
 int main(int argc, char *argv[])
 {
     // Image declarations
@@ -34,14 +32,14 @@ int main(int argc, char *argv[])
     out_file_luma = fopen(of_lum_path, "w+");
     out_file_rgb = fopen(of_rgb_path, "w+");
 
-    int a = fseek(in_file_rgb, 10, SEEK_SET);
-    exit_on_error(fseek(in_file_rgb, 10, SEEK_SET) != 0, "Seeking offset position failed");
-    printf("%d\n", a);
-
-    // Run processes
+    // Allocate memory
     allocate_rgb_memory(rgb_in_img);
-    set_img_header_from_file(rgb_in_img, in_file_rgb);
-    // allocate_rgb_pixels_memory(rgb_in_img);
+    allocate_ycc_memory(ycc_out_img);
+    allocate_rgb_memory(rgb_out_img);
+    allocate_rgb_pixels_memory(rgb_in_img);
+
+    // // Read rgb input file
+    // set_img_header_from_file(rgb_in_img, in_file_rgb);
     // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
     // // Copy info from input file to output files
@@ -65,12 +63,12 @@ int main(int argc, char *argv[])
     // ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
     // rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
 
-    // // Free memory
-    // free(rgb_in_img->pixels);
-    // free(ycc_out_img->pixels);
-    // free(rgb_in_img);
-    // free(rgb_out_img);
-    // free(ycc_out_img);
+    // Free memory
+    free(rgb_in_img->pixels);
+    free(ycc_out_img->pixels);
+    free(rgb_in_img);
+    free(rgb_out_img);
+    free(ycc_out_img);
 
     // Close files
     fclose(in_file_rgb);
