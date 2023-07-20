@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     out_file_luma = fopen(of_lum_path, "w+");
     out_file_rgb = fopen(of_rgb_path, "w+");
 
-    // // Run processes
-    // set_img_header_from_file(rgb_in_img, in_file_rgb);
-    // allocate_rgb_pixels_memory(rgb_in_img);
-    // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
+    // Run processes
+    set_img_header_from_file(rgb_in_img, in_file_rgb);
+    allocate_rgb_pixels_memory(rgb_in_img);
+    rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
     // // Copy info from input file to output files
     // copy_file(in_file_rgb, out_file_cb);
