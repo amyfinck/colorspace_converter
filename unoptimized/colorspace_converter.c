@@ -277,7 +277,7 @@ int main(int argc, char* argv[] )
         }
     }
 
-    // create a file for all 4 RBG from YCC types
+    // create a file for all 4 RBG types
     chdir("output");
     chdir("luma");
 
@@ -299,15 +299,15 @@ int main(int argc, char* argv[] )
         fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); printf("error creating cr/%s\n", argv[1]); exit(1);
     }
 
-    chdir(".."); chdir("RBG from YCC");
+    chdir(".."); chdir("RBG");
     FILE* o_fp = fopen(argv[1], "w+");
     if (o_fp == NULL) {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); printf("error creating RBG from YCC/%s\n", argv[1]); exit(1);
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); printf("error creating RBG/%s\n", argv[1]); exit(1);
     }
 
     chdir(".."); chdir("..");
 
-    // copy input file to RBG from YCC locations
+    // copy input file to RBG locations
     char buffer[inputRGBImage->file_size];
     size_t bytesRead;
     fseek(in_fp, 0, SEEK_SET);
@@ -328,7 +328,7 @@ int main(int argc, char* argv[] )
         }
     }
 
-    // create RBG from YCC image struct and fill in info
+    // create RBG image struct and fill in info
     outputYCCImage = malloc(sizeof(YCC_image_t));
     if(outputYCCImage == NULL) {
         printf("Error - Output YCC malloc failed\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
@@ -363,7 +363,7 @@ int main(int argc, char* argv[] )
     // use downsampled YCC image to create new RGB image
     YCCToRGB();
 
-    // write YCC values to RBG from YCC files
+    // write YCC values to RBG files
     pixel_index = 0;
     for(y = 0; y < outputYCCImage->height; y++)
     {
@@ -373,7 +373,7 @@ int main(int argc, char* argv[] )
             // Pixels are stored in BGR order
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
-            // Write luma RBG from YCC file (grayscale)
+            // Write luma RBG file (grayscale)
             if (fseek(luma_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); fclose(in_fp); exit(1);
             }
@@ -390,7 +390,7 @@ int main(int argc, char* argv[] )
             fwrite(&baseColor, 1, 1, cb_fp);
             fwrite(&baseColor, 1, 1, cb_fp);
 
-            // Write red difference RBG from YCC file
+            // Write red difference RBG file
             if (fseek(cr_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
             }
@@ -398,7 +398,7 @@ int main(int argc, char* argv[] )
             fwrite(&baseColor, 1, 1, cr_fp);
             fwrite(&outputYCCImage->pixels[pixel_index].Cr, 1, 1, cr_fp);
 
-            // Write RBG from YCC file
+            // Write RBG file
             if (fseek(o_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
             }

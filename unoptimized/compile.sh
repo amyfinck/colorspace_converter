@@ -4,8 +4,8 @@ process_id=$!
 echo Copying files to /tmp/tmp_dir/
 
 mkdir -p /tmp/tmp_dir/
-cp ./unoptimized/colorspace_converter.c /tmp/tmp_dir/
-cp ./unoptimized/colorspace_converter.h /tmp/tmp_dir/
+cp ./colorspace_converter.c /tmp/tmp_dir/
+cp ./colorspace_converter.h /tmp/tmp_dir/
 # add more files as they are added to our project
 
 echo Compiling unoptimized colorspace converter
