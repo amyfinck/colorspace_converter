@@ -7,7 +7,7 @@
 #include <string.h>
 #include "constants.h"
 
-#define PATH_MAX 256
+#define PATH_MAX 512
 #define CHUNK_SIZE 4096
 #define BMP_HEADER_SIZE 54
 
