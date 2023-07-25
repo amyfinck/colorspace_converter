@@ -10,9 +10,13 @@
 #include "bmp_parser.h"
 #include "bmp_handler.h"
 #include "utilities.h"
+#include <time.h>
 
 int main(int argc, char *argv[])
 {
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
     // Image declarations
     RGB_image_t *rgb_in_img;
     RGB_image_t *rgb_out_img;
@@ -89,6 +93,9 @@ int main(int argc, char *argv[])
     fclose(out_file_cr);
     fclose(out_file_luma);
     fclose(out_file_rgb);
+
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     return 0;
 }
