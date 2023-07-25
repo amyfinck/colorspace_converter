@@ -25,10 +25,6 @@ void copy_file_header(FILE *src_file, FILE *dest_file)
     fwrite(header, sizeof(unsigned char), BMP_HEADER_SIZE, dest_file);
 }
 
-void copy_file_contents()
-{
-}
-
 void copy_file(FILE *src_file, FILE *dest_file)
 {
     size_t bytes_read;
