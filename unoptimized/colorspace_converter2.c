@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
     // Open files
     chdir("input");
     in_file_rgb = fopen(argv[1], "r");
-    chdir(".."); chdir("output/cb");
-    out_file_cb = fopen(argv[1], "w+");
+    // chdir(".."); chdir("output/cb");
+    // out_file_cb = fopen(argv[1], "w+");
     // chdir(".."); chdir("cr");
     // out_file_cr = fopen(argv[1], "w+");
     // chdir(".."); chdir("luma");
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
 
     // Allocate memory
     allocate_rgb_memory(rgb_in_img);
-    // allocate_ycc_memory(ycc_out_img);
-    // allocate_rgb_memory(rgb_out_img);
+    allocate_ycc_memory(ycc_out_img);
+    allocate_rgb_memory(rgb_out_img);
 
     // Read rgb input file
     set_img_header_from_file(rgb_in_img, in_file_rgb);
-    // allocate_rgb_pixels_memory(rgb_in_img);
-    // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
+    allocate_rgb_pixels_memory(rgb_in_img);
+    rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
 
     // // Copy info from input file to output files
