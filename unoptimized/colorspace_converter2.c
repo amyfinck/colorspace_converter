@@ -63,7 +63,8 @@ int main(int argc, char *argv[])
     // Copy info from input image to output images
     copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
     copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
-
+    
+    ycc_out_img->pixel_count = rgb_in_img->pixels;
     // Compute and allocate conversions
     compute_ycc_from_rgb(rgb_in_img, ycc_out_img);
     downsample_ycc_chroma(ycc_out_img);
