@@ -129,9 +129,4 @@ void ycc_pixels_file_handler(YCC_image_t *img, FILE *file, void (*io_func)(YCC_i
     }
 }
 
-// void file_to_rgb();
-// void rgb_to_file();
-// void file_to_ycc();
-// void ycc_to_file();
-
 #endif

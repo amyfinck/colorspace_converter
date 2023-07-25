@@ -70,7 +70,4 @@ void downsample_ycc_chroma(YCC_image_t *ycc_out_img)
     }
 }
 
-void rgb_to_ycc();
-void ycc_to_ycc();
-
 #endif

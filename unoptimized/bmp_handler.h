@@ -11,13 +11,6 @@
 #define CHUNK_SIZE 4096
 #define BMP_HEADER_SIZE 54
 
-char *get_abs_path(char *rel_path)
-{
-    static char abs_path[PATH_MAX];
-    exit_on_error(realpath(rel_path, abs_path) == NULL, "Cannot find absolute path");
-    return abs_path;
-}
-
 void copy_file_header(FILE *src_file, FILE *dest_file)
 {
     unsigned char header[BMP_HEADER_SIZE];
