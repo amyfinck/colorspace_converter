@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
     // // Write the images to output files
     ycc_pixels_file_handler(ycc_out_img, out_file_luma, write_luma);
     ycc_pixels_file_handler(ycc_out_img, out_file_cb, write_cb);
-    // ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
-    // rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
+    ycc_pixels_file_handler(ycc_out_img, out_file_cr, write_cr);
+    rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
 
     // Free memory
     free(rgb_in_img->pixels);
