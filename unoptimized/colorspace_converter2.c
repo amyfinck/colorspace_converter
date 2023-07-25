@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "converters.h"
-#include "bmp_parser.h"
-#include "bmp_handler.h"
-#include "utilities.h"
 #include <fcntl.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "converters.h"
+#include "bmp_parser.h"
+#include "bmp_handler.h"
+#include "utilities.h"
 
 int main(int argc, char *argv[])
 {
@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
     copy_file(in_file_rgb, out_file_luma);
     copy_file(in_file_rgb, out_file_rgb);
 
-    // Copy info from input image to output imagess
-    // copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
+    // Copy info from input image to output images
+    copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
     // copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
 
     // // Compute and allocate conversions
