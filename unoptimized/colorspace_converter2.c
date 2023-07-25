@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
     out_file_rgb = fopen(argv[1], "w+");
 
     // Copy info from input file to output files
-    // copy_file(in_file_rgb, out_file_cb);
-    // copy_file(in_file_rgb, out_file_cr);
-    // copy_file(in_file_rgb, out_file_luma);
-    // copy_file(in_file_rgb, out_file_rgb);
+    copy_file(in_file_rgb, out_file_cb);
+    copy_file(in_file_rgb, out_file_cr);
+    copy_file(in_file_rgb, out_file_luma);
+    copy_file(in_file_rgb, out_file_rgb);
 
-    // // Copy info from input image to output imagess
-    // copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
-    // copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
+    // Copy info from input image to output imagess
+    copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
+    copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
 
     // // Compute and allocate conversions
     // compute_ycc_from_rgb(rgb_in_img, ycc_out_img);
@@ -79,9 +79,9 @@ int main(int argc, char *argv[])
     // free(rgb_in_img->pixels);
     // free(ycc_out_img->pixels);
     // free(rgb_out_img->pixels);
-    free(rgb_in_img);
-    free(rgb_out_img);
-    free(ycc_out_img);
+    // free(rgb_in_img);
+    // free(rgb_out_img);
+    // free(ycc_out_img);
 
     // Close files
     fclose(in_file_rgb);
