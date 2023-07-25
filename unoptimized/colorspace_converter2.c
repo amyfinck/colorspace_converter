@@ -55,10 +55,10 @@ int main(int argc, char *argv[])
     out_file_rgb = fopen(argv[1], "w+");
 
     // Copy info from input file to output files
-    copy_file(in_file_rgb, out_file_cb);
-    copy_file(in_file_rgb, out_file_cr);
-    copy_file(in_file_rgb, out_file_luma);
-    copy_file(in_file_rgb, out_file_rgb);
+    copy_file(in_file_rgb, out_file_cb, rgb_in_img->file_size);
+    copy_file(in_file_rgb, out_file_cr, rgb_in_img->file_size);
+    copy_file(in_file_rgb, out_file_luma, rgb_in_img->file_size);
+    copy_file(in_file_rgb, out_file_rgb, rgb_in_img->file_size);
 
     // Copy info from input image to output images
     copy_rgb_to_yyc(rgb_in_img, ycc_out_img);

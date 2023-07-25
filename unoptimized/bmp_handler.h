@@ -29,9 +29,20 @@ void copy_file_contents()
 {
 }
 
-void copy_file(FILE *src_file, FILE *dest_file)
+void copy_file(FILE *src_file, FILE *dest_file, u_int32_t size)
 {
+    // char buffer[size];
+    // size_t bytesRead;
+    // fseek(src_file, 0, SEEK_SET);
+    // while ((bytesRead = fread(buffer, 1, sizeof(buffer),in_fp)) > 0)
+    // {
+    //     // TODO just copy over header
+    //     if( fwrite(buffer, 1, bytesRead, dest_file) == -1) {
+    //     }
+    // }
+
     size_t bytes_read;
+    fseek(src_file, 0, SEEK_SET);
     unsigned char buffer[CHUNK_SIZE];
     while ((bytes_read = fread(buffer, sizeof(unsigned char), CHUNK_SIZE, src_file)) > 0)
     {
