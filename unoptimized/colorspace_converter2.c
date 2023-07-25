@@ -4,6 +4,12 @@
 #include "bmp_parser.h"
 #include "bmp_handler.h"
 #include "utilities.h"
+#include <fcntl.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <sys/stat.h>
 
 int main(int argc, char *argv[])
 {
