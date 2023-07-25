@@ -34,14 +34,14 @@ int main(int argc, char *argv[])
     // Open files
     chdir("input");
     in_file_rgb = fopen(argv[1], "r");
-    chdir(".."); chdir("output"); chdir("cb");
-    out_file_cb = fopen(argv[1], "w+");
-    chdir(".."); chdir("cr");
-    out_file_cr = fopen(argv[1], "w+");
-    chdir(".."); chdir("luma");
-    out_file_luma = fopen(argv[1], "w+");
-    chdir(".."); chdir("rgb");
-    out_file_rgb = fopen(argv[1], "w+");
+    // chdir(".."); chdir("output"); chdir("cb");
+    // out_file_cb = fopen(argv[1], "w+");
+    // chdir(".."); chdir("cr");
+    // out_file_cr = fopen(argv[1], "w+");
+    // chdir(".."); chdir("luma");
+    // out_file_luma = fopen(argv[1], "w+");
+    // chdir(".."); chdir("rgb");
+    // out_file_rgb = fopen(argv[1], "w+");
 
     // Allocate memory
     allocate_rgb_memory(rgb_in_img);
