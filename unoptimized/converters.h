@@ -21,6 +21,7 @@ void compute_ycc_from_rgb(RGB_image_t *rgb_in_img, YCC_image_t *ycc_out_img)
 
 void compute_rgb_from_ycc(YCC_image_t *ycc_in_img, RGB_image_t *rgb_out_img)
 {
+    printf("Yoooooooo");
     uint32_t index;
     for (index = 0; index < rgb_out_img->pixel_count; index++)
     {
