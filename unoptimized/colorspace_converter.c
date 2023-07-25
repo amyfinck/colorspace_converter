@@ -6,7 +6,6 @@
 #include<sys/mman.h>
 #include<string.h>
 #include <sys/stat.h>
-#include <time.h>
 
 #define K 8
 
@@ -190,7 +189,7 @@ void YCCToRGB()
         outputRGBImage->pixels[i].G = (uint8_t)G;
         outputRGBImage->pixels[i].B = (uint8_t)B;
     }
-    // printf("max is %d\n", max);
+    printf("max is %d\n", max);
 }
 
 void print_pixel( uint32_t x, uint32_t y)
@@ -202,10 +201,6 @@ void print_pixel( uint32_t x, uint32_t y)
 
 int main(int argc, char* argv[] )
 {
-    clock_t start, end;
-    double cpu_time_used;
-    start = clock();
-
     if(argc != 2)
     {
         printf("Not a valid command. Usage: ./cc.exe <img_name>.bmp\n"); exit(1);
@@ -235,8 +230,7 @@ int main(int argc, char* argv[] )
     if (fseek(in_fp, 10, SEEK_SET) != 0) {
         printf("Error seeking to offset position\n"); fclose(in_fp); exit(1);
     }
-    int a = fread(&inputRGBImage->offset, 4, 1, in_fp);
-    printf("%d", a);
+    fread(&inputRGBImage->offset, 4, 1, in_fp);
     if (fseek(in_fp, 18, SEEK_SET) != 0){
         printf("Error seeking to width position\n"); fclose(in_fp); exit(1);
     }
@@ -265,7 +259,7 @@ int main(int argc, char* argv[] )
     }
 
     // read in pixels
-    // printf("hello\n");
+    printf("hello\n");
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
     uint32_t y;
@@ -437,9 +431,7 @@ int main(int argc, char* argv[] )
     fclose(cr_fp);
     fclose(o_fp);
 
-    // printf("Luma component: /luma/%s\nCb component: /cb/%s\nCr component: /cr/%s\n", argv[1], argv[1], argv[1]);
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("main() took %f seconds to execute \n", cpu_time_used);
+    printf("Luma component: /luma/%s\nCb component: /cb/%s\nCr component: /cr/%s\n", argv[1], argv[1], argv[1]);
+
     return 0;
 }
