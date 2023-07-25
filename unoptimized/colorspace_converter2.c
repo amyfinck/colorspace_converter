@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    // char *if_rgb_path = get_abs_path("input/parrot500.bmp");
+    char *if_rgb_path = get_abs_path("input/parrot500.bmp");
     // char *of_cb_path = get_abs_path("output/cb/parrot10.bmp");
     // char *of_cr_path = get_abs_path("output/cr/parrot10.bmp");
     // char *of_lum_path = get_abs_path("output/luma/parrot10.bmp");
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     // chdir("input");
     // Open files
-    in_file_rgb = fopen("parrot10.bmp", "r");
+    in_file_rgb = fopen(if_rgb_path, "r");
     // out_file_cb = fopen(of_cb_path, "w+");
     // out_file_cr = fopen(of_cr_path, "w+");
     // out_file_luma = fopen(of_lum_path, "w+");
