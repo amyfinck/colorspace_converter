@@ -34,7 +34,7 @@ void copy_rgb_to_yyc(RGB_image_t *rgb_in_img, YCC_image_t *ycc_out_img)
     ycc_out_img->offset = rgb_in_img->offset;
     ycc_out_img->width = rgb_in_img->width;
     ycc_out_img->height = rgb_in_img->height;
-    allocate_ycc_pixels_memory(ycc_out_img);
+    // allocate_ycc_pixels_memory(ycc_out_img);
 }
 
 void copy_rgb_to_rgb(RGB_image_t *rgb_in_img, RGB_image_t *rgb_out_img)
