@@ -440,5 +440,6 @@ int main(int argc, char* argv[] )
     // printf("Luma component: /luma/%s\nCb component: /cb/%s\nCr component: /cr/%s\n", argv[1], argv[1], argv[1]);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("main() took %f seconds to execute \n", cpu_time_used);
     return 0;
 }
