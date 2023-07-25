@@ -13,6 +13,8 @@ void compute_ycc_from_rgb(RGB_image_t *rgb_in_img, YCC_image_t *ycc_out_img)
         uint8_t G = rgb_in_img->pixels[index].G;
         uint8_t B = rgb_in_img->pixels[index].B;
 
+        printf("YOOOOO");
+        
         ycc_out_img->pixels[index].Y = compute_ycc_y(R, G, B);
         ycc_out_img->pixels[index].Cb = compute_ycc_cb(R, G, B);
         ycc_out_img->pixels[index].Cr = compute_ycc_cr(R, G, B);
