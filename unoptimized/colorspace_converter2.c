@@ -31,18 +31,17 @@ int main(int argc, char *argv[])
     // char *of_lum_path = get_abs_path("output/luma/parrot10.bmp");
     // char *of_rgb_path = get_abs_path("output/rgb/parrot10.bmp");
 
-    char *file_name = argv[1];
     // Open files
     chdir("input");
-    in_file_rgb = fopen(file_name, "r");
+    in_file_rgb = fopen(argv[1], "r");
     chdir(".."); chdir("output"); chdir("cb");
-    out_file_cb = fopen(file_name, "w+");
+    out_file_cb = fopen(argv[1], "w+");
     chdir(".."); chdir("cr");
-    out_file_cr = fopen(file_name, "w+");
+    out_file_cr = fopen(argv[1], "w+");
     chdir(".."); chdir("luma");
-    out_file_luma = fopen(file_name, "w+");
+    out_file_luma = fopen(argv[1], "w+");
     chdir(".."); chdir("rgb");
-    out_file_rgb = fopen(file_name, "w+");
+    out_file_rgb = fopen(argv[1], "w+");
 
     // Allocate memory
     allocate_rgb_memory(rgb_in_img);
