@@ -24,7 +24,7 @@ void compute_rgb_from_ycc(YCC_image_t *ycc_in_img, RGB_image_t *rgb_out_img)
     uint32_t index;
     for (index = 0; index < ycc_in_img->pixel_count; index++)
     {
-        uint8_t Y = ycc_in_img->pixels[index].Y;
+        uint8_t Y = ycc_in_img->pixels[index].Y - 16;
         uint8_t Cb = ycc_in_img->pixels[index].Cb - 128;
         uint8_t Cr = ycc_in_img->pixels[index].Cr - 128;
 
