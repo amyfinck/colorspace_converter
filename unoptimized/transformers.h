@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 
-#define K 8
+#define Q 8 // Number of fractional bits
+#define FP_SHIFT(x) ((x) << Q)
+#define FP_ROUND(x) (((x) + (1 << (Q - 1))) >> Q)
 
 uint8_t compute_ycc_y(uint8_t R, uint8_t G, uint8_t B)
 {
