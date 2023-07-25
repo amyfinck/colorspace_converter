@@ -361,13 +361,13 @@ int main(int argc, char* argv[] )
         printf("error - Output pix malloc failed\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
     }
 
-    // Calculate YCC values for OutputImage
-    getLuma();
-    getChroma();
-    downsampleChroma();
+    // // Calculate YCC values for OutputImage
+    // getLuma();
+    // getChroma();
+    // downsampleChroma();
 
-    // use downsampled YCC image to create new RGB image
-    YCCToRGB();
+    // // use downsampled YCC image to create new RGB image
+    // YCCToRGB();
 
     // write YCC values to RBG from YCC files
     pixel_index = 0;
