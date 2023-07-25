@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
     // free(ycc_out_img);
 
     // Close files
-    // fclose(in_file_rgb);
-    // fclose(out_file_cb);
-    // fclose(out_file_cr);
-    // fclose(out_file_luma);
-    // fclose(out_file_rgb);
+    fclose(in_file_rgb);
+    fclose(out_file_cb);
+    fclose(out_file_cr);
+    fclose(out_file_luma);
+    fclose(out_file_rgb);
 
     return 0;
 }
