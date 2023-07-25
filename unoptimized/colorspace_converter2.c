@@ -36,8 +36,9 @@ int main(int argc, char *argv[])
     in_file_rgb = fopen(argv[1], "r");
 
     // Allocate memory
-    allocate_rgb_memory(rgb_in_img);
-    allocate_rgb_memory(rgb_out_img);
+    allocate_rgb_memory(&rgb_in_img);
+    allocate_rgb_memory(&rgb_out_img);
+    allocate_ycc_memory(&ycc_out_img);
 
     // Read rgb input file
     set_img_header_from_file(rgb_in_img, in_file_rgb);
@@ -60,9 +61,8 @@ int main(int argc, char *argv[])
     copy_file(in_file_rgb, out_file_rgb);
 
     // Copy info from input image to output images
-    allocate_ycc_memory(&ycc_out_img);
     copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
-    // copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
+    copy_rgb_to_rgb(rgb_in_img, rgb_out_img);
 
     // // Compute and allocate conversions
     // compute_ycc_from_rgb(rgb_in_img, ycc_out_img);
