@@ -230,7 +230,8 @@ int main(int argc, char* argv[] )
     if (fseek(in_fp, 10, SEEK_SET) != 0) {
         printf("Error seeking to offset position\n"); fclose(in_fp); exit(1);
     }
-    fread(&inputRGBImage->offset, 4, 1, in_fp);
+    int a = fread(&inputRGBImage->offset, 4, 1, in_fp);
+    printf("%d", a);
     if (fseek(in_fp, 18, SEEK_SET) != 0){
         printf("Error seeking to width position\n"); fclose(in_fp); exit(1);
     }
