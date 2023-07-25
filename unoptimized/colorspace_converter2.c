@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
     allocate_ycc_memory(ycc_out_img);
     allocate_rgb_memory(rgb_out_img);
 
+    printf("%s", if_rgb_path);
     // Read rgb input file
     set_img_header_from_file(rgb_in_img, in_file_rgb);
     // allocate_rgb_pixels_memory(rgb_in_img);
