@@ -9,10 +9,10 @@ void allocate_rgb_memory(RGB_image_t *rgb_img)
     exit_on_error(rgb_img == NULL, "Malloc for rgb image failed");
 }
 
-void allocate_ycc_memory(YCC_image_t *ycc_img)
+void allocate_ycc_memory(YCC_image_t **ycc_img)
 {
-    ycc_img = (YCC_image_t *)malloc(sizeof(YCC_image_t));
-    exit_on_error(ycc_img == NULL, "Malloc for yyc image failed");
+    *ycc_img = (YCC_image_t *)malloc(sizeof(YCC_image_t));
+    exit_on_error(*ycc_img == NULL, "Malloc for yyc image failed");
 }
 
 void allocate_rgb_pixels_memory(RGB_image_t *rgb_img)
@@ -32,7 +32,6 @@ void allocate_ycc_pixels_memory(YCC_image_t *ycc_img)
 void copy_rgb_to_yyc(RGB_image_t *rgb_in_img, YCC_image_t *ycc_out_img)
 {
     printf("%d", rgb_in_img->offset);
-    allocate_ycc_memory(ycc_out_img);
     ycc_out_img->offset = rgb_in_img->offset;
     ycc_out_img->width = rgb_in_img->width;
     // ycc_out_img->height = rgb_in_img->height;
