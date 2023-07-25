@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
 
     // Allocate memory
     allocate_rgb_memory(rgb_in_img);
-    allocate_ycc_memory(ycc_out_img);
-    allocate_rgb_memory(rgb_out_img);
+    // allocate_ycc_memory(ycc_out_img);
+    // allocate_rgb_memory(rgb_out_img);
 
     // Read rgb input file
-    // set_img_header_from_file(rgb_in_img, in_file_rgb);
+    set_img_header_from_file(rgb_in_img, in_file_rgb);
     // allocate_rgb_pixels_memory(rgb_in_img);
     // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
