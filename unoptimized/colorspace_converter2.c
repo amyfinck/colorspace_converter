@@ -54,11 +54,11 @@ int main(int argc, char *argv[])
     chdir(".."); chdir("rgb");
     out_file_rgb = fopen(argv[1], "w+");
 
-    // // Copy info from input file to output files
-    // copy_file(in_file_rgb, out_file_cb);
-    // copy_file(in_file_rgb, out_file_cr);
-    // copy_file(in_file_rgb, out_file_luma);
-    // copy_file(in_file_rgb, out_file_rgb);
+    // Copy info from input file to output files
+    copy_file(in_file_rgb, out_file_cb);
+    copy_file(in_file_rgb, out_file_cr);
+    copy_file(in_file_rgb, out_file_luma);
+    copy_file(in_file_rgb, out_file_rgb);
 
     // // Copy info from input image to output imagess
     // copy_rgb_to_yyc(rgb_in_img, ycc_out_img);
