@@ -31,7 +31,7 @@ uint8_t compute_ycc_cr(uint8_t R, uint8_t G, uint8_t B)
 
 uint8_t compute_rgb_r(uint8_t Y, uint8_t Cb, uint8_t Cr)
 {
-    int16_t red = FP_ROUND(Y + 1.402 * (Cr - 128));
+    int16_t red = FP_ROUND(FP_SHIFT(Y) + FP_SHIFT(1.402) * (Cr - 128));
     return (uint8_t)(red < 0 ? 0 : (red > 255 ? 255 : red));
 }
 
