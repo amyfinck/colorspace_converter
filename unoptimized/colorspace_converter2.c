@@ -25,8 +25,9 @@ int main(int argc, char *argv[])
     char *of_lum_path = get_abs_path("output/luma/parrot10.bmp");
     char *of_rgb_path = get_abs_path("output/rgb/parrot10.bmp");
 
+    chdir("input");
     // Open files
-    in_file_rgb = fopen(if_rgb_path, "r");
+    in_file_rgb = fopen("parrot10.bmp", "r");
     out_file_cb = fopen(of_cb_path, "w+");
     out_file_cr = fopen(of_cr_path, "w+");
     out_file_luma = fopen(of_lum_path, "w+");
@@ -37,7 +38,6 @@ int main(int argc, char *argv[])
     allocate_ycc_memory(ycc_out_img);
     allocate_rgb_memory(rgb_out_img);
 
-    printf("%s", if_rgb_path);
     // Read rgb input file
     set_img_header_from_file(rgb_in_img, in_file_rgb);
     // allocate_rgb_pixels_memory(rgb_in_img);
