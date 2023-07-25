@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 
     // Read rgb input file
     set_img_header_from_file(rgb_in_img, in_file_rgb);
-    allocate_rgb_pixels_memory(rgb_in_img);
-    rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
+    // allocate_rgb_pixels_memory(rgb_in_img);
+    // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
 
     // // Copy info from input file to output files
