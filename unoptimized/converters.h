@@ -21,7 +21,6 @@ void compute_ycc_from_rgb(RGB_image_t *rgb_in_img, YCC_image_t *ycc_out_img)
 
 void compute_rgb_from_ycc(YCC_image_t *ycc_in_img, RGB_image_t *rgb_out_img)
 {
-    printf("Yoooooooo");
     uint32_t index;
     for (index = 0; index < rgb_out_img->pixel_count; index++)
     {
@@ -30,6 +29,7 @@ void compute_rgb_from_ycc(YCC_image_t *ycc_in_img, RGB_image_t *rgb_out_img)
         uint8_t Cr = ycc_in_img->pixels[index].Cr;
 
         printf("Y %d", Y);
+        printf("Yoooooooo");
 
         rgb_out_img->pixels[index].R = compute_rgb_r(Y, Cb, Cr);
         rgb_out_img->pixels[index].G = compute_rgb_g(Y, Cb, Cr);
