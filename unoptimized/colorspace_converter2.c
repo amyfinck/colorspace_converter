@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     chdir("input");
     // Open files
     in_file_rgb = fopen("parrot10.bmp", "r");
-    out_file_cb = fopen(of_cb_path, "w+");
-    out_file_cr = fopen(of_cr_path, "w+");
-    out_file_luma = fopen(of_lum_path, "w+");
-    out_file_rgb = fopen(of_rgb_path, "w+");
+    // out_file_cb = fopen(of_cb_path, "w+");
+    // out_file_cr = fopen(of_cr_path, "w+");
+    // out_file_luma = fopen(of_lum_path, "w+");
+    // out_file_rgb = fopen(of_rgb_path, "w+");
 
     // Allocate memory
     allocate_rgb_memory(rgb_in_img);
