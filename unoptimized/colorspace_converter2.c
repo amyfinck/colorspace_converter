@@ -76,12 +76,12 @@ int main(int argc, char *argv[])
     // rgb_pixels_file_handler(rgb_out_img, out_file_rgb, write_rgb);
 
     // Free memory
-    // free(rgb_in_img->pixels);
-    // free(ycc_out_img->pixels);
-    // free(rgb_out_img->pixels);
-    // free(rgb_in_img);
-    // free(rgb_out_img);
-    // free(ycc_out_img);
+    free(rgb_in_img->pixels);
+    free(ycc_out_img->pixels);
+    free(rgb_out_img->pixels);
+    free(rgb_in_img);
+    free(rgb_out_img);
+    free(ycc_out_img);
 
     // Close files
     fclose(in_file_rgb);
