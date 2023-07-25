@@ -25,19 +25,24 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    char *if_rgb_path = get_abs_path("input/parrot500.bmp");
+    // char *if_rgb_path = get_abs_path("input/parrot500.bmp");
     // char *of_cb_path = get_abs_path("output/cb/parrot10.bmp");
     // char *of_cr_path = get_abs_path("output/cr/parrot10.bmp");
     // char *of_lum_path = get_abs_path("output/luma/parrot10.bmp");
     // char *of_rgb_path = get_abs_path("output/rgb/parrot10.bmp");
 
-    // chdir("input");
+    char file_name[] = argv[1];
     // Open files
-    in_file_rgb = fopen(if_rgb_path, "r");
-    // out_file_cb = fopen(of_cb_path, "w+");
-    // out_file_cr = fopen(of_cr_path, "w+");
-    // out_file_luma = fopen(of_lum_path, "w+");
-    // out_file_rgb = fopen(of_rgb_path, "w+");
+    chdir("input");
+    in_file_rgb = fopen(file_name, "r");
+    chdir(".."); chdir("output"); chdir("cb");
+    out_file_cb = fopen(file_name, "w+");
+    chdir(".."); chdir("cr");
+    out_file_cr = fopen(file_name, "w+");
+    chdir(".."); chdir("luma");
+    out_file_luma = fopen(file_name, "w+");
+    chdir(".."); chdir("rgb");
+    out_file_rgb = fopen(file_name, "w+");
 
     // Allocate memory
     allocate_rgb_memory(rgb_in_img);
