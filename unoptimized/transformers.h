@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define K8
+#define K 8
 #define Q 8 // Number of fractional bits
 #define FP_SHIFT(x) ((x) << Q)
 #define FP_ROUND(x) (((x) + (1 << (Q - 1))) >> Q)
