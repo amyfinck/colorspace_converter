@@ -17,8 +17,8 @@ void get_file_offset(RGB_image_t *in_img, FILE *in_file)
 {
     exit_on_error(fseek(in_file, 10, SEEK_SET) != 0, "Seeking offset position failed");
     // exit_on_error(fread(&in_img->offset, 4, 1, in_file) == 0, "Reading file offset failed");
-    fread(&in_img->offset, 4, 1, in_file);
-    printf("%d", in_img->offset);
+    int a = fread(&in_img->offset, 4, 1, in_file);
+    printf("%d", a);
 }
 
 void get_file_width(RGB_image_t *in_img, FILE *in_file)
