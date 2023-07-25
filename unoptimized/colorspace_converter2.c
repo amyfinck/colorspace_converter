@@ -27,6 +27,10 @@ int main(int argc, char *argv[])
 
     // Open files
     in_file_rgb = fopen(if_rgb_path, "r");
+    if (in_file_rgb == NULL)
+    {
+        printf("Could not open %s\n", if_rgb_path); exit(1);
+    }
     out_file_cb = fopen(of_cb_path, "w+");
     out_file_cr = fopen(of_cr_path, "w+");
     out_file_luma = fopen(of_lum_path, "w+");
