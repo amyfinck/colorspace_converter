@@ -25,11 +25,11 @@ int main(int argc, char *argv[])
     FILE *out_file_luma;
     FILE *out_file_rgb;
 
-    char *if_rgb_path = get_abs_path("input/parrot500.bmp");
-    char *of_cb_path = get_abs_path("output/cb/parrot10.bmp");
-    char *of_cr_path = get_abs_path("output/cr/parrot10.bmp");
-    char *of_lum_path = get_abs_path("output/luma/parrot10.bmp");
-    char *of_rgb_path = get_abs_path("output/rgb/parrot10.bmp");
+    // char *if_rgb_path = get_abs_path("input/parrot500.bmp");
+    // char *of_cb_path = get_abs_path("output/cb/parrot10.bmp");
+    // char *of_cr_path = get_abs_path("output/cr/parrot10.bmp");
+    // char *of_lum_path = get_abs_path("output/luma/parrot10.bmp");
+    // char *of_rgb_path = get_abs_path("output/rgb/parrot10.bmp");
 
     chdir("input");
     // Open files
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     // allocate_rgb_memory(rgb_out_img);
 
     // Read rgb input file
-    set_img_header_from_file(rgb_in_img, in_file_rgb);
+    // set_img_header_from_file(rgb_in_img, in_file_rgb);
     // allocate_rgb_pixels_memory(rgb_in_img);
     // rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
