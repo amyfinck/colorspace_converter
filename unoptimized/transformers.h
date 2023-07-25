@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define K 8
+
 uint8_t compute_ycc_y(uint8_t R, uint8_t G, uint8_t B)
 {
     uint32_t temp = (16 << K) + (66 * R) + (129 * G) + (25 * B);
