@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     allocate_rgb_pixels_memory(rgb_in_img);
     rgb_pixels_file_handler(rgb_in_img, in_file_rgb, read_rgb);
 
-    chdir(".."); chdir("output/cb");
+    chdir(".."); chdir("output"); chdir("cb");
     out_file_cb = fopen(argv[1], "w+");
     chdir(".."); chdir("cr");
     out_file_cr = fopen(argv[1], "w+");
