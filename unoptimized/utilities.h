@@ -12,7 +12,7 @@ void allocate_rgb_memory(RGB_image_t *rgb_img)
 void allocate_ycc_memory(YCC_image_t *ycc_img)
 {
     ycc_img = (YCC_image_t *)malloc(sizeof(YCC_image_t));
-    exit_on_error(ycc_img == NULL, "Malloc for rgb image failed");
+    exit_on_error(ycc_img == NULL, "Malloc for yyc image failed");
 }
 
 void allocate_rgb_pixels_memory(RGB_image_t *rgb_img)
