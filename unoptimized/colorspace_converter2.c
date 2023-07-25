@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     // Open files
     chdir("input");
     in_file_rgb = fopen(argv[1], "r");
-    chdir(".."); chdir("output"); chdir("cb");
+    chdir(".."); chdir("output/cb");
     out_file_cb = fopen(argv[1], "w+");
     // chdir(".."); chdir("cr");
     // out_file_cr = fopen(argv[1], "w+");
