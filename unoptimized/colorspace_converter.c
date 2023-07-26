@@ -41,9 +41,31 @@ typedef struct YCC_image_t
     uint32_t padding;
 }YCC_image_t;
 
+FILE *in_fp;
+FILE *luma_fp;
+FILE *cb_fp;
+FILE *cr_fp;
+FILE *o_fp;
+
 RGB_image_t *inputRGBImage;
 YCC_image_t *outputYCCImage;
 RGB_image_t *outputRGBImage;
+
+void error_teardown()
+{
+    fclose(in_fp);
+    fclose(luma_fp);
+    fclose(cb_fp);
+    fclose(cr_fp);
+    fclose(o_fp);
+
+    free(inputRGBImage);
+    free(inputRGBImage->pixels);
+    free(outputYCCImage);
+    free(outputYCCImage->pixels);
+    free(outputRGBImage);
+    free(outputRGBImage->pixels);
+}
 
 /*
  * y = 16.0 + 0.257 R + 0.504 G + 0.098 B
@@ -189,55 +211,8 @@ void YCCToRGB()
     }
 }
 
-void print_pixel( uint32_t x, uint32_t y)
+void read_pixels()
 {
-    uint32_t pixel_index = y * inputRGBImage->width + x;
-    printf("Pixel %d (%d, %d) - R: %d, G: %d, B: %d\n", pixel_index, x, y, inputRGBImage->pixels[pixel_index].R,
-           inputRGBImage->pixels[pixel_index].G, inputRGBImage->pixels[pixel_index].B);
-}
-
-int main(int argc, char* argv[] )
-{
-    if(argc != 2)
-    {
-        printf("Not a valid command. Usage: ./cc.exe <img_name>.bmp\n"); exit(1);
-    }
-
-    // open the input file
-    chdir("input");
-    FILE *in_fp = fopen(argv[1], "r");
-    if (in_fp == NULL)
-    {
-        printf("Could not open %s\n", argv[1]); exit(1);
-    }
-    chdir("..");
-
-    // create input image struct and fill in info from header
-    inputRGBImage = malloc(sizeof(RGB_image_t));
-    if(inputRGBImage == NULL) {
-        printf("error - image malloc failed\n"); fclose(in_fp); exit(1);
-    }
-
-    // get file size
-    fseek(in_fp, 0, SEEK_END);
-    inputRGBImage->file_size = ftell(in_fp);
-
-    // get offset, width, and height
-    if (fseek(in_fp, 10, SEEK_SET) != 0) {
-        printf("Error seeking to offset position\n"); fclose(in_fp); exit(1);
-    }
-    fread(&inputRGBImage->offset, 4, 1, in_fp);
-    if (fseek(in_fp, 18, SEEK_SET) != 0){
-        printf("Error seeking to width position\n"); fclose(in_fp); exit(1);
-    }
-    fread(&inputRGBImage->width, 4, 1, in_fp);
-    printf("width: %d\n", inputRGBImage->width);
-    if (fseek(in_fp, 22, SEEK_SET) != 0) {
-        printf("Error seeking to offset position\n"); fclose(in_fp); exit(1);
-    }
-    fread(&inputRGBImage->height, 4, 1, in_fp);
-    printf("height: %d\n", inputRGBImage->height);
-
     // allocate memory for pixels
     inputRGBImage->pixel_count = 0;
     inputRGBImage->pixels = malloc(sizeof(RGB_pixel_t) * inputRGBImage->height * inputRGBImage->width);
@@ -253,7 +228,6 @@ int main(int argc, char* argv[] )
         bytesPerRow += padding;
     }
 
-    // read in pixels
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
     uint32_t y;
@@ -276,67 +250,177 @@ int main(int argc, char* argv[] )
             inputRGBImage->pixel_count++;
         }
     }
+}
 
-    // create a file for all 4 RBG types
-    chdir("output");
-    chdir("luma");
-
-    FILE* luma_fp = fopen(argv[1], "w+");
-    if (luma_fp == NULL) {
-        // TODO free
-        fclose(in_fp); printf("error creating luma/%s\n", argv[1]); exit(1);
-    }
-
-    chdir(".."); chdir("cb");
-    FILE* cb_fp = fopen(argv[1], "w+");
-    if (cb_fp == NULL) {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); printf("error creating cb/%s\n", argv[1]); exit(1);
-    }
-
-    chdir(".."); chdir("cr");
-    FILE* cr_fp = fopen(argv[1], "w+");
-    if (cr_fp == NULL) {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); printf("error creating cr/%s\n", argv[1]); exit(1);
-    }
-
-    chdir(".."); chdir("RBG");
-    FILE* o_fp = fopen(argv[1], "w+");
-    if (o_fp == NULL) {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); printf("error creating RBG/%s\n", argv[1]); exit(1);
-    }
-
-    chdir(".."); chdir("..");
-
+void write_headers()
+{
     // copy input file to RBG locations
     char buffer[inputRGBImage->file_size];
     size_t bytesRead;
     fseek(in_fp, 0, SEEK_SET);
     while ((bytesRead = fread(buffer, 1, sizeof(buffer),in_fp)) > 0)
     {
-        // TODO just copy over header
         if( fwrite(buffer, 1, bytesRead, luma_fp) == -1) {
-            printf("Error writing to luma file\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
+            printf("Error writing to luma file\n"); error_teardown(); exit(1);
         }
         if( fwrite(buffer, 1, bytesRead, cb_fp) == -1) {
-            printf("Error writing to cb file\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
+            printf("Error writing to cb file\n"); error_teardown(); exit(1);
         }
         if( fwrite(buffer, 1, bytesRead,cr_fp) == -1) {
-            printf("Error writing to cr file\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
+            printf("Error writing to cr file\n"); error_teardown(); exit(1);
         }
         if( fwrite(buffer, 1, bytesRead, o_fp) == -1) {
-            printf("Error writing to output file\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
+            printf("Error writing to output file\n"); error_teardown(); exit(1);
         }
     }
+}
 
-    // create RBG image struct and fill in info
+void write_YCC_components()
+{
+    // calculate padding
+    uint32_t bytesPerRow = inputRGBImage->width * 3; // 3 bytes per pixel
+    if (bytesPerRow % 4 != 0)
+    {
+        uint32_t padding = 4 - (bytesPerRow % 4);
+        bytesPerRow += padding;
+    }
+
+    uint32_t pixel_index = 0;
+    uint32_t y;
+    for(y = 0; y < outputYCCImage->height; y++)
+    {
+        uint32_t x;
+        for (x = 0; x < outputYCCImage->width; x++)
+        {
+            // Pixels are stored in BGR order
+            uint32_t pixel_offset = (y * bytesPerRow) + (x * 3);
+
+            // Write luma RBG file (grayscale)
+            if (fseek(luma_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); error_teardown(); exit(1);
+            }
+            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
+
+            // Convert Cb and Cr to unsigned for use in RGB representation
+            uint8_t baseColor = 128;
+            if (fseek(cb_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); error_teardown(); exit(1);
+            }
+            fwrite(&outputYCCImage->pixels[pixel_index].Cb, 1, 1, cb_fp);
+            fwrite(&baseColor, 1, 1, cb_fp);
+            fwrite(&baseColor, 1, 1, cb_fp);
+
+            // Write red difference RBG file
+            if (fseek(cr_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); error_teardown(); exit(1);
+            }
+            fwrite(&baseColor, 1, 1, cr_fp);
+            fwrite(&baseColor, 1, 1, cr_fp);
+            fwrite(&outputYCCImage->pixels[pixel_index].Cr, 1, 1, cr_fp);
+
+            // Write RBG file
+            if (fseek(o_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); error_teardown(); exit(1);
+            }
+            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, o_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, o_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, o_fp);
+
+            pixel_index++;
+            outputYCCImage->pixel_count++;
+        }
+    }
+}
+
+void get_image_info()
+{
+    // get file size
+    fseek(in_fp, 0, SEEK_END);
+    inputRGBImage->file_size = ftell(in_fp);
+
+    // get offset, width, and height
+    if (fseek(in_fp, 10, SEEK_SET) != 0) {
+        printf("Error seeking to offset position\n"); error_teardown(); exit(1);
+    }
+    fread(&inputRGBImage->offset, 4, 1, in_fp);
+    if (fseek(in_fp, 18, SEEK_SET) != 0){
+        printf("Error seeking to width position\n"); error_teardown(); exit(1);
+    }
+    fread(&inputRGBImage->width, 4, 1, in_fp);
+    printf("width: %d\n", inputRGBImage->width);
+    if (fseek(in_fp, 22, SEEK_SET) != 0) {
+        printf("Error seeking to offset position\n"); error_teardown(); exit(1);
+    }
+    fread(&inputRGBImage->height, 4, 1, in_fp);
+    printf("height: %d\n", inputRGBImage->height);
+}
+
+void print_pixel( uint32_t x, uint32_t y)
+{
+    uint32_t pixel_index = y * inputRGBImage->width + x;
+    printf("Pixel %d (%d, %d) - R: %d, G: %d, B: %d\n", pixel_index, x, y, inputRGBImage->pixels[pixel_index].R,
+           inputRGBImage->pixels[pixel_index].G, inputRGBImage->pixels[pixel_index].B);
+}
+
+int main(int argc, char* argv[] )
+{
+    if(argc != 2)
+    {
+        printf("Not a valid command. Usage: ./cc.exe <img_name>.bmp\n"); exit(1);
+    }
+
+    // open the input, luma, cb, cr, and output files
+    chdir("input");
+    in_fp = fopen(argv[1], "r");
+    if (in_fp == NULL) {
+        printf("Could not open %s\n", argv[1]); exit(1);
+    }
+    chdir(".."); chdir("output"); chdir("luma");
+    luma_fp = fopen(argv[1], "w+");
+    if (luma_fp == NULL) {
+        fclose(in_fp); fclose(luma_fp); printf("error creating luma/%s\n", argv[1]); exit(1);
+    }
+    chdir(".."); chdir("cb");
+    cb_fp = fopen(argv[1], "w+");
+    if (cb_fp == NULL) {
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); printf("error creating cb/%s\n", argv[1]); exit(1);
+    }
+    chdir(".."); chdir("cr");
+    cr_fp = fopen(argv[1], "w+");
+    if (cr_fp == NULL) {
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); printf("error creating cr/%s\n", argv[1]); exit(1);
+    }
+    chdir(".."); chdir("RBG");
+    o_fp = fopen(argv[1], "w+");
+    if (o_fp == NULL) {
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); printf("error creating RBG/%s\n", argv[1]); exit(1);
+    }
+    chdir(".."); chdir("..");
+
+    // create image structs
+    inputRGBImage = malloc(sizeof(RGB_image_t));
+    if(inputRGBImage == NULL)
+    {
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); free(inputRGBImage); printf("error - input malloc failed\n"); exit(1);
+    }
     outputYCCImage = malloc(sizeof(YCC_image_t));
-    if(outputYCCImage == NULL) {
-        printf("Error - Output YCC malloc failed\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
+    if(outputYCCImage == NULL)
+    {
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); free(inputRGBImage); free(outputYCCImage); printf("error - YCC output malloc failed\n"); exit(1);
     }
     outputRGBImage = malloc(sizeof(RGB_image_t));
-    if(outputYCCImage == NULL){
-        printf("Error - Output RGB malloc failed\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
+    if(outputYCCImage == NULL)
+    {
+        error_teardown(); printf("error - RGB output malloc failed\n"); exit(1);
     }
+
+    get_image_info();
+
+    read_pixels();
+
+    write_headers();
 
     outputYCCImage->pixel_count = 0;
     outputRGBImage->pixel_count = 0;
@@ -364,52 +448,7 @@ int main(int argc, char* argv[] )
     YCCToRGB();
 
     // write YCC values to RBG files
-    pixel_index = 0;
-    for(y = 0; y < outputYCCImage->height; y++)
-    {
-        uint32_t x;
-        for (x = 0; x < outputYCCImage->width; x++)
-        {
-            // Pixels are stored in BGR order
-            pixel_offset = (y * bytesPerRow) + (x * 3);
-
-            // Write luma RBG file (grayscale)
-            if (fseek(luma_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); fclose(in_fp); exit(1);
-            }
-            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
-
-            // Convert Cb and Cr to unsigned for use in RGB representation
-            uint8_t baseColor = 128;
-            if (fseek(cb_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); fclose(in_fp);fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
-            }
-            fwrite(&outputYCCImage->pixels[pixel_index].Cb, 1, 1, cb_fp);
-            fwrite(&baseColor, 1, 1, cb_fp);
-            fwrite(&baseColor, 1, 1, cb_fp);
-
-            // Write red difference RBG file
-            if (fseek(cr_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
-            }
-            fwrite(&baseColor, 1, 1, cr_fp);
-            fwrite(&baseColor, 1, 1, cr_fp);
-            fwrite(&outputYCCImage->pixels[pixel_index].Cr, 1, 1, cr_fp);
-
-            // Write RBG file
-            if (fseek(o_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); exit(1);
-            }
-            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, o_fp);
-            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, o_fp);
-            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, o_fp);
-
-            pixel_index++;
-            outputYCCImage->pixel_count++;
-        }
-    }
+    write_YCC_components();
 
     // free memory
     free(inputRGBImage->pixels);
