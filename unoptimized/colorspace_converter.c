@@ -388,7 +388,7 @@ int main(int argc, char* argv[] )
     if (cr_fp == NULL) {
         fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); printf("error creating cr/%s\n", argv[1]); exit(1);
     }
-    chdir(".."); chdir("RBG");
+    chdir(".."); chdir("rgb");
     out_fp = fopen(argv[1], "w+");
     if (out_fp == NULL) {
         fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(out_fp); printf("error creating RBG/%s\n", argv[1]); exit(1);
