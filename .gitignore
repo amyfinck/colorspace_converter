@@ -1,6 +1,6 @@
 cmake-build-debug/
 .DS_Store
 unoptimized/output/
-cc.exe
-unoptimized/cc.exe
+*/cc.exe
 colorspace_converter.dSYM
+*.bmp

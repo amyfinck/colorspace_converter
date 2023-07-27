@@ -45,7 +45,7 @@ FILE *in_fp;
 FILE *luma_fp;
 FILE *cb_fp;
 FILE *cr_fp;
-FILE *o_fp;
+FILE *out_fp;
 
 RGB_image_t *inputRGBImage;
 YCC_image_t *outputYCCImage;
@@ -57,7 +57,7 @@ void error_teardown()
     fclose(luma_fp);
     fclose(cb_fp);
     fclose(cr_fp);
-    fclose(o_fp);
+    fclose(out_fp);
 
     free(inputRGBImage);
     free(inputRGBImage->pixels);
@@ -181,29 +181,25 @@ void YCCToRGB()
         uint8_t Cb = outputYCCImage->pixels[i].Cb;
         uint8_t Cr = outputYCCImage->pixels[i].Cr;
 
-        int64_t R_temp = (74 * (Y -16)) + (102 * (Cr-128));
+        int32_t R_temp = (74 * (Y-16)) + (102 * (Cr-128));
+        int32_t G_temp = (74 * (Y-16)) - (52 * (Cr-128)) - (25 * (Cb-128));
+        int32_t B_temp = (74 * (Y-16)) + (129 * (Cb-128));
+
+        R_temp = (( R_temp + (1 << (6-1))) >> 6);
+        G_temp = (( G_temp + (1 << (6-1))) >> 6);
+        B_temp = (( B_temp + (1 << (6-1))) >> 6);
+
+        // Saturating Arithmetic
         if(R_temp < 0) R_temp = 0;
-
-        int64_t G_temp = (74 * (Y-16)) - (52 * (Cr-128)) - (25 * (Cb-128));
+        if(R_temp > 255) R_temp = 255;
         if(G_temp < 0) G_temp = 0;
-
-        int64_t B_temp = (74 * (Y-16)) + (129 * (Cb-128));
+        if(G_temp > 255) G_temp = 255;
         if(B_temp < 0) B_temp = 0;
+        if(B_temp > 255) B_temp = 255;
 
-        // max B_temp value is 74*(235-16) + 129*(240-128) = 19230
-
-        //double R = 1.164*(Y-16) + 1.596*(Cr - 128);
-        //double G = 1.164*(Y-16) - 0.813*(Cr-128) - 0.391*(Cb-128);
-        //double B = 1.164*(Y-16) + 2.018*(Cb-128);
-
-//        if(R_temp > (255*K)) R_temp = 255*K;
-//        if(G_temp > 255*K) G_temp = 255*K;
-//        if(B_temp > 255*K) B_temp = 255*K;
-
-
-        uint8_t R = (uint8_t)(( R_temp + (1 << (6-1))) >> 6) ;
-        uint8_t G = (uint8_t)(( G_temp + (1 << (6-1))) >> 6);
-        uint8_t B = (uint8_t)(( B_temp + (1 << (6-1))) >> 6);
+        uint8_t R = (uint8_t)R_temp;
+        uint8_t G = (uint8_t)G_temp;
+        uint8_t B = (uint8_t)B_temp;
 
         outputRGBImage->pixels[i].R = (uint8_t)R;
         outputRGBImage->pixels[i].G = (uint8_t)G;
@@ -269,7 +265,7 @@ void write_headers()
         if( fwrite(buffer, 1, bytesRead,cr_fp) == -1) {
             printf("Error writing to cr file\n"); error_teardown(); exit(1);
         }
-        if( fwrite(buffer, 1, bytesRead, o_fp) == -1) {
+        if(fwrite(buffer, 1, bytesRead, out_fp) == -1) {
             printf("Error writing to output file\n"); error_teardown(); exit(1);
         }
     }
@@ -321,12 +317,12 @@ void write_YCC_components()
             fwrite(&outputYCCImage->pixels[pixel_index].Cr, 1, 1, cr_fp);
 
             // Write RBG file
-            if (fseek(o_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(out_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); error_teardown(); exit(1);
             }
-            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, o_fp);
-            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, o_fp);
-            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, o_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, out_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, out_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, out_fp);
 
             pixel_index++;
             outputYCCImage->pixel_count++;
@@ -393,9 +389,9 @@ int main(int argc, char* argv[] )
         fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); printf("error creating cr/%s\n", argv[1]); exit(1);
     }
     chdir(".."); chdir("RBG");
-    o_fp = fopen(argv[1], "w+");
-    if (o_fp == NULL) {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); printf("error creating RBG/%s\n", argv[1]); exit(1);
+    out_fp = fopen(argv[1], "w+");
+    if (out_fp == NULL) {
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(out_fp); printf("error creating RBG/%s\n", argv[1]); exit(1);
     }
     chdir(".."); chdir("..");
 
@@ -403,12 +399,12 @@ int main(int argc, char* argv[] )
     inputRGBImage = malloc(sizeof(RGB_image_t));
     if(inputRGBImage == NULL)
     {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); free(inputRGBImage); printf("error - input malloc failed\n"); exit(1);
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(out_fp); free(inputRGBImage); printf("error - input malloc failed\n"); exit(1);
     }
     outputYCCImage = malloc(sizeof(YCC_image_t));
     if(outputYCCImage == NULL)
     {
-        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(o_fp); free(inputRGBImage); free(outputYCCImage); printf("error - YCC output malloc failed\n"); exit(1);
+        fclose(in_fp); fclose(luma_fp); fclose(cb_fp); fclose(cr_fp); fclose(out_fp); free(inputRGBImage); free(outputYCCImage); printf("error - YCC output malloc failed\n"); exit(1);
     }
     outputRGBImage = malloc(sizeof(RGB_image_t));
     if(outputYCCImage == NULL)
@@ -463,7 +459,7 @@ int main(int argc, char* argv[] )
     fclose(luma_fp);
     fclose(cb_fp);
     fclose(cr_fp);
-    fclose(o_fp);
+    fclose(out_fp);
 
     printf("Luma component: /luma/%s\nCb component: /cb/%s\nCr component: /cr/%s\n", argv[1], argv[1], argv[1]);
 
