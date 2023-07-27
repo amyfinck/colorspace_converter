@@ -22,6 +22,7 @@ typedef struct RGB_image_t
     RGB_pixel_t *pixels;
     uint32_t pixel_count;
     uint32_t file_size;
+    uint32_t data_size;
 }RGB_image_t;
 
 typedef struct YCC_pixel_t
@@ -223,6 +224,8 @@ void read_pixels()
         uint32_t padding = 4 - (bytesPerRow % 4);
         bytesPerRow += padding;
     }
+    inputRGBImage->data_size = bytesPerRow * inputRGBImage->height;
+    printf("data size is %d\n", inputRGBImage->data_size);
 
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
@@ -248,13 +251,31 @@ void read_pixels()
     }
 }
 
+void resize_file(FILE* file, uint32_t width, uint32_t height)
+{
+    if (fseek(file, 18, SEEK_SET) != 0){
+        printf("Error seeking to width position\n"); error_teardown(); exit(1);
+    }
+    fwrite(&width, 4, 1, file);
+    if (fseek(file, 22, SEEK_SET) != 0) {
+        printf("Error seeking to offset position\n"); error_teardown(); exit(1);
+    }
+    fwrite(&height, 4, 1, file);
+}
+
+
+/*
+ *
+ */
 void write_headers()
 {
     // copy input file to RBG locations
-    char buffer[inputRGBImage->file_size];
+    uint32_t header_length = inputRGBImage->offset;
+    char buffer[header_length];
     size_t bytesRead;
+    size_t totalBytesRead = 0;
     fseek(in_fp, 0, SEEK_SET);
-    while ((bytesRead = fread(buffer, 1, sizeof(buffer),in_fp)) > 0)
+    while (totalBytesRead < header_length && (bytesRead = fread(buffer, 1, header_length - totalBytesRead, in_fp)) > 0)
     {
         if( fwrite(buffer, 1, bytesRead, luma_fp) == -1) {
             printf("Error writing to luma file\n"); error_teardown(); exit(1);
@@ -268,7 +289,10 @@ void write_headers()
         if(fwrite(buffer, 1, bytesRead, out_fp) == -1) {
             printf("Error writing to output file\n"); error_teardown(); exit(1);
         }
+        totalBytesRead += bytesRead;
     }
+    resize_file(cb_fp, inputRGBImage->width/2, inputRGBImage->height/2);
+    resize_file(cr_fp, inputRGBImage->width/2, inputRGBImage->height/2);
 }
 
 void write_YCC_components()
@@ -299,6 +323,37 @@ void write_YCC_components()
             fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
             fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
 
+            // Write RBG file
+            if (fseek(out_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); error_teardown(); exit(1);
+            }
+            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, out_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, out_fp);
+            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, out_fp);
+
+            pixel_index++;
+            outputYCCImage->pixel_count++;
+        }
+    }
+
+    bytesPerRow = inputRGBImage->width / 2 * 3; // 3 bytes per pixel
+    if (bytesPerRow % 4 != 0)
+    {
+        uint32_t padding = 4 - (bytesPerRow % 4);
+        bytesPerRow += padding;
+    }
+
+    uint32_t datasize = bytesPerRow * inputRGBImage->height;
+    printf("data size is %d\n", datasize);
+
+    pixel_index = 0;
+    for(y = 0; y < outputYCCImage->height/2; y++)
+    {
+        uint32_t x;
+        for (x = 0; x < outputYCCImage->width/2; x++)
+        {
+            uint32_t pixel_offset = (y * bytesPerRow) + (x * 3);
+
             // Convert Cb and Cr to unsigned for use in RGB representation
             uint8_t baseColor = 128;
             if (fseek(cb_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
@@ -316,17 +371,9 @@ void write_YCC_components()
             fwrite(&baseColor, 1, 1, cr_fp);
             fwrite(&outputYCCImage->pixels[pixel_index].Cr, 1, 1, cr_fp);
 
-            // Write RBG file
-            if (fseek(out_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); error_teardown(); exit(1);
-            }
-            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, out_fp);
-            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, out_fp);
-            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, out_fp);
-
-            pixel_index++;
-            outputYCCImage->pixel_count++;
+            pixel_index+=2;
         }
+        pixel_index += inputRGBImage->width;
     }
 }
 
@@ -344,13 +391,12 @@ void get_image_info()
     if (fseek(in_fp, 18, SEEK_SET) != 0){
         printf("Error seeking to width position\n"); error_teardown(); exit(1);
     }
+    printf("offset: %d\n", inputRGBImage->offset);
     fread(&inputRGBImage->width, 4, 1, in_fp);
-    printf("width: %d\n", inputRGBImage->width);
     if (fseek(in_fp, 22, SEEK_SET) != 0) {
         printf("Error seeking to offset position\n"); error_teardown(); exit(1);
     }
     fread(&inputRGBImage->height, 4, 1, in_fp);
-    printf("height: %d\n", inputRGBImage->height);
 }
 
 void print_pixel( uint32_t x, uint32_t y)
