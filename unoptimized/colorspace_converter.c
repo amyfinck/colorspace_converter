@@ -42,31 +42,9 @@ typedef struct YCC_image_t
     uint32_t padding;
 }YCC_image_t;
 
-//FILE *in_fp;
-//FILE *luma_fp;
-//FILE *cb_fp;
-//FILE *cr_fp;
-//FILE *out_fp;
-
 RGB_image_t *inputRGBImage;
 YCC_image_t *outputYCCImage;
 RGB_image_t *outputRGBImage;
-
-//void error_teardown()
-//{
-//    fclose(in_fp);
-//    fclose(luma_fp);
-//    fclose(cb_fp);
-//    fclose(cr_fp);
-//    fclose(out_fp);
-//
-//    free(inputRGBImage);
-//    free(inputRGBImage->pixels);
-//    free(outputYCCImage);
-//    free(outputYCCImage->pixels);
-//    free(outputRGBImage);
-//    free(outputRGBImage->pixels);
-//}
 
 /*
  * y = 16.0 + 0.257 R + 0.504 G + 0.098 B
@@ -158,7 +136,6 @@ void downsampleChroma()
         }
     }
 }
-
 
 /*
  * R′ = 1.164(Y′−16) + 1.596(Cr−128)
@@ -262,36 +239,6 @@ void resize_file(FILE* file, uint32_t width, uint32_t height)
     fwrite(&height, 4, 1, file);
 }
 
-//void write_headers()
-//{
-//    // copy input file to RBG locations
-//    uint32_t header_length = inputRGBImage->offset;
-//    char buffer[header_length];
-//    size_t bytesRead;
-//    size_t totalBytesRead = 0;
-//    fseek(in_fp, 0, SEEK_SET);
-//    // copy over header
-//    while (totalBytesRead < header_length && (bytesRead = fread(buffer, 1, header_length - totalBytesRead, in_fp)) > 0)
-//    {
-//        if( fwrite(buffer, 1, bytesRead, luma_fp) == -1) {
-//            printf("Error writing to luma file\n"); ; exit(1);
-//        }
-//        if( fwrite(buffer, 1, bytesRead, cb_fp) == -1) {
-//            printf("Error writing to cb file\n"); ; exit(1);
-//        }
-//        if( fwrite(buffer, 1, bytesRead,cr_fp) == -1) {
-//            printf("Error writing to cr file\n"); ; exit(1);
-//        }
-//        if(fwrite(buffer, 1, bytesRead, out_fp) == -1) {
-//            printf("Error writing to output file\n"); ; exit(1);
-//        }
-//        totalBytesRead += bytesRead;
-//    }
-//    // resize the chroma components
-//    resize_file(cb_fp, inputRGBImage->width/2, inputRGBImage->height/2);
-//    resize_file(cr_fp, inputRGBImage->width/2, inputRGBImage->height/2);
-//}
-
 void write_header(FILE* file_to_write, FILE* reference_file)
 {
     // copy input file to RBG locations
@@ -300,21 +247,13 @@ void write_header(FILE* file_to_write, FILE* reference_file)
     size_t bytesRead;
     size_t totalBytesRead = 0;
     fseek(reference_file, 0, SEEK_SET);
+
     // copy over header
     while (totalBytesRead < header_length && (bytesRead = fread(buffer, 1, header_length - totalBytesRead, reference_file)) > 0)
     {
         if( fwrite(buffer, 1, bytesRead, file_to_write) == -1) {
             printf("Error writing to luma file\n"); exit(1);
         }
-//        if( fwrite(buffer, 1, bytesRead, cb_fp) == -1) {
-//            printf("Error writing to cb file\n"); ; exit(1);
-//        }
-//        if( fwrite(buffer, 1, bytesRead,cr_fp) == -1) {
-//            printf("Error writing to cr file\n"); ; exit(1);
-//        }
-//        if(fwrite(buffer, 1, bytesRead, out_fp) == -1) {
-//            printf("Error writing to output file\n"); ; exit(1);
-//        }
         totalBytesRead += bytesRead;
     }
 }
@@ -381,14 +320,6 @@ void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
             fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
             fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
             fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
-
-//            // Write RBG file
-//            if (fseek(out_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
-//                printf("Error seeking to pixel\n"); ; exit(1);
-//            }
-//            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, out_fp);
-//            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, out_fp);
-//            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, out_fp);
 
             pixel_index++;
             outputYCCImage->pixel_count++;
