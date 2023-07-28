@@ -3,29 +3,18 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total
  time   seconds   seconds    calls  ms/call  ms/call  name
- 37.27      0.41     0.41                             write
- 31.82      0.76     0.35                             read
-  6.36      0.83     0.07                             llseek
-  4.55      0.88     0.05                             _IO_new_file_xsputn
-  2.73      0.91     0.03                             _IO_file_seekoff
-  2.73      0.94     0.03                             _IO_seekoff_unlocked
-  2.73      0.97     0.03                             _IO_switch_to_get_mode
-  1.82      0.99     0.02                             fseek
-  1.82      1.01     0.02                             new_do_write
-  0.91      1.02     0.01        1    10.00    10.00  main
-  0.91      1.03     0.01                             _IO_file_close
-  0.91      1.04     0.01                             _IO_file_overflow
-  0.91      1.05     0.01                             _IO_file_read
-  0.91      1.06     0.01                             _IO_file_seek
-  0.91      1.07     0.01                             _IO_file_write
-  0.91      1.08     0.01                             _IO_sgetn
-  0.91      1.09     0.01                             fread
-  0.91      1.10     0.01                             fwrite
-  0.00      1.10     0.00        2     0.00     0.00  resize_file
-  0.00      1.10     0.00        1     0.00     0.00  get_image_info
-  0.00      1.10     0.00        1     0.00     0.00  read_pixels
-  0.00      1.10     0.00        1     0.00     0.00  write_YCC_components
-  0.00      1.10     0.00        1     0.00     0.00  write_headers
+ 59.38      0.19     0.19                             write
+ 15.62      0.24     0.05                             read
+  6.25      0.26     0.02                             fseek
+  6.25      0.28     0.02                             llseek
+  3.12      0.29     0.01        1    10.00    10.00  main
+  3.12      0.30     0.01                             _IO_file_overflow
+  3.12      0.31     0.01                             _IO_file_seek
+  3.12      0.32     0.01                             _IO_file_write
+  0.00      0.32     0.00        1     0.00     0.00  get_image_info
+  0.00      0.32     0.00        1     0.00     0.00  read_pixels
+  0.00      0.32     0.00        1     0.00     0.00  write_RGB
+  0.00      0.32     0.00        1     0.00     0.00  write_header
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -63,86 +52,52 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 0.91% of 1.10 seconds
+granularity: each sample hit covers 4 byte(s) for 3.12% of 0.32 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     37.3    0.41    0.00                 write [1]
+[1]     59.4    0.19    0.00                 write [1]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     31.8    0.35    0.00                 read [2]
+[2]     15.6    0.05    0.00                 read [2]
 -----------------------------------------------
                                                  <spontaneous>
-[3]      6.4    0.07    0.00                 llseek [3]
+[3]      6.2    0.02    0.00                 fseek [3]
 -----------------------------------------------
                                                  <spontaneous>
-[4]      4.5    0.05    0.00                 _IO_new_file_xsputn [4]
+[4]      6.2    0.02    0.00                 llseek [4]
+-----------------------------------------------
+                0.01    0.00       1/1           __libc_start_main [9]
+[5]      3.1    0.01    0.00       1         main [5]
+                0.00    0.00       1/1           get_image_info [10]
+                0.00    0.00       1/1           read_pixels [11]
+                0.00    0.00       1/1           write_header [13]
+                0.00    0.00       1/1           write_RGB [12]
 -----------------------------------------------
                                                  <spontaneous>
-[5]      2.7    0.03    0.00                 _IO_file_seekoff [5]
+[6]      3.1    0.01    0.00                 _IO_file_overflow [6]
 -----------------------------------------------
                                                  <spontaneous>
-[6]      2.7    0.03    0.00                 _IO_seekoff_unlocked [6]
+[7]      3.1    0.01    0.00                 _IO_file_seek [7]
 -----------------------------------------------
                                                  <spontaneous>
-[7]      2.7    0.03    0.00                 _IO_switch_to_get_mode [7]
+[8]      3.1    0.01    0.00                 _IO_file_write [8]
 -----------------------------------------------
                                                  <spontaneous>
-[8]      1.8    0.02    0.00                 fseek [8]
+[9]      3.1    0.00    0.01                 __libc_start_main [9]
+                0.01    0.00       1/1           main [5]
 -----------------------------------------------
-                                                 <spontaneous>
-[9]      1.8    0.02    0.00                 new_do_write [9]
+                0.00    0.00       1/1           main [5]
+[10]     0.0    0.00    0.00       1         get_image_info [10]
 -----------------------------------------------
-                0.01    0.00       1/1           __libc_start_main [19]
-[10]     0.9    0.01    0.00       1         main [10]
-                0.00    0.00       1/1           get_image_info [21]
-                0.00    0.00       1/1           write_headers [24]
-                0.00    0.00       1/1           read_pixels [22]
-                0.00    0.00       1/1           write_YCC_components [23]
+                0.00    0.00       1/1           main [5]
+[11]     0.0    0.00    0.00       1         read_pixels [11]
 -----------------------------------------------
-                                                 <spontaneous>
-[11]     0.9    0.01    0.00                 fread [11]
+                0.00    0.00       1/1           main [5]
+[12]     0.0    0.00    0.00       1         write_RGB [12]
 -----------------------------------------------
-                                                 <spontaneous>
-[12]     0.9    0.01    0.00                 fwrite [12]
------------------------------------------------
-                                                 <spontaneous>
-[13]     0.9    0.01    0.00                 _IO_file_close [13]
------------------------------------------------
-                                                 <spontaneous>
-[14]     0.9    0.01    0.00                 _IO_file_overflow [14]
------------------------------------------------
-                                                 <spontaneous>
-[15]     0.9    0.01    0.00                 _IO_file_read [15]
------------------------------------------------
-                                                 <spontaneous>
-[16]     0.9    0.01    0.00                 _IO_file_seek [16]
------------------------------------------------
-                                                 <spontaneous>
-[17]     0.9    0.01    0.00                 _IO_file_write [17]
------------------------------------------------
-                                                 <spontaneous>
-[18]     0.9    0.01    0.00                 _IO_sgetn [18]
------------------------------------------------
-                                                 <spontaneous>
-[19]     0.9    0.00    0.01                 __libc_start_main [19]
-                0.01    0.00       1/1           main [10]
------------------------------------------------
-                0.00    0.00       2/2           write_headers [24]
-[20]     0.0    0.00    0.00       2         resize_file [20]
------------------------------------------------
-                0.00    0.00       1/1           main [10]
-[21]     0.0    0.00    0.00       1         get_image_info [21]
------------------------------------------------
-                0.00    0.00       1/1           main [10]
-[22]     0.0    0.00    0.00       1         read_pixels [22]
------------------------------------------------
-                0.00    0.00       1/1           main [10]
-[23]     0.0    0.00    0.00       1         write_YCC_components [23]
------------------------------------------------
-                0.00    0.00       1/1           main [10]
-[24]     0.0    0.00    0.00       1         write_headers [24]
-                0.00    0.00       2/2           resize_file [20]
+                0.00    0.00       1/1           main [5]
+[13]     0.0    0.00    0.00       1         write_header [13]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -235,11 +190,7 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [13] _IO_file_close         [18] _IO_sgetn               [9] new_do_write
-  [14] _IO_file_overflow       [7] _IO_switch_to_get_mode  [2] read
-  [15] _IO_file_read          [11] fread                  [22] read_pixels
-  [16] _IO_file_seek           [8] fseek                  [20] resize_file
-   [5] _IO_file_seekoff       [12] fwrite                  [1] write
-  [17] _IO_file_write         [21] get_image_info         [23] write_YCC_components
-   [4] _IO_new_file_xsputn     [3] llseek                 [24] write_headers
-   [6] _IO_seekoff_unlocked   [10] main
+   [6] _IO_file_overflow      [10] get_image_info         [11] read_pixels
+   [7] _IO_file_seek           [4] llseek                  [1] write
+   [8] _IO_file_write          [5] main                   [12] write_RGB
+   [3] fseek                   [2] read                   [13] write_header
