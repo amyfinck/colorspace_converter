@@ -9,6 +9,7 @@
 #include<sys/mman.h>
 #include<string.h>
 #include <sys/stat.h>
+#include <arm_neon.h>
 
 typedef struct RGB_pixel_t
 {
@@ -19,13 +20,7 @@ typedef struct RGB_pixel_t
 
 typedef struct RGB_image_t
 {
-    uint32_t height;
-    uint32_t width;
-    uint32_t offset;
     RGB_pixel_t *pixels;
-    uint32_t pixel_count;
-    uint32_t file_size;
-    uint32_t data_size;
 }RGB_image_t;
 
 typedef struct YCC_pixel_t
@@ -37,13 +32,18 @@ typedef struct YCC_pixel_t
 
 typedef struct YCC_image_t
 {
+    YCC_pixel_t *pixels;
+}YCC_image_t;
+
+typedef struct header_t
+{
     uint32_t height;
     uint32_t width;
     uint32_t offset;
-    YCC_pixel_t *pixels;
     uint32_t pixel_count;
     uint32_t padding;
-}YCC_image_t;
+    uint32_t file_size;
+}header_t;
 
 void get_image_info(FILE* file);
 void read_pixels(FILE* file);
