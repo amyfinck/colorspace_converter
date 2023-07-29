@@ -493,8 +493,5 @@ int main(int argc, char* argv[] )
         fclose(cr_fp);
     }
     fclose(out_fp);
-
-    printf("Luma component: /luma/%s\nCb component: /cb/%s\nCr component: /cr/%s\n", argv[1], argv[1], argv[1]);
-
     return 0;
 }
