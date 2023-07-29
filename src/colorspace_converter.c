@@ -108,13 +108,7 @@ void write_rgb(RGB_image_t *input_rgb_img, RGB_image_t *output_rgb_img, FILE* rg
 void write_ycc_components(RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img, FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
 {
     // calculate padding
-    uint32_t bytesPerRow = input_rgb_img->width * 3; // 3 bytes per pixel
-    if (bytesPerRow % 4 != 0)
-    {
-        uint32_t padding = 4 - (bytesPerRow % 4);
-        bytesPerRow += padding;
-    }
-
+    uint32_t bytesPerRow = get_row_byte_count(input_rgb_img->width);
     uint32_t pixel_index = 0;
     uint32_t y;
     for(y = 0; y < input_rgb_img->height; y++)
@@ -137,13 +131,7 @@ void write_ycc_components(RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_im
         }
     }
 
-    bytesPerRow = input_rgb_img->width / 2 * 3; // 3 bytes per pixel
-    if (bytesPerRow % 4 != 0)
-    {
-        uint32_t padding = 4 - (bytesPerRow % 4);
-        bytesPerRow += padding;
-    }
-
+    bytesPerRow = get_row_byte_count(input_rgb_img->width / 2);
     pixel_index = 0;
     for(y = 0; y < input_rgb_img->height/2; y++)
     {
