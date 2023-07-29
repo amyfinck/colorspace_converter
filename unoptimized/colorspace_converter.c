@@ -42,9 +42,9 @@ typedef struct YCC_image_t
     uint32_t padding;
 }YCC_image_t;
 
-RGB_image_t *inputRGBImage;
-YCC_image_t *outputYCCImage;
-RGB_image_t *outputRGBImage;
+RGB_image_t *input_rgb_img;
+YCC_image_t *output_ycc_img;
+RGB_image_t *output_rgb_img;
 
 /*
  * y = 16.0 + 0.257 R + 0.504 G + 0.098 B
@@ -52,19 +52,19 @@ RGB_image_t *outputRGBImage;
  * 2^8 * 0.504 = 129
  * 2^8 * 0.098 = 25
  */
-void getLuma()
+void get_luma()
 {
     uint8_t K = 8;
     uint32_t i;
-    for(i = 0; i < inputRGBImage->pixel_count; i++)
+    for(i = 0; i < input_rgb_img->pixel_count; i++)
     {
-        uint8_t R = inputRGBImage->pixels[i].R;
-        uint8_t G = inputRGBImage->pixels[i].G;
-        uint8_t B = inputRGBImage->pixels[i].B;
+        uint8_t R = input_rgb_img->pixels[i].R;
+        uint8_t G = input_rgb_img->pixels[i].G;
+        uint8_t B = input_rgb_img->pixels[i].B;
         uint32_t Y_temp = (16 << K) + (66 * R) + (129 * G) + (25 * B);
         uint8_t Y = (uint8_t)(( Y_temp + (1 << (K-1))) >> K);
 
-        outputYCCImage->pixels[i].Y = Y;
+        output_ycc_img->pixels[i].Y = Y;
     }
 }
 
@@ -79,17 +79,17 @@ void getLuma()
  * 0.368 * 2^8 = 94
  * 0.071 * 2^8 = 18
  */
-void getChroma()
+void get_chroma()
 {
     uint32_t i;
-    for(i = 0; i < inputRGBImage->pixel_count; i++)
+    for(i = 0; i < input_rgb_img->pixel_count; i++)
     {
         uint8_t K = 8;
 
         // Cb and Cr are signed from -128 to 127
-        uint8_t R = inputRGBImage->pixels[i].R;
-        uint8_t G = inputRGBImage->pixels[i].G;
-        uint8_t B = inputRGBImage->pixels[i].B;
+        uint8_t R = input_rgb_img->pixels[i].R;
+        uint8_t G = input_rgb_img->pixels[i].G;
+        uint8_t B = input_rgb_img->pixels[i].B;
 
         uint32_t Cb_temp = (128 << K) - (38 * R) - (74 * G) + (112 * B);
         uint32_t Cr_temp = (128 << K) + (112 * R) - (94 * G) - (18 * B);
@@ -100,39 +100,39 @@ void getChroma()
         if(Cb < 0) Cb = 0;
         if(Cb > 255) Cb = 255;
 
-        outputYCCImage->pixels[i].Cb = (uint8_t)Cb;
-        outputYCCImage->pixels[i].Cr = (uint8_t)Cr;
+        output_ycc_img->pixels[i].Cb = (uint8_t)Cb;
+        output_ycc_img->pixels[i].Cr = (uint8_t)Cr;
     }
 }
 
-void downsampleChroma()
+void downsample_chroma()
 {
     // TODO this should probably be a scaled down image
     uint32_t y;
-    for(y = 0; y < inputRGBImage->height; y+=2)
+    for(y = 0; y < input_rgb_img->height; y+=2)
     {
         uint32_t x;
-        for(x = 0; x < inputRGBImage->width; x+=2)
+        for(x = 0; x < input_rgb_img->width; x+=2)
         {
-            uint32_t bottom_left = y * inputRGBImage->width + x;
+            uint32_t bottom_left = y * input_rgb_img->width + x;
             uint32_t bottom_right = bottom_left + 1;
-            uint32_t top_left = bottom_left + inputRGBImage->width;
+            uint32_t top_left = bottom_left + input_rgb_img->width;
             uint32_t top_right = top_left + 1;
 
-            int32_t Cb_total = (int32_t)outputYCCImage->pixels[bottom_left].Cb + (int32_t)outputYCCImage->pixels[bottom_right].Cb + (int32_t)outputYCCImage->pixels[top_left].Cb + (int32_t)outputYCCImage->pixels[top_right].Cb;
+            int32_t Cb_total = (int32_t)output_ycc_img->pixels[bottom_left].Cb + (int32_t)output_ycc_img->pixels[bottom_right].Cb + (int32_t)output_ycc_img->pixels[top_left].Cb + (int32_t)output_ycc_img->pixels[top_right].Cb;
             int8_t Cb_avg = (int8_t)(Cb_total / 4);
-            int32_t Cr_total = (int32_t)outputYCCImage->pixels[bottom_left].Cr + (int32_t)outputYCCImage->pixels[bottom_right].Cr + (int32_t)outputYCCImage->pixels[top_left].Cr + (int32_t)outputYCCImage->pixels[top_right].Cr;
+            int32_t Cr_total = (int32_t)output_ycc_img->pixels[bottom_left].Cr + (int32_t)output_ycc_img->pixels[bottom_right].Cr + (int32_t)output_ycc_img->pixels[top_left].Cr + (int32_t)output_ycc_img->pixels[top_right].Cr;
             int8_t Cr_avg = (int8_t)(Cr_total / 4);
 
-            outputYCCImage->pixels[bottom_left].Cb = Cb_avg;
-            outputYCCImage->pixels[bottom_right].Cb = Cb_avg;
-            outputYCCImage->pixels[top_left].Cb = Cb_avg;
-            outputYCCImage->pixels[top_right].Cb = Cb_avg;
+            output_ycc_img->pixels[bottom_left].Cb = Cb_avg;
+            output_ycc_img->pixels[bottom_right].Cb = Cb_avg;
+            output_ycc_img->pixels[top_left].Cb = Cb_avg;
+            output_ycc_img->pixels[top_right].Cb = Cb_avg;
 
-            outputYCCImage->pixels[bottom_left].Cr = Cr_avg;
-            outputYCCImage->pixels[bottom_right].Cr = Cr_avg;
-            outputYCCImage->pixels[top_left].Cr = Cr_avg;
-            outputYCCImage->pixels[top_right].Cr = Cr_avg;
+            output_ycc_img->pixels[bottom_left].Cr = Cr_avg;
+            output_ycc_img->pixels[bottom_right].Cr = Cr_avg;
+            output_ycc_img->pixels[top_left].Cr = Cr_avg;
+            output_ycc_img->pixels[top_right].Cr = Cr_avg;
         }
     }
 }
@@ -148,16 +148,16 @@ void downsampleChroma()
  * 2^6 * 0.391 = 25
  * 2^6 * 2.018 = 129
  */
-void YCCToRGB()
+void ycc_to_rgb()
 {
     uint32_t i;
-    for(i = 0; i < inputRGBImage->pixel_count; i++)
+    for(i = 0; i < input_rgb_img->pixel_count; i++)
     {
         uint8_t K = 6;
 
-        uint8_t Y = outputYCCImage->pixels[i].Y;
-        uint8_t Cb = outputYCCImage->pixels[i].Cb;
-        uint8_t Cr = outputYCCImage->pixels[i].Cr;
+        uint8_t Y = output_ycc_img->pixels[i].Y;
+        uint8_t Cb = output_ycc_img->pixels[i].Cb;
+        uint8_t Cr = output_ycc_img->pixels[i].Cr;
 
         int32_t R_temp = (74 * (Y-16)) + (102 * (Cr-128));
         int32_t G_temp = (74 * (Y-16)) - (52 * (Cr-128)) - (25 * (Cb-128));
@@ -179,50 +179,50 @@ void YCCToRGB()
         uint8_t G = (uint8_t)G_temp;
         uint8_t B = (uint8_t)B_temp;
 
-        outputRGBImage->pixels[i].R = (uint8_t)R;
-        outputRGBImage->pixels[i].G = (uint8_t)G;
-        outputRGBImage->pixels[i].B = (uint8_t)B;
+        output_rgb_img->pixels[i].R = (uint8_t)R;
+        output_rgb_img->pixels[i].G = (uint8_t)G;
+        output_rgb_img->pixels[i].B = (uint8_t)B;
     }
 }
 
 void read_pixels(FILE* file)
 {
     // allocate memory for pixels
-    inputRGBImage->pixel_count = 0;
-    inputRGBImage->pixels = malloc(sizeof(RGB_pixel_t) * inputRGBImage->height * inputRGBImage->width);
-    if(inputRGBImage->pixels == NULL) {
+    input_rgb_img->pixel_count = 0;
+    input_rgb_img->pixels = malloc(sizeof(RGB_pixel_t) * input_rgb_img->height * input_rgb_img->width);
+    if(input_rgb_img->pixels == NULL) {
         printf("error - pixel malloc failed\n"); exit(1);
     }
 
     // calculate padding
-    uint32_t bytesPerRow = inputRGBImage->width * 3; // 3 bytes per pixel
+    uint32_t bytesPerRow = input_rgb_img->width * 3; // 3 bytes per pixel
     if (bytesPerRow % 4 != 0)
     {
         uint32_t padding = 4 - (bytesPerRow % 4);
         bytesPerRow += padding;
     }
-    inputRGBImage->data_size = bytesPerRow * inputRGBImage->height;
+    input_rgb_img->data_size = bytesPerRow * input_rgb_img->height;
 
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
     uint32_t y;
-    for(y = 0; y < inputRGBImage->height; y++)
+    for(y = 0; y < input_rgb_img->height; y++)
     {
         uint32_t x;
-        for(x = 0; x < inputRGBImage->width; x++)
+        for(x = 0; x < input_rgb_img->width; x++)
         {
             pixel_offset = (y * bytesPerRow) + (x * 3);
 
             // Pixels are stored in BGR order
-            if (fseek(file, (long)inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(file, (long)input_rgb_img->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); fclose(file); exit(1);
             }
-            fread(&inputRGBImage->pixels[pixel_index].B, 1, 1, file);
-            fread(&inputRGBImage->pixels[pixel_index].G, 1, 1, file);
-            fread(&inputRGBImage->pixels[pixel_index].R, 1, 1, file);
+            fread(&input_rgb_img->pixels[pixel_index].B, 1, 1, file);
+            fread(&input_rgb_img->pixels[pixel_index].G, 1, 1, file);
+            fread(&input_rgb_img->pixels[pixel_index].R, 1, 1, file);
 
             pixel_index++;
-            inputRGBImage->pixel_count++;
+            input_rgb_img->pixel_count++;
         }
     }
 }
@@ -242,7 +242,7 @@ void resize_file(FILE* file, uint32_t width, uint32_t height)
 void write_header(FILE* file_to_write, FILE* reference_file)
 {
     // copy input file to RBG locations
-    uint32_t header_length = inputRGBImage->offset;
+    uint32_t header_length = input_rgb_img->offset;
     char buffer[header_length];
     size_t bytesRead;
     size_t totalBytesRead = 0;
@@ -258,10 +258,10 @@ void write_header(FILE* file_to_write, FILE* reference_file)
     }
 }
 
-void write_RGB(FILE* rgb_file)
+void write_rgb(FILE* rgb_file)
 {
     // calculate padding
-    uint32_t bytesPerRow = inputRGBImage->width * 3; // 3 bytes per pixel
+    uint32_t bytesPerRow = input_rgb_img->width * 3; // 3 bytes per pixel
     if (bytesPerRow % 4 != 0)
     {
         uint32_t padding = 4 - (bytesPerRow % 4);
@@ -270,33 +270,33 @@ void write_RGB(FILE* rgb_file)
 
     uint32_t pixel_index = 0;
     uint32_t y;
-    for(y = 0; y < outputYCCImage->height; y++)
+    for(y = 0; y < output_ycc_img->height; y++)
     {
         uint32_t x;
-        for (x = 0; x < outputYCCImage->width; x++)
+        for (x = 0; x < output_ycc_img->width; x++)
         {
             // Pixels are stored in BGR order
             uint32_t pixel_offset = (y * bytesPerRow) + (x * 3);
 
             // Write RBG file
-            if (fseek(rgb_file, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(rgb_file, input_rgb_img->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); ; exit(1);
             }
-            fwrite(&outputRGBImage->pixels[pixel_index].B, 1, 1, rgb_file);
-            fwrite(&outputRGBImage->pixels[pixel_index].G, 1, 1, rgb_file);
-            fwrite(&outputRGBImage->pixels[pixel_index].R, 1, 1, rgb_file);
+            fwrite(&output_rgb_img->pixels[pixel_index].B, 1, 1, rgb_file);
+            fwrite(&output_rgb_img->pixels[pixel_index].G, 1, 1, rgb_file);
+            fwrite(&output_rgb_img->pixels[pixel_index].R, 1, 1, rgb_file);
 
             pixel_index++;
-            outputYCCImage->pixel_count++;
+            output_ycc_img->pixel_count++;
         }
     }
 
 }
 
-void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
+void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
 {
     // calculate padding
-    uint32_t bytesPerRow = inputRGBImage->width * 3; // 3 bytes per pixel
+    uint32_t bytesPerRow = input_rgb_img->width * 3; // 3 bytes per pixel
     if (bytesPerRow % 4 != 0)
     {
         uint32_t padding = 4 - (bytesPerRow % 4);
@@ -305,65 +305,65 @@ void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
 
     uint32_t pixel_index = 0;
     uint32_t y;
-    for(y = 0; y < outputYCCImage->height; y++)
+    for(y = 0; y < output_ycc_img->height; y++)
     {
         uint32_t x;
-        for (x = 0; x < outputYCCImage->width; x++)
+        for (x = 0; x < output_ycc_img->width; x++)
         {
             // Pixels are stored in BGR order
             uint32_t pixel_offset = (y * bytesPerRow) + (x * 3);
 
             // Write luma RBG file (grayscale)
-            if (fseek(luma_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(luma_fp, input_rgb_img->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); ; exit(1);
             }
-            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&outputYCCImage->pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
 
             pixel_index++;
-            outputYCCImage->pixel_count++;
+            output_ycc_img->pixel_count++;
         }
     }
 
-    bytesPerRow = inputRGBImage->width / 2 * 3; // 3 bytes per pixel
+    bytesPerRow = input_rgb_img->width / 2 * 3; // 3 bytes per pixel
     if (bytesPerRow % 4 != 0)
     {
         uint32_t padding = 4 - (bytesPerRow % 4);
         bytesPerRow += padding;
     }
 
-    uint32_t datasize = bytesPerRow * inputRGBImage->height;
+    uint32_t datasize = bytesPerRow * input_rgb_img->height;
     printf("data size is %d\n", datasize);
 
     pixel_index = 0;
-    for(y = 0; y < outputYCCImage->height/2; y++)
+    for(y = 0; y < output_ycc_img->height/2; y++)
     {
         uint32_t x;
-        for (x = 0; x < outputYCCImage->width/2; x++)
+        for (x = 0; x < output_ycc_img->width/2; x++)
         {
             uint32_t pixel_offset = (y * bytesPerRow) + (x * 3);
 
             // Convert Cb and Cr to unsigned for use in RGB representation
             uint8_t baseColor = 128;
-            if (fseek(cb_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(cb_fp, input_rgb_img->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); ; exit(1);
             }
-            fwrite(&outputYCCImage->pixels[pixel_index].Cb, 1, 1, cb_fp);
+            fwrite(&output_ycc_img->pixels[pixel_index].Cb, 1, 1, cb_fp);
             fwrite(&baseColor, 1, 1, cb_fp);
             fwrite(&baseColor, 1, 1, cb_fp);
 
             // Write red difference RBG file
-            if (fseek(cr_fp, inputRGBImage->offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(cr_fp, input_rgb_img->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); ; exit(1);
             }
             fwrite(&baseColor, 1, 1, cr_fp);
             fwrite(&baseColor, 1, 1, cr_fp);
-            fwrite(&outputYCCImage->pixels[pixel_index].Cr, 1, 1, cr_fp);
+            fwrite(&output_ycc_img->pixels[pixel_index].Cr, 1, 1, cr_fp);
 
             pixel_index+=2;
         }
-        pixel_index += inputRGBImage->width;
+        pixel_index += input_rgb_img->width;
     }
 }
 
@@ -371,28 +371,28 @@ void get_image_info(FILE* file)
 {
     // get file size
     fseek(file, 0, SEEK_END);
-    inputRGBImage->file_size = ftell(file);
+    input_rgb_img->file_size = ftell(file);
 
     // get offset, width, and height
     if (fseek(file, 10, SEEK_SET) != 0) {
         printf("Error seeking to offset position\n"); ; exit(1);
     }
-    fread(&inputRGBImage->offset, 4, 1, file);
+    fread(&input_rgb_img->offset, 4, 1, file);
     if (fseek(file, 18, SEEK_SET) != 0){
         printf("Error seeking to width position\n"); ; exit(1);
     }
-    fread(&inputRGBImage->width, 4, 1, file);
+    fread(&input_rgb_img->width, 4, 1, file);
     if (fseek(file, 22, SEEK_SET) != 0) {
         printf("Error seeking to offset position\n"); ; exit(1);
     }
-    fread(&inputRGBImage->height, 4, 1, file);
+    fread(&input_rgb_img->height, 4, 1, file);
 }
 
 void print_pixel( uint32_t x, uint32_t y)
 {
-    uint32_t pixel_index = y * inputRGBImage->width + x;
-    printf("Pixel %d (%d, %d) - R: %d, G: %d, B: %d\n", pixel_index, x, y, inputRGBImage->pixels[pixel_index].R,
-           inputRGBImage->pixels[pixel_index].G, inputRGBImage->pixels[pixel_index].B);
+    uint32_t pixel_index = y * input_rgb_img->width + x;
+    printf("Pixel %d (%d, %d) - R: %d, G: %d, B: %d\n", pixel_index, x, y, input_rgb_img->pixels[pixel_index].R,
+           input_rgb_img->pixels[pixel_index].G, input_rgb_img->pixels[pixel_index].B);
 }
 
 int main(int argc, char* argv[] )
@@ -462,18 +462,18 @@ int main(int argc, char* argv[] )
     chdir(".."); chdir("..");
 
     // create image structs
-    inputRGBImage = malloc(sizeof(RGB_image_t));
-    if(inputRGBImage == NULL)
+    input_rgb_img = malloc(sizeof(RGB_image_t));
+    if(input_rgb_img == NULL)
     {
         printf("error - input malloc failed\n"); exit(1);
     }
-    outputYCCImage = malloc(sizeof(YCC_image_t));
-    if(outputYCCImage == NULL)
+    output_ycc_img = malloc(sizeof(YCC_image_t));
+    if(output_ycc_img == NULL)
     {
         printf("error - YCC output malloc failed\n"); exit(1);
     }
-    outputRGBImage = malloc(sizeof(RGB_image_t));
-    if(outputYCCImage == NULL)
+    output_rgb_img = malloc(sizeof(RGB_image_t));
+    if(output_ycc_img == NULL)
     {
         printf("error - RGB output malloc failed\n"); exit(1);
     }
@@ -491,54 +491,54 @@ int main(int argc, char* argv[] )
         write_header(luma_fp, in_fp);
         write_header(cr_fp, in_fp);
         write_header(cb_fp, in_fp);
-        resize_file(cb_fp, inputRGBImage->width/2, inputRGBImage->height/2);
-        resize_file(cr_fp, inputRGBImage->width/2, inputRGBImage->height/2);
+        resize_file(cb_fp, input_rgb_img->width/2, input_rgb_img->height/2);
+        resize_file(cr_fp, input_rgb_img->width/2, input_rgb_img->height/2);
     }
 
-    outputYCCImage->pixel_count = 0;
-    outputRGBImage->pixel_count = 0;
-    outputYCCImage->offset = inputRGBImage->offset;
-    outputRGBImage->offset = inputRGBImage->offset;
-    outputYCCImage->width = inputRGBImage->width;
-    outputRGBImage->width = inputRGBImage->width;
-    outputYCCImage->height = inputRGBImage->height;
-    outputRGBImage->height = inputRGBImage->height;
-    outputYCCImage->pixels = malloc(sizeof(YCC_pixel_t) * outputYCCImage->height * outputYCCImage->width);
-    if(outputYCCImage->pixels == NULL){
+    output_ycc_img->pixel_count = 0;
+    output_rgb_img->pixel_count = 0;
+    output_ycc_img->offset = input_rgb_img->offset;
+    output_rgb_img->offset = input_rgb_img->offset;
+    output_ycc_img->width = input_rgb_img->width;
+    output_rgb_img->width = input_rgb_img->width;
+    output_ycc_img->height = input_rgb_img->height;
+    output_rgb_img->height = input_rgb_img->height;
+    output_ycc_img->pixels = malloc(sizeof(YCC_pixel_t) * output_ycc_img->height * output_ycc_img->width);
+    if(output_ycc_img->pixels == NULL){
         printf("error - Output pix malloc failed\n"); exit(1);
     }
-    outputRGBImage->pixels = malloc(sizeof(RGB_pixel_t) * outputRGBImage->height * outputRGBImage->width);
-    if(outputRGBImage->pixels == NULL){
+    output_rgb_img->pixels = malloc(sizeof(RGB_pixel_t) * output_rgb_img->height * output_rgb_img->width);
+    if(output_rgb_img->pixels == NULL){
         printf("error - Output pix malloc failed\n"); exit(1);
     }
 
 
     // Calculate YCC values for OutputImage
-    getLuma();
-    getChroma();
-    downsampleChroma();
+    get_luma();
+    get_chroma();
+    downsample_chroma();
 
     // use downsampled YCC image to create new RGB image
-    YCCToRGB();
+    ycc_to_rgb();
 
     // write YCC values to RBG files
     if(outputComponents == 1)
     {
-        write_YCC_components(luma_fp, cb_fp, cr_fp);
+        write_ycc_components(luma_fp, cb_fp, cr_fp);
     }
-    write_RGB(out_fp);
+    write_rgb(out_fp);
 
-    printf("rgb pixels: %d\n", outputRGBImage->pixel_count);
-    printf("ycc pixels: %d\n", outputYCCImage->pixel_count);
+    printf("rgb pixels: %d\n", output_rgb_img->pixel_count);
+    printf("ycc pixels: %d\n", output_ycc_img->pixel_count);
 
 
     // free memory
-    free(inputRGBImage->pixels);
-    free(inputRGBImage);
-    free(outputYCCImage->pixels);
-    free(outputYCCImage);
-    free(outputRGBImage->pixels);
-    free(outputRGBImage);
+    free(input_rgb_img->pixels);
+    free(input_rgb_img);
+    free(output_ycc_img->pixels);
+    free(output_ycc_img);
+    free(output_rgb_img->pixels);
+    free(output_rgb_img);
 
     // close all files
     fclose(in_fp);
