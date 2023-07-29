@@ -49,10 +49,10 @@ void get_image_info(FILE* file);
 void read_pixels(FILE* file);
 void write_header(FILE* file_to_write, FILE* reference_file);
 void resize_file(FILE* file, uint32_t width, uint32_t height);
-void getLuma();
-void getChroma();
-void downsampleChroma();
-void YCCToRGB();
+void get_luma();
+void get_chroma();
+void downsample_chroma();
+void YCC_to_RGB();
 void write_RGB(FILE* rgb_file);
 void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp);
 

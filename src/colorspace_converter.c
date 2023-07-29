@@ -24,6 +24,16 @@ void get_image_info(FILE* file)
         printf("Error seeking to offset position\n"); exit(1);
     }
     fread(&header->height, 4, 1, file);
+
+    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
+    if (bytes_per_row % 4 != 0)
+    {
+        header->padding= 4 - (bytes_per_row % 4);
+    }
+    else
+    {
+        header->padding = 0;
+    }
 }
 
 void read_pixels(FILE* file)
@@ -104,7 +114,7 @@ void resize_file(FILE* file, uint32_t width, uint32_t height)
  * 2^8 * 0.504 = 129
  * 2^8 * 0.098 = 25
  */
-void getLuma()
+void get_luma()
 {
     uint8_t K = 8;
     uint32_t i;
@@ -131,7 +141,7 @@ void getLuma()
  * 0.368 * 2^8 = 94
  * 0.071 * 2^8 = 18
  */
-void getChroma()
+void get_chroma()
 {
     uint32_t i;
     for(i = 0; i < header->pixel_count; i++)
@@ -157,7 +167,7 @@ void getChroma()
     }
 }
 
-void downsampleChroma()
+void downsample_chroma()
 {
     // TODO this should probably be a scaled down image
     uint32_t y;
@@ -200,7 +210,7 @@ void downsampleChroma()
  * 2^6 * 0.391 = 25
  * 2^6 * 2.018 = 129
  */
-void YCCToRGB()
+void YCC_to_RGB()
 {
     uint32_t i;
     for(i = 0; i < header->pixel_count; i++)
@@ -245,6 +255,7 @@ void write_RGB(FILE* rgb_file)
     {
         uint32_t padding = 4 - (bytesPerRow % 4);
         bytesPerRow += padding;
+        header->padding = padding;
     }
 
     uint32_t pixel_index = 0;
@@ -268,6 +279,8 @@ void write_RGB(FILE* rgb_file)
             pixel_index++;
         }
     }
+    uint8_t zero = 0;
+    fwrite(&zero, 1, header->padding, rgb_file);
 }
 
 void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
@@ -301,12 +314,14 @@ void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
             pixel_index++;
         }
     }
+    fseek(luma_fp, header->padding, SEEK_CUR);
 
     bytesPerRow = header->width / 2 * 3; // 3 bytes per pixel
+    uint32_t chroma_padding = 0;
     if (bytesPerRow % 4 != 0)
     {
-        uint32_t padding = 4 - (bytesPerRow % 4);
-        bytesPerRow += padding;
+        chroma_padding = 4 - (bytesPerRow % 4);
+        bytesPerRow += chroma_padding;
     }
 
     pixel_index = 0;
@@ -338,6 +353,9 @@ void write_YCC_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
         }
         pixel_index += header->width;
     }
+    uint8_t zero = 0;
+    fwrite(&zero, 1, chroma_padding, cr_fp);
+    fwrite(&zero, 1, chroma_padding, cb_fp);
 }
 
 int main(int argc, char* argv[] )
@@ -462,19 +480,19 @@ int main(int argc, char* argv[] )
     }
 
     // Calculate YCC values for OutputImage
-    getLuma();
-    getChroma();
-    downsampleChroma();
+    get_luma();
+    get_chroma();
+    downsample_chroma();
 
     // use downsampled YCC image to create new RGB image
-    YCCToRGB();
+    YCC_to_RGB();
 
     // write YCC values to RBG files
+    write_RGB(out_fp);
     if(outputComponents == 1)
     {
         write_YCC_components(luma_fp, cb_fp, cr_fp);
     }
-    write_RGB(out_fp);
 
     // free memory
     free(inputRGBImage->pixels);
