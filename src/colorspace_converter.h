@@ -15,9 +15,9 @@
 
 void get_image_info(FILE* file);
 void read_pixels(FILE* file);
+void write_rgb_file(FILE* rgb_file);
 void write_header(FILE* file_to_write, FILE* reference_file);
 void resize_file(FILE* file, uint32_t width, uint32_t height);
-void write_rgb_file(FILE* rgb_file);
 void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp);
 
 

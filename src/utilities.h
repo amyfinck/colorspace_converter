@@ -28,4 +28,10 @@ void resize_file(FILE* file, uint32_t width, uint32_t height)
     fwrite(&height, 4, 1, file);
 }
 
+void check_height_width(uint32_t width, uint32_t height)
+{
+    int condition = width % 2 != 0 || height % 2 != 0;
+    exit_on_error(condition, "width and height must be divisible by 2");
+}
+
 #endif

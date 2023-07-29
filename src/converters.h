@@ -54,7 +54,7 @@ void get_chroma(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *o
  * 2^6 * 0.391 = 25
  * 2^6 * 2.018 = 129
  */
-void ycc_to_rgb(uint32_t pixel_count, RGB_image_t *input_rgb_img, RGB_image_t *output_rgb_img, YCC_image_t *output_ycc_img)
+void ycc_to_rgb(uint32_t pixel_count, RGB_image_t *output_rgb_img, YCC_image_t *output_ycc_img)
 {
     uint32_t i;
     for(i = 0; i < pixel_count; i++)
@@ -69,7 +69,7 @@ void ycc_to_rgb(uint32_t pixel_count, RGB_image_t *input_rgb_img, RGB_image_t *o
     }
 }
 
-void downsample_chroma(uint32_t height, uint32_t width, RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img)
+void downsample_chroma(uint32_t height, uint32_t width, YCC_image_t *output_ycc_img)
 {
     // TODO this should probably be a scaled down image
     uint32_t y;
@@ -78,9 +78,9 @@ void downsample_chroma(uint32_t height, uint32_t width, RGB_image_t *input_rgb_i
         uint32_t x;
         for(x = 0; x < width; x+=2)
         {
-            uint32_t bottom_left = y * input_rgb_img->width + x;
+            uint32_t bottom_left = y * width + x;
             uint32_t bottom_right = bottom_left + 1;
-            uint32_t top_left = bottom_left + input_rgb_img->width;
+            uint32_t top_left = bottom_left + width;
             uint32_t top_right = top_left + 1;
 
             int32_t Cb_total = (int32_t)output_ycc_img->pixels[bottom_left].Cb + (int32_t)output_ycc_img->pixels[bottom_right].Cb + (int32_t)output_ycc_img->pixels[top_left].Cb + (int32_t)output_ycc_img->pixels[top_right].Cb;
