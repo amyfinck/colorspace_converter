@@ -7,3 +7,4 @@ src/output/cb/*.bmp
 src/output/cr/*.bmp
 src/output/luma/*.bmp
 src/output/rgb/*.bmp
+*.DS_Store
