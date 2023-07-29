@@ -268,10 +268,10 @@ int main(int argc, char* argv[] )
 
     
     // create image structs
-    allocate_rgb_memory(input_rgb_img);
-    allocate_rgb_memory(output_rgb_img);
-    allocate_ycc_memory(output_ycc_img);
-    allocate_header_memory(header);
+    allocate_rgb_memory(&input_rgb_img);
+    allocate_rgb_memory(&output_rgb_img);
+    allocate_ycc_memory(&output_ycc_img);
+    allocate_header_memory(&header);
 
     // get relevant information from header
     get_image_info(in_fp);
@@ -296,7 +296,7 @@ int main(int argc, char* argv[] )
     // Calculate YCC values for OutputImage
     get_luma(header->pixel_count, input_rgb_img, output_ycc_img);
     get_chroma(header->pixel_count, input_rgb_img, output_ycc_img);
-    downsample_chroma(header->height, header->width, output_rgb_img);
+    downsample_chroma(header->height, header->width, output_ycc_img);
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
     // write YCC values to RBG files
