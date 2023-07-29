@@ -39,6 +39,16 @@ typedef struct YCC_image_t
     YCC_pixel_t *pixels;
 } YCC_image_t;
 
+typedef struct header_t
+{
+    uint32_t height;
+    uint32_t width;
+    uint32_t offset;
+    uint32_t padding;
+    uint32_t pixel_count;
+    uint32_t file_size;
+} header_t;
+
 void exit_on_error(int condition, char *msg)
 {
     if (condition)
