@@ -4,13 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct RGB_pixel_t
-{
-    uint8_t R;
-    uint8_t G;
-    uint8_t B;
-} RGB_pixel_t;
-
 typedef struct YCC_pixel_t
 {
     uint8_t Y; // luma
