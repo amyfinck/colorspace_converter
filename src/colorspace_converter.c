@@ -27,6 +27,36 @@ void get_image_info(FILE* file, header_t* header)
     }
 }
 
+//void read_pixels(FILE* file, header_t* header, RGB_pixel_t* input_rgb_pixels)
+//{
+//    // allocate memory for pixels
+//    header->pixel_count = 0;
+//    uint32_t bytes_per_row = get_row_byte_count(header->width);
+//    uint32_t pixel_offset;
+//    uint32_t pixel_index = 0;
+//
+//    uint32_t y;
+//    for(y = 0; y < header->height; y++)
+//    {
+//        uint32_t x;
+//        for(x = 0; x < header->width; x++)
+//        {
+//            pixel_offset = (y * bytes_per_row) + (x * 3);
+//
+//            // Pixels are stored in BGR order
+//            if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
+//                printf("Error seeking to pixel\n"); fclose(file); exit(1);
+//            }
+//            fread(&input_rgb_pixels[pixel_index].B, 1, 1, file);
+//            fread(&input_rgb_pixels[pixel_index].G, 1, 1, file);
+//            fread(&input_rgb_pixels[pixel_index].R, 1, 1, file);
+//
+//            pixel_index++;
+//            header->pixel_count++;
+//        }
+//    }
+//}
+
 void write_header(FILE* file_to_write, FILE* reference_file, uint32_t header_length)
 {
     // copy input file to RBG locations
@@ -43,6 +73,42 @@ void write_header(FILE* file_to_write, FILE* reference_file, uint32_t header_len
         }
         totalBytesRead += bytesRead;
     }
+}
+
+void write_rgb_file(FILE* rgb_file, RGB_pixel_t* output_rgb_pixels, header_t* header)
+{
+    // calculate padding
+    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
+    if (bytes_per_row % 4 != 0)
+    {
+        uint32_t padding = 4 - (bytes_per_row % 4);
+        bytes_per_row += padding;
+        header->padding = padding;
+    }
+
+    uint32_t pixel_index = 0;
+    uint32_t y;
+    for(y = 0; y < header->height; y++)
+    {
+        uint32_t x;
+        for (x = 0; x < header->width; x++)
+        {
+            // Pixels are stored in BGR order
+            uint32_t pixel_offset = (y * bytes_per_row) + (x * 3);
+
+            // Write RBG file
+            if (fseek(rgb_file, header->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); exit(1);
+            }
+            fwrite(&output_rgb_pixels[pixel_index].B, 1, 1, rgb_file);
+            fwrite(&output_rgb_pixels[pixel_index].G, 1, 1, rgb_file);
+            fwrite(&output_rgb_pixels[pixel_index].R, 1, 1, rgb_file);
+
+            pixel_index++;
+        }
+    }
+    uint8_t zero = 0;
+    fwrite(&zero, 1, header->padding, rgb_file);
 }
 
 void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp, header_t* header, YCC_pixel_t* output_ycc_pixels)
@@ -198,9 +264,11 @@ int main(int argc, char* argv[] )
 
     //RGB_pixel_t * input_rgb_pixels = (RGB_pixel_t *)malloc(sizeof(RGB_pixel_t) * header->height * header->width);
     YCC_pixel_t * output_ycc_pixels = (YCC_pixel_t *)malloc(sizeof(YCC_pixel_t) * header->height * header->width);
-    if(output_ycc_pixels == NULL ) {
+    RGB_pixel_t * output_rgb_pixels = (RGB_pixel_t *)malloc(sizeof(RGB_pixel_t) * header->height * header->width);
+    if(output_ycc_pixels == NULL || output_rgb_pixels == NULL) {
         printf("Malloc for pixels failed\n"); exit(1);
     }
+
 
     // Write the headers of the output files
     uint32_t header_len = header->offset;
@@ -214,17 +282,23 @@ int main(int argc, char* argv[] )
         resize_file(cr_fp, header->width/2, header->height/2);
     }
 
-    rgb_to_ycc(in_fp, header, output_ycc_pixels);
-
+    //read_pixels(in_fp, header, input_rgb_pixels);
+    // Calculate YCC values for OutputImage
+    get_ycc_pixels(in_fp, header, output_ycc_pixels);
     downsample_chroma(header->height, header->width, output_ycc_pixels);
+    ycc_to_rgb(header->pixel_count, output_rgb_pixels, output_ycc_pixels);
+
+    // write YCC values to RBG files
+    write_rgb_file(out_fp, output_rgb_pixels, header);
     if(outputComponents == 1)
     {
         write_ycc_components(luma_fp, cb_fp, cr_fp, header, output_ycc_pixels);
     }
 
-    ycc_to_rgb(header, output_ycc_pixels, out_fp);
-
+    // free memory
+    //free(input_rgb_pixels);
     free(output_ycc_pixels);
+    free(output_rgb_pixels);
 
     // close all files
     fclose(in_fp);
