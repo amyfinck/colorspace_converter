@@ -10,6 +10,7 @@
 #include "converters.h"
 #include "allocators.h"
 #include "utilities.h"
+#include "bmp_parser.h"
 
 void get_image_info(header_t *header, FILE* file);
 void resize_file(FILE* file, uint32_t width, uint32_t height);
