@@ -13,12 +13,6 @@ typedef struct RGB_pixel_t
 
 typedef struct RGB_image_t
 {
-    uint32_t height;
-    uint32_t width;
-    uint32_t offset;
-    uint32_t pixel_count;
-    uint32_t file_size;
-    uint32_t data_size;
     RGB_pixel_t *pixels;
 } RGB_image_t;
 
@@ -31,11 +25,6 @@ typedef struct YCC_pixel_t
 
 typedef struct YCC_image_t
 {
-    uint32_t height;
-    uint32_t width;
-    uint32_t offset;
-    uint32_t pixel_count;
-    uint32_t padding;
     YCC_pixel_t *pixels;
 } YCC_image_t;
 

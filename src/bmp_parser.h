@@ -63,38 +63,38 @@ void write_cr(YCC_image_t *in_img, FILE *out_file, uint32_t index)
     fwrite(&in_img->pixels[index].Cr, 1, 1, out_file);
 }
 
-void rgb_pixels_file_handler(RGB_image_t *img, FILE *file, void (*io_func)(RGB_image_t *, FILE *, uint32_t))
+void rgb_pixels_file_handler(header_t *header, RGB_image_t *img, FILE *file, void (*io_func)(RGB_image_t *, FILE *, uint32_t))
 {
-    exit_on_error(fseek(file, img->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
-    uint32_t buffer_row_bytes = get_buffer_row_bytes(img->width);
+    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
-    for (row = 0; row < img->height; row++)
+    for (row = 0; row < header->height; row++)
     {
-        for (column = 0; column < img->width; column++)
+        for (column = 0; column < header->width; column++)
         {
-            uint32_t index = row * img->width + column;
+            uint32_t index = row * header->width + column;
             io_func(img, file, index);
-            if (column == img->width - 1 && buffer_row_bytes != 0)
+            if (column == header->width - 1 && buffer_row_bytes != 0)
                 fseek(file, buffer_row_bytes, SEEK_CUR);
-            ++img->pixel_count;
+            ++header->pixel_count;
         }
     }
 }
 
-void ycc_pixels_file_handler(YCC_image_t *img, FILE *file, void (*io_func)(YCC_image_t *, FILE *, uint32_t))
+void ycc_pixels_file_handler(header_t *header, YCC_image_t *img, FILE *file, void (*io_func)(YCC_image_t *, FILE *, uint32_t))
 {
-    exit_on_error(fseek(file, img->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
-    uint32_t buffer_row_bytes = get_buffer_row_bytes(img->width);
+    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
-    for (row = 0; row < img->height; row++)
+    for (row = 0; row < header->height; row++)
     {
-        for (column = 0; column < img->width; column++)
+        for (column = 0; column < header->width; column++)
         {
-            uint32_t index = row * img->width + column;
+            uint32_t index = row * header->width + column;
             io_func(img, file, index);
-            if (column == img->width - 1 && buffer_row_bytes != 0)
+            if (column == header->width - 1 && buffer_row_bytes != 0)
                 fseek(file, buffer_row_bytes, SEEK_CUR);
-            ++img->pixel_count;
+            ++header->pixel_count;
         }
     }
 }
