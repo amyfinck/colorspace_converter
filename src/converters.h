@@ -74,10 +74,10 @@ void get_ycc_pixels(FILE* in_file, header_t* header, YCC_pixel_t * ycc_pixels)
     }
 }
 
-void ycc_to_rgb(header_t * header, RGB_pixel_t* output_rgb_pixels, YCC_pixel_t *output_ycc_pixels, FILE* out_fp)
+void ycc_to_rgb(uint32_t pixel_count, RGB_pixel_t *output_rgb_pixels, YCC_pixel_t *output_ycc_pixels)
 {
     uint32_t i;
-    for(i = 0; i < header->pixel_count; i++)
+    for(i = 0; i < pixel_count; i++)
     {
         uint8_t Y = output_ycc_pixels[i].Y;
         uint8_t Cb = output_ycc_pixels[i].Cb;
@@ -87,40 +87,6 @@ void ycc_to_rgb(header_t * header, RGB_pixel_t* output_rgb_pixels, YCC_pixel_t *
         output_rgb_pixels[i].G = compute_rgb_g(Y, Cb, Cr);
         output_rgb_pixels[i].B = compute_rgb_b(Y, Cb, Cr);
     }
-
-    // calculate padding
-    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
-    if (bytes_per_row % 4 != 0)
-    {
-        uint32_t padding = 4 - (bytes_per_row % 4);
-        bytes_per_row += padding;
-        header->padding = padding;
-    }
-
-    uint32_t pixel_index = 0;
-    uint32_t y;
-    for(y = 0; y < header->height; y++)
-    {
-        uint32_t x;
-        for (x = 0; x < header->width; x++)
-        {
-            // Pixels are stored in BGR order
-            uint32_t pixel_offset = (y * bytes_per_row) + (x * 3);
-
-            // Write RBG file
-            if (fseek(out_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); exit(1);
-            }
-            fwrite(&output_rgb_pixels[pixel_index].B, 1, 1, out_fp);
-            fwrite(&output_rgb_pixels[pixel_index].G, 1, 1, out_fp);
-            fwrite(&output_rgb_pixels[pixel_index].R, 1, 1, out_fp);
-
-            pixel_index++;
-        }
-    }
-    uint8_t zero = 0;
-    fwrite(&zero, 1, header->padding, out_fp);
-
 }
 
 void downsample_chroma(uint32_t height, uint32_t width, YCC_pixel_t *output_ycc_pixels)
