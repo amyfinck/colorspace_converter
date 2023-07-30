@@ -6,7 +6,8 @@
  * 2^8 * 0.504 = 129
  * 2^8 * 0.098 = 25
  */
-void get_luma(uint32_t pixel_count, RGB_pixel_t *input_rgb_pixels, YCC_pixel_t *output_ycc_pixels)
+
+void get_ycc_pixels(uint32_t pixel_count, RGB_pixel_t *input_rgb_pixels, YCC_pixel_t *output_ycc_pixels)
 {
     uint32_t i;
     for(i = 0; i < pixel_count; i++)
@@ -15,17 +16,6 @@ void get_luma(uint32_t pixel_count, RGB_pixel_t *input_rgb_pixels, YCC_pixel_t *
         uint8_t G = input_rgb_pixels[i].G;
         uint8_t B = input_rgb_pixels[i].B;
         output_ycc_pixels[i].Y = compute_ycc_y(R, G, B);
-    }
-}
-
-void get_chroma(uint32_t pixel_count, RGB_pixel_t *input_rgb_pixels, YCC_pixel_t *output_ycc_pixels)
-{
-    uint32_t i;
-    for(i = 0; i < pixel_count; i++)
-    {
-        uint8_t R = input_rgb_pixels[i].R;
-        uint8_t G = input_rgb_pixels[i].G;
-        uint8_t B = input_rgb_pixels[i].B;
         output_ycc_pixels[i].Cb = compute_ycc_cb(R, G, B);
         output_ycc_pixels[i].Cr = compute_ycc_cr(R, G, B);
     }
