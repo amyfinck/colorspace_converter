@@ -1,7 +1,6 @@
 #ifndef COLORSPACE_CONVERTER_COLORSPACE_CONVERTER_H
 #define COLORSPACE_CONVERTER_COLORSPACE_CONVERTER_H
 
-#include <fcntl.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/mman.h>
