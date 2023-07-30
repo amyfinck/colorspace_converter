@@ -226,7 +226,6 @@ int main(int argc, char* argv[] )
     chdir(".."); chdir("..");
 
     header_t * header = (header_t *)malloc(sizeof(header_t));
-
     if(header == NULL) {
         printf("Malloc for header failed\n"); exit(1);
     }
@@ -254,8 +253,9 @@ int main(int argc, char* argv[] )
     // Calculate YCC values for OutputImage
     get_ycc_pixels(in_fp, header, output_ycc_pixels);
     downsample_chroma(header->height, header->width, output_ycc_pixels);
-    ycc_to_rgb(header, output_ycc_pixels, out_fp);
+    ycc_to_rgb(header, output_rgb_pixels, output_ycc_pixels, out_fp);
     //write_rgb_file(out_fp, output_rgb_pixels, header);
+
 
     if(outputComponents == 1)
     {

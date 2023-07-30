@@ -35,12 +35,9 @@ uint32_t get_row_bytes(uint32_t img_width)
 
 void get_ycc_pixels(FILE* in_file, header_t* header, YCC_pixel_t * ycc_pixels)
 {
-    uint32_t width = header->width;
-    uint32_t height = header->height;
-    uint32_t padding = header->padding;
-
     // allocate memory for pixels
-    uint32_t bytes_per_row = width * 3 + padding;
+    header->pixel_count = 0;
+    uint32_t bytes_per_row = get_row_bytes(header->width);
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
 
@@ -49,10 +46,10 @@ void get_ycc_pixels(FILE* in_file, header_t* header, YCC_pixel_t * ycc_pixels)
     uint8_t B;
 
     uint32_t y;
-    for (y = 0; y < height; y++)
+    for (y = 0; y < header->height; y++)
     {
         uint32_t x;
-        for (x = 0; x < width; x++)
+        for (x = 0; x < header->width; x++)
         {
             pixel_offset = (y * bytes_per_row) + (x * 3);
 
@@ -72,50 +69,58 @@ void get_ycc_pixels(FILE* in_file, header_t* header, YCC_pixel_t * ycc_pixels)
             ycc_pixels[pixel_index].Cr = compute_ycc_cr(R, G, B);
 
             pixel_index++;
+            header->pixel_count++;
         }
     }
 }
 
-void ycc_to_rgb(header_t * header, YCC_pixel_t *output_ycc_pixels, FILE* out_fp)
+void ycc_to_rgb(header_t * header, RGB_pixel_t* output_rgb_pixels, YCC_pixel_t *output_ycc_pixels, FILE* out_fp)
 {
-    uint32_t bytes_per_row = header->width * 3 + header->padding;
-    uint32_t offset = header->offset;
-    uint32_t width = header->width;
-    uint32_t height = header->height;
-    uint32_t padding = header->padding;
-
-    uint8_t B;
-    uint8_t G;
-    uint8_t R;
-
-    uint32_t i = 0;
-    uint32_t y;
-    uint32_t x;
-    for(y = 0; y < height; y++)
+    uint32_t i;
+    for(i = 0; i < header->pixel_count; i++)
     {
-        for (x = 0; x < width; x++)
+        uint8_t Y = output_ycc_pixels[i].Y;
+        uint8_t Cb = output_ycc_pixels[i].Cb;
+        uint8_t Cr = output_ycc_pixels[i].Cr;
+
+        output_rgb_pixels[i].R = compute_rgb_r(Y, Cb, Cr);
+        output_rgb_pixels[i].G = compute_rgb_g(Y, Cb, Cr);
+        output_rgb_pixels[i].B = compute_rgb_b(Y, Cb, Cr);
+    }
+
+    // calculate padding
+    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
+    if (bytes_per_row % 4 != 0)
+    {
+        uint32_t padding = 4 - (bytes_per_row % 4);
+        bytes_per_row += padding;
+        header->padding = padding;
+    }
+
+    uint32_t pixel_index = 0;
+    uint32_t y;
+    for(y = 0; y < header->height; y++)
+    {
+        uint32_t x;
+        for (x = 0; x < header->width; x++)
         {
             // Pixels are stored in BGR order
             uint32_t pixel_offset = (y * bytes_per_row) + (x * 3);
 
             // Write RBG file
-            if (fseek(out_fp, offset + pixel_offset, SEEK_SET) != 0) {
+            if (fseek(out_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); exit(1);
             }
-            // TODO candidate for software pipelining, write after you calculate
-            B = compute_rgb_b(output_ycc_pixels[i].Y, output_ycc_pixels[i].Cb, output_ycc_pixels[i].Cr);
-            G = compute_rgb_g(output_ycc_pixels[i].Y, output_ycc_pixels[i].Cb, output_ycc_pixels[i].Cr);
-            R = compute_rgb_r(output_ycc_pixels[i].Y, output_ycc_pixels[i].Cb, output_ycc_pixels[i].Cr);
+            fwrite(&output_rgb_pixels[pixel_index].B, 1, 1, out_fp);
+            fwrite(&output_rgb_pixels[pixel_index].G, 1, 1, out_fp);
+            fwrite(&output_rgb_pixels[pixel_index].R, 1, 1, out_fp);
 
-            fwrite(&B, 1, 1, out_fp);
-            fwrite(&G, 1, 1, out_fp);
-            fwrite(&R, 1, 1, out_fp);
-
-            i++;
+            pixel_index++;
         }
     }
     uint8_t zero = 0;
-    fwrite(&zero, 1, padding, out_fp);
+    fwrite(&zero, 1, header->padding, out_fp);
+
 }
 
 void downsample_chroma(uint32_t height, uint32_t width, YCC_pixel_t *output_ycc_pixels)
