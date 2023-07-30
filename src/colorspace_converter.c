@@ -27,36 +27,6 @@ void get_image_info(FILE* file, header_t* header)
     }
 }
 
-//void read_pixels(FILE* file, header_t* header, RGB_pixel_t* input_rgb_pixels)
-//{
-//    // allocate memory for pixels
-//    header->pixel_count = 0;
-//    uint32_t bytes_per_row = get_row_byte_count(header->width);
-//    uint32_t pixel_offset;
-//    uint32_t pixel_index = 0;
-//
-//    uint32_t y;
-//    for(y = 0; y < header->height; y++)
-//    {
-//        uint32_t x;
-//        for(x = 0; x < header->width; x++)
-//        {
-//            pixel_offset = (y * bytes_per_row) + (x * 3);
-//
-//            // Pixels are stored in BGR order
-//            if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
-//                printf("Error seeking to pixel\n"); fclose(file); exit(1);
-//            }
-//            fread(&input_rgb_pixels[pixel_index].B, 1, 1, file);
-//            fread(&input_rgb_pixels[pixel_index].G, 1, 1, file);
-//            fread(&input_rgb_pixels[pixel_index].R, 1, 1, file);
-//
-//            pixel_index++;
-//            header->pixel_count++;
-//        }
-//    }
-//}
-
 void write_header(FILE* file_to_write, FILE* reference_file, uint32_t header_length)
 {
     // copy input file to RBG locations
@@ -262,13 +232,11 @@ int main(int argc, char* argv[] )
     get_image_info(in_fp, header);
     check_height_width(header->width, header->height);
 
-    //RGB_pixel_t * input_rgb_pixels = (RGB_pixel_t *)malloc(sizeof(RGB_pixel_t) * header->height * header->width);
     YCC_pixel_t * output_ycc_pixels = (YCC_pixel_t *)malloc(sizeof(YCC_pixel_t) * header->height * header->width);
     RGB_pixel_t * output_rgb_pixels = (RGB_pixel_t *)malloc(sizeof(RGB_pixel_t) * header->height * header->width);
     if(output_ycc_pixels == NULL || output_rgb_pixels == NULL) {
         printf("Malloc for pixels failed\n"); exit(1);
     }
-
 
     // Write the headers of the output files
     uint32_t header_len = header->offset;
@@ -282,7 +250,6 @@ int main(int argc, char* argv[] )
         resize_file(cr_fp, header->width/2, header->height/2);
     }
 
-    //read_pixels(in_fp, header, input_rgb_pixels);
     // Calculate YCC values for OutputImage
     get_ycc_pixels(in_fp, header, output_ycc_pixels);
     downsample_chroma(header->height, header->width, output_ycc_pixels);
@@ -296,7 +263,6 @@ int main(int argc, char* argv[] )
     }
 
     // free memory
-    //free(input_rgb_pixels);
     free(output_ycc_pixels);
     free(output_rgb_pixels);
 

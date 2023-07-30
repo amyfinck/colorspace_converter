@@ -74,36 +74,6 @@ void get_ycc_pixels(FILE* in_file, header_t* header, YCC_pixel_t * ycc_pixels)
     }
 }
 
-//void read_pixels(FILE* file, header_t* header, RGB_pixel_t* input_rgb_pixels)
-//{
-//    // allocate memory for pixels
-//    header->pixel_count = 0;
-//    uint32_t bytes_per_row = get_row_byte_count(header->width);
-//    uint32_t pixel_offset;
-//    uint32_t pixel_index = 0;
-//
-//    uint32_t y;
-//    for(y = 0; y < header->height; y++)
-//    {
-//        uint32_t x;
-//        for(x = 0; x < header->width; x++)
-//        {
-//            pixel_offset = (y * bytes_per_row) + (x * 3);
-//
-//            // Pixels are stored in BGR order
-//            if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
-//                printf("Error seeking to pixel\n"); fclose(file); exit(1);
-//            }
-//            fread(&input_rgb_pixels[pixel_index].B, 1, 1, file);
-//            fread(&input_rgb_pixels[pixel_index].G, 1, 1, file);
-//            fread(&input_rgb_pixels[pixel_index].R, 1, 1, file);
-//
-//            pixel_index++;
-//            header->pixel_count++;
-//        }
-//    }
-//}
-
 void ycc_to_rgb(uint32_t pixel_count, RGB_pixel_t *output_rgb_pixels, YCC_pixel_t *output_ycc_pixels)
 {
     uint32_t i;
