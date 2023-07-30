@@ -7,10 +7,6 @@ RGB_pixel_t *output_rgb_pixels;
 
 void get_image_info(FILE* file)
 {
-    // get file size
-    fseek(file, 0, SEEK_END);
-    header->file_size = ftell(file);
-
     // get offset, width, and height
     if (fseek(file, 10, SEEK_SET) != 0) {
         printf("Error seeking to offset position\n"); exit(1);
