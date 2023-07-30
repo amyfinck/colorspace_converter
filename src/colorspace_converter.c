@@ -1,9 +1,9 @@
 #include "colorspace_converter.h"
 
 header_t *header;
-RGB_image_t *input_rgb_img;
-YCC_image_t *output_ycc_img;
-RGB_image_t *output_rgb_img;
+RGB_pixel_t *input_rgb_pixels;
+YCC_pixel_t *output_ycc_pixels;
+RGB_pixel_t *output_rgb_pixels;
 
 void get_image_info(FILE* file)
 {
@@ -40,7 +40,6 @@ void read_pixels(FILE* file)
 {
     // allocate memory for pixels
     header->pixel_count = 0;
-    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
     uint32_t bytes_per_row = get_row_byte_count(header->width);
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
@@ -57,9 +56,9 @@ void read_pixels(FILE* file)
             if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); fclose(file); exit(1);
             }
-            fread(&input_rgb_img->pixels[pixel_index].B, 1, 1, file);
-            fread(&input_rgb_img->pixels[pixel_index].G, 1, 1, file);
-            fread(&input_rgb_img->pixels[pixel_index].R, 1, 1, file);
+            fread(&input_rgb_pixels[pixel_index].B, 1, 1, file);
+            fread(&input_rgb_pixels[pixel_index].G, 1, 1, file);
+            fread(&input_rgb_pixels[pixel_index].R, 1, 1, file);
 
             pixel_index++;
             header->pixel_count++;
@@ -111,9 +110,9 @@ void write_rgb_file(FILE* rgb_file)
             if (fseek(rgb_file, header->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); exit(1);
             }
-            fwrite(&output_rgb_img->pixels[pixel_index].B, 1, 1, rgb_file);
-            fwrite(&output_rgb_img->pixels[pixel_index].G, 1, 1, rgb_file);
-            fwrite(&output_rgb_img->pixels[pixel_index].R, 1, 1, rgb_file);
+            fwrite(&output_rgb_pixels[pixel_index].B, 1, 1, rgb_file);
+            fwrite(&output_rgb_pixels[pixel_index].G, 1, 1, rgb_file);
+            fwrite(&output_rgb_pixels[pixel_index].R, 1, 1, rgb_file);
 
             pixel_index++;
         }
@@ -146,9 +145,9 @@ void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
             if (fseek(luma_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); exit(1);
             }
-            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&output_ycc_pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&output_ycc_pixels[pixel_index].Y, 1, 1, luma_fp);
+            fwrite(&output_ycc_pixels[pixel_index].Y, 1, 1, luma_fp);
 
             pixel_index++;
         }
@@ -176,7 +175,7 @@ void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
             if (fseek(cb_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
                 printf("Error seeking to pixel\n"); exit(1);
             }
-            fwrite(&output_ycc_img->pixels[pixel_index].Cb, 1, 1, cb_fp);
+            fwrite(&output_ycc_pixels[pixel_index].Cb, 1, 1, cb_fp);
             fwrite(&baseColor, 1, 1, cb_fp);
             fwrite(&baseColor, 1, 1, cb_fp);
 
@@ -186,7 +185,7 @@ void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
             }
             fwrite(&baseColor, 1, 1, cr_fp);
             fwrite(&baseColor, 1, 1, cr_fp);
-            fwrite(&output_ycc_img->pixels[pixel_index].Cr, 1, 1, cr_fp);
+            fwrite(&output_ycc_pixels[pixel_index].Cr, 1, 1, cr_fp);
 
             pixel_index+=2;
         }
@@ -266,16 +265,20 @@ int main(int argc, char* argv[] )
     }
     chdir(".."); chdir("..");
 
-    
-    // create image structs
-    allocate_rgb_memory(&input_rgb_img);
-    allocate_rgb_memory(&output_rgb_img);
-    allocate_ycc_memory(&output_ycc_img);
-    allocate_header_memory(&header);
-
-    // get relevant information from header
+    header = (header_t *)malloc(sizeof(header_t));
+    if(header == NULL) {
+        printf("Malloc for header failed\n"); exit(1);
+    }
     get_image_info(in_fp);
     check_height_width(header->width, header->height);
+
+    input_rgb_pixels = (RGB_pixel_t *)malloc(sizeof(RGB_pixel_t) * header->height * header->width);
+    output_ycc_pixels = (YCC_pixel_t *)malloc(sizeof(YCC_pixel_t) * header->height * header->width);
+    output_rgb_pixels = (RGB_pixel_t *)malloc(sizeof(RGB_pixel_t) * header->height * header->width);
+    if(input_rgb_pixels == NULL || output_ycc_pixels == NULL || output_rgb_pixels == NULL) {
+        printf("Malloc for pixels failed\n"); exit(1);
+    }
+
     read_pixels(in_fp);
 
     // Write the headers of the output files
@@ -289,15 +292,11 @@ int main(int argc, char* argv[] )
         resize_file(cr_fp, header->width/2, header->height/2);
     }
 
-    // Allocate pixel memory
-    allocate_ycc_pixels_memory(header->height, header->width, output_ycc_img);
-    allocate_rgb_pixels_memory(header->height, header->width, output_rgb_img);
-
     // Calculate YCC values for OutputImage
-    get_luma(header->pixel_count, input_rgb_img, output_ycc_img);
-    get_chroma(header->pixel_count, input_rgb_img, output_ycc_img);
-    downsample_chroma(header->height, header->width, output_ycc_img);
-    ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
+    get_luma(header->pixel_count, input_rgb_pixels, output_ycc_pixels);
+    get_chroma(header->pixel_count, input_rgb_pixels, output_ycc_pixels);
+    downsample_chroma(header->height, header->width, output_ycc_pixels);
+    ycc_to_rgb(header->pixel_count, output_rgb_pixels, output_ycc_pixels);
 
     // write YCC values to RBG files
     write_rgb_file(out_fp);
@@ -307,12 +306,9 @@ int main(int argc, char* argv[] )
     }
 
     // free memory
-    free(input_rgb_img->pixels);
-    free(output_ycc_img->pixels);
-    free(output_rgb_img->pixels);
-    free(input_rgb_img);
-    free(output_ycc_img);
-    free(output_rgb_img);
+    free(input_rgb_pixels);
+    free(output_ycc_pixels);
+    free(output_rgb_pixels);
 
     // close all files
     fclose(in_fp);

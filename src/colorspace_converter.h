@@ -10,7 +10,6 @@
 #include "constants.h"
 #include "transformers.h"
 #include "converters.h"
-#include "allocators.h"
 #include "utilities.h"
 
 void get_image_info(FILE* file);
