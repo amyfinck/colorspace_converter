@@ -1,3 +1,10 @@
 cmake-build-debug/
 .DS_Store
+src/output/*.bmp
+*/cc.exe
 colorspace_converter.dSYM
+src/output/cb/*.bmp
+src/output/cr/*.bmp
+src/output/luma/*.bmp
+src/output/rgb/*.bmp
+*.DS_Store
