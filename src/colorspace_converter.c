@@ -253,10 +253,10 @@ int main(int argc, char* argv[] )
     // Calculate YCC values for OutputImage
     get_ycc_pixels(in_fp, header, output_ycc_pixels);
     downsample_chroma(header->height, header->width, output_ycc_pixels);
-    ycc_to_rgb(header->pixel_count, output_rgb_pixels, output_ycc_pixels);
+    ycc_to_rgb(header, output_rgb_pixels, output_ycc_pixels, out_fp);
+    //write_rgb_file(out_fp, output_rgb_pixels, header);
 
-    // write YCC values to RBG files
-    write_rgb_file(out_fp, output_rgb_pixels, header);
+
     if(outputComponents == 1)
     {
         write_ycc_components(luma_fp, cb_fp, cr_fp, header, output_ycc_pixels);
