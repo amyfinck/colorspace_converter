@@ -274,7 +274,8 @@ int main(int argc, char* argv[] )
     // get relevant information from header
     get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
-    read_pixels(header, input_rgb_img, in_fp);
+    // read_pixels(header, input_rgb_img, in_fp);
+    rgb_pixels_file_handler(header, input_rgb_img, in_fp, read_rgb);
 
     // Write the headers of the output files
     write_header(header->offset, out_fp, in_fp);
