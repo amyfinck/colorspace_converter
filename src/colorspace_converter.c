@@ -33,20 +33,31 @@ void get_image_info(header_t *header, FILE* file)
 
 void read_pixels(header_t *header, RGB_image_t *input_rgb_img, FILE* file)
 {
-    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
-    uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
-    uint32_t row, column;
-    for (row = 0; row < header->height; row++)
+    // allocate memory for pixels
+    header->pixel_count = 0;
+    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
+    uint32_t bytes_per_row = get_row_byte_count(header->width);
+    uint32_t pixel_offset;
+    uint32_t pixel_index = 0;
+
+    uint32_t y;
+    for(y = 0; y < header->height; y++)
     {
-        for (column = 0; column < header->width; column++)
+        uint32_t x;
+        for(x = 0; x < header->width; x++)
         {
-            uint32_t index = row * header->width + column;
-            fread(&input_rgb_img->pixels[index].B, 1, 1, file);
-            fread(&input_rgb_img->pixels[index].G, 1, 1, file);
-            fread(&input_rgb_img->pixels[index].R, 1, 1, file);
-            if (column == header->width - 1 && buffer_row_bytes != 0)
-                fseek(file, buffer_row_bytes, SEEK_CUR);
-            ++header->pixel_count;
+            pixel_offset = (y * bytes_per_row) + (x * 3);
+
+            // Pixels are stored in BGR order
+            if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
+                printf("Error seeking to pixel\n"); fclose(file); exit(1);
+            }
+            fread(&input_rgb_img->pixels[pixel_index].B, 1, 1, file);
+            fread(&input_rgb_img->pixels[pixel_index].G, 1, 1, file);
+            fread(&input_rgb_img->pixels[pixel_index].R, 1, 1, file);
+
+            pixel_index++;
+            header->pixel_count++;
         }
     }
 }
