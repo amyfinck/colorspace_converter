@@ -76,7 +76,7 @@ int main(int argc, char* argv[] )
     
     // create image structs
     allocate_rgb_memory(&input_rgb_img);
-    allocate_rgb_pixels_memory(header->height, header->width, &input_rgb_img);
+    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
     allocate_rgb_memory(&output_rgb_img);
     allocate_ycc_memory(&output_ycc_img);
     allocate_header_memory(&header);
@@ -99,7 +99,7 @@ int main(int argc, char* argv[] )
 
     // Allocate pixel memory
     allocate_ycc_pixels_memory(header->height, header->width, output_ycc_img);
-    allocate_rgb_pixels_memory(header->height, header->width, &output_rgb_img);
+    allocate_rgb_pixels_memory(header->height, header->width, output_rgb_img);
 
     // Calculate YCC values for OutputImage
     get_luma(header->pixel_count, input_rgb_img, output_ycc_img);
