@@ -31,37 +31,6 @@ void get_image_info(header_t *header, FILE* file)
     }
 }
 
-void read_pixels(header_t *header, RGB_image_t *input_rgb_img, FILE* file)
-{
-    // allocate memory for pixels
-    header->pixel_count = 0;
-    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
-    uint32_t bytes_per_row = get_row_byte_count(header->width);
-    uint32_t pixel_offset;
-    uint32_t pixel_index = 0;
-
-    uint32_t y;
-    for(y = 0; y < header->height; y++)
-    {
-        uint32_t x;
-        for(x = 0; x < header->width; x++)
-        {
-            pixel_offset = (y * bytes_per_row) + (x * 3);
-
-            // Pixels are stored in BGR order
-            if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); fclose(file); exit(1);
-            }
-            fread(&input_rgb_img->pixels[pixel_index].B, 1, 1, file);
-            fread(&input_rgb_img->pixels[pixel_index].G, 1, 1, file);
-            fread(&input_rgb_img->pixels[pixel_index].R, 1, 1, file);
-
-            pixel_index++;
-            header->pixel_count++;
-        }
-    }
-}
-
 void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
 {
     // copy input file to RBG locations
@@ -275,7 +244,6 @@ int main(int argc, char* argv[] )
     get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
     rgb_pixels_file_handler(header, input_rgb_img, in_fp, read_rgb);
-    // read_pixels(header, input_rgb_img, in_fp);
 
     // Write the headers of the output files
     write_header(header->offset, out_fp, in_fp);
@@ -299,7 +267,8 @@ int main(int argc, char* argv[] )
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
     // write YCC values to RBG files
-    write_rgb_file(header, output_rgb_img, out_fp);
+    // write_rgb_file(header, output_rgb_img, out_fp);
+    rgb_pixels_file_handler(header, output_rgb_img, out_fp, write_rgb);
     if(outputComponents == 1)
     {
         write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
