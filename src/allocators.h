@@ -33,22 +33,4 @@ void allocate_ycc_pixels_memory(uint32_t height, uint32_t width, YCC_image_t *yc
     exit_on_error(ycc_img->pixels == NULL, "Malloc for YCC pixels failed");
 }
 
-// void copy_rgb_to_yyc(RGB_image_t *rgb_in_img, YCC_image_t *ycc_out_img)
-// {
-//     ycc_out_img->pixel_count = rgb_in_img->pixel_count;
-//     ycc_out_img->offset = rgb_in_img->offset;
-//     ycc_out_img->width = rgb_in_img->width;
-//     ycc_out_img->height = rgb_in_img->height;
-//     allocate_ycc_pixels_memory(ycc_out_img);
-// }
-
-// void copy_rgb_to_rgb(RGB_image_t *rgb_in_img, RGB_image_t *rgb_out_img)
-// {
-//     rgb_out_img->pixel_count = rgb_in_img->pixel_count;
-//     rgb_out_img->offset = rgb_in_img->offset;
-//     rgb_out_img->width = rgb_in_img->width;
-//     rgb_out_img->height = rgb_in_img->height;
-//     allocate_rgb_pixels_memory(rgb_out_img);
-// }
-
 #endif //ALLOCATORS_H

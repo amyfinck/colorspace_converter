@@ -12,9 +12,5 @@
 #include "utilities.h"
 #include "bmp_parser.h"
 
-void get_image_info(header_t *header, FILE* file);
-void resize_file(FILE* file, uint32_t width, uint32_t height);
-void write_ycc_components(header_t *header, YCC_image_t *output_ycc_img, FILE* luma_fp, FILE* cb_fp, FILE* cr_fp);
-
 
 #endif //COLORSPACE_CONVERTER_COLORSPACE_CONVERTER_H
