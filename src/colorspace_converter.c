@@ -1,54 +1,5 @@
 #include "colorspace_converter.h"
 
-void get_image_info(header_t *header, FILE* file)
-{
-    // get file size
-    fseek(file, 0, SEEK_END);
-    header->file_size = ftell(file);
-
-    // get offset, width, and height
-    if (fseek(file, 10, SEEK_SET) != 0) {
-        printf("Error seeking to offset position\n"); exit(1);
-    }
-    fread(&header->offset, 4, 1, file);
-    if (fseek(file, 18, SEEK_SET) != 0){
-        printf("Error seeking to width position\n"); exit(1);
-    }
-    fread(&header->width, 4, 1, file);
-    if (fseek(file, 22, SEEK_SET) != 0) {
-        printf("Error seeking to offset position\n"); exit(1);
-    }
-    fread(&header->height, 4, 1, file);
-
-    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
-    if (bytes_per_row % 4 != 0)
-    {
-        header->padding= 4 - (bytes_per_row % 4);
-    }
-    else
-    {
-        header->padding = 0;
-    }
-}
-
-void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
-{
-    // copy input file to RBG locations
-    char buffer[offset];
-    size_t bytesRead;
-    size_t totalBytesRead = 0;
-    fseek(reference_file, 0, SEEK_SET);
-
-    // copy over header
-    while (totalBytesRead < offset && (bytesRead = fread(buffer, 1, offset - totalBytesRead, reference_file)) > 0)
-    {
-        if( fwrite(buffer, 1, bytesRead, file_to_write) == -1) {
-            printf("Error writing to luma file\n"); exit(1);
-        }
-        totalBytesRead += bytesRead;
-    }
-}
-
 int main(int argc, char* argv[] )
 {
     header_t *header;
@@ -132,6 +83,8 @@ int main(int argc, char* argv[] )
     // get relevant information from header
     get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
+
+    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
     rgb_pixels_file_handler(header, input_rgb_img, in_fp, read_rgb);
 
     // Write the headers of the output files
