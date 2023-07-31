@@ -25,7 +25,7 @@ uint32_t get_buffer_row_bytes(uint32_t img_width)
     return row_byte_count - row_pixels_byte_count;
 }
 
-uint32_t get_file_size(header_t *header, FILE *in_file)
+void get_file_size(header_t *header, FILE *in_file)
 {
     fseek(in_file, 0, SEEK_END);
     header->file_size = ftell(in_file);
