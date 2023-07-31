@@ -2,26 +2,24 @@ Flat profile:
 
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
- time   seconds   seconds    calls  Ts/call  Ts/call  name    
- 50.00      0.03     0.03                             write
- 33.33      0.05     0.02                             mcount_internal
- 16.67      0.06     0.01                             fread
-  0.00      0.06     0.00    10000     0.00     0.00  compute_rgb_b
-  0.00      0.06     0.00    10000     0.00     0.00  compute_rgb_g
-  0.00      0.06     0.00    10000     0.00     0.00  compute_rgb_r
-  0.00      0.06     0.00    10000     0.00     0.00  compute_ycc_cb
-  0.00      0.06     0.00    10000     0.00     0.00  compute_ycc_cr
-  0.00      0.06     0.00    10000     0.00     0.00  compute_ycc_y
-  0.00      0.06     0.00        1     0.00     0.00  check_height_width
-  0.00      0.06     0.00        1     0.00     0.00  downsample_chroma
-  0.00      0.06     0.00        1     0.00     0.00  get_chroma
-  0.00      0.06     0.00        1     0.00     0.00  get_image_info
-  0.00      0.06     0.00        1     0.00     0.00  get_luma
-  0.00      0.06     0.00        1     0.00     0.00  main
-  0.00      0.06     0.00        1     0.00     0.00  read_pixels_rgb
-  0.00      0.06     0.00        1     0.00     0.00  write_header
-  0.00      0.06     0.00        1     0.00     0.00  write_pixels_rgb
-  0.00      0.06     0.00        1     0.00     0.00  ycc_to_rgb
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 25.00      0.01     0.01    10000     0.00     0.00  check_height_width
+ 25.00      0.02     0.01                             _IO_new_file_xsputn
+ 25.00      0.03     0.01                             fread
+ 25.00      0.04     0.01                             fwrite
+  0.00      0.04     0.00    20000     0.00     0.00  compute_rgb_r
+  0.00      0.04     0.00    20000     0.00     0.00  resize_file
+  0.00      0.04     0.00    10000     0.00     0.00  compute_rgb_b
+  0.00      0.04     0.00        1     0.00     0.00  __libc_start_main
+  0.00      0.04     0.00        1     0.00     0.00  compute_ycc_cb
+  0.00      0.04     0.00        1     0.00     0.00  downsample_chroma
+  0.00      0.04     0.00        1     0.00    10.00  get_chroma
+  0.00      0.04     0.00        1     0.00     0.00  get_image_info
+  0.00      0.04     0.00        1     0.00     0.00  get_luma
+  0.00      0.04     0.00        1     0.00    10.00  main
+  0.00      0.04     0.00        1     0.00     0.00  read_pixels_rgb
+  0.00      0.04     0.00        1     0.00     0.00  write_header
+  0.00      0.04     0.00        1     0.00     0.00  write_pixels_rgb
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -59,80 +57,78 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 16.67% of 0.06 seconds
+granularity: each sample hit covers 4 byte(s) for 25.00% of 0.04 seconds
 
 index % time    self  children    called     name
-                                                 <spontaneous>
-[1]     50.0    0.03    0.00                 write [1]
+                0.01    0.00   10000/10000       get_chroma [2]
+[1]     25.0    0.01    0.00   10000         check_height_width [1]
+-----------------------------------------------
+                0.00    0.01       1/1           main [3]
+[2]     25.0    0.00    0.01       1         get_chroma [2]
+                0.01    0.00   10000/10000       check_height_width [1]
+                0.00    0.00   10000/20000       resize_file [9]
+-----------------------------------------------
+                0.00    0.01       1/1           check_one_fd [4]
+[3]     25.0    0.00    0.01       1         main [3]
+                0.00    0.01       1/1           get_chroma [2]
+                0.00    0.00       1/1           get_image_info [13]
+                0.00    0.00       1/1           write_header [16]
+                0.00    0.00       1/1           read_pixels_rgb [15]
+                0.00    0.00       1/1           __libc_start_main [366]
+                0.00    0.00       1/1           compute_ycc_cb [11]
+                0.00    0.00       1/1           get_luma [14]
+                0.00    0.00       1/1           downsample_chroma [12]
+                0.00    0.00       1/1           write_pixels_rgb [17]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     33.3    0.02    0.00                 mcount_internal [2]
+[4]     25.0    0.00    0.01                 check_one_fd [4]
+                0.00    0.01       1/1           main [3]
 -----------------------------------------------
                                                  <spontaneous>
-[3]     16.7    0.01    0.00                 fread [3]
+[5]     25.0    0.01    0.00                 fread [5]
 -----------------------------------------------
-                0.00    0.00   10000/10000       ycc_to_rgb [19]
-[4]      0.0    0.00    0.00   10000         compute_rgb_b [4]
+                                                 <spontaneous>
+[6]     25.0    0.01    0.00                 fwrite [6]
 -----------------------------------------------
-                0.00    0.00   10000/10000       ycc_to_rgb [19]
-[5]      0.0    0.00    0.00   10000         compute_rgb_g [5]
+                                                 <spontaneous>
+[7]     25.0    0.01    0.00                 _IO_new_file_xsputn [7]
 -----------------------------------------------
-                0.00    0.00   10000/10000       ycc_to_rgb [19]
-[6]      0.0    0.00    0.00   10000         compute_rgb_r [6]
+                0.00    0.00   10000/20000       compute_ycc_y [66]
+                0.00    0.00   10000/20000       compute_ycc_cr [65]
+[8]      0.0    0.00    0.00   20000         compute_rgb_r [8]
 -----------------------------------------------
-                0.00    0.00   10000/10000       get_chroma [12]
-[7]      0.0    0.00    0.00   10000         compute_ycc_cb [7]
+                0.00    0.00   10000/20000       get_chroma [2]
+                0.00    0.00   10000/20000       get_luma [14]
+[9]      0.0    0.00    0.00   20000         resize_file [9]
 -----------------------------------------------
-                0.00    0.00   10000/10000       get_chroma [12]
-[8]      0.0    0.00    0.00   10000         compute_ycc_cr [8]
+                0.00    0.00   10000/10000       compute_ycc_cb [11]
+[10]     0.0    0.00    0.00   10000         compute_rgb_b [10]
 -----------------------------------------------
-                0.00    0.00   10000/10000       get_luma [14]
-[9]      0.0    0.00    0.00   10000         compute_ycc_y [9]
+                0.00    0.00       1/1           main [3]
+[11]     0.0    0.00    0.00       1         compute_ycc_cb [11]
+                0.00    0.00   10000/10000       compute_rgb_b [10]
 -----------------------------------------------
-                0.00    0.00       1/1           main [15]
-[10]     0.0    0.00    0.00       1         check_height_width [10]
+                0.00    0.00       1/1           main [3]
+[12]     0.0    0.00    0.00       1         downsample_chroma [12]
 -----------------------------------------------
-                0.00    0.00       1/1           main [15]
-[11]     0.0    0.00    0.00       1         downsample_chroma [11]
------------------------------------------------
-                0.00    0.00       1/1           main [15]
-[12]     0.0    0.00    0.00       1         get_chroma [12]
-                0.00    0.00   10000/10000       compute_ycc_cb [7]
-                0.00    0.00   10000/10000       compute_ycc_cr [8]
------------------------------------------------
-                0.00    0.00       1/1           main [15]
+                0.00    0.00       1/1           main [3]
 [13]     0.0    0.00    0.00       1         get_image_info [13]
 -----------------------------------------------
-                0.00    0.00       1/1           main [15]
+                0.00    0.00       1/1           main [3]
 [14]     0.0    0.00    0.00       1         get_luma [14]
-                0.00    0.00   10000/10000       compute_ycc_y [9]
+                0.00    0.00   10000/20000       resize_file [9]
 -----------------------------------------------
-                0.00    0.00       1/1           __libc_start_main [676]
-[15]     0.0    0.00    0.00       1         main [15]
-                0.00    0.00       1/1           get_image_info [13]
-                0.00    0.00       1/1           check_height_width [10]
-                0.00    0.00       1/1           read_pixels_rgb [16]
-                0.00    0.00       1/1           write_header [17]
-                0.00    0.00       1/1           get_luma [14]
-                0.00    0.00       1/1           get_chroma [12]
-                0.00    0.00       1/1           downsample_chroma [11]
-                0.00    0.00       1/1           ycc_to_rgb [19]
-                0.00    0.00       1/1           write_pixels_rgb [18]
+                0.00    0.00       1/1           main [3]
+[15]     0.0    0.00    0.00       1         read_pixels_rgb [15]
 -----------------------------------------------
-                0.00    0.00       1/1           main [15]
-[16]     0.0    0.00    0.00       1         read_pixels_rgb [16]
+                0.00    0.00       1/1           main [3]
+[16]     0.0    0.00    0.00       1         write_header [16]
 -----------------------------------------------
-                0.00    0.00       1/1           main [15]
-[17]     0.0    0.00    0.00       1         write_header [17]
+                0.00    0.00       1/1           main [3]
+[17]     0.0    0.00    0.00       1         write_pixels_rgb [17]
 -----------------------------------------------
-                0.00    0.00       1/1           main [15]
-[18]     0.0    0.00    0.00       1         write_pixels_rgb [18]
------------------------------------------------
-                0.00    0.00       1/1           main [15]
-[19]     0.0    0.00    0.00       1         ycc_to_rgb [19]
-                0.00    0.00   10000/10000       compute_rgb_r [6]
-                0.00    0.00   10000/10000       compute_rgb_g [5]
-                0.00    0.00   10000/10000       compute_rgb_b [4]
+                0.00    0.00       1/1           main [3]
+[366]    0.0    0.00    0.00       1         __libc_start_main [366]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -225,10 +221,9 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [10] check_height_width     [11] downsample_chroma      [16] read_pixels_rgb
-   [4] compute_rgb_b           [3] fread                   [1] write
-   [5] compute_rgb_g          [12] get_chroma             [17] write_header
-   [6] compute_rgb_r          [13] get_image_info         [18] write_pixels_rgb
-   [7] compute_ycc_cb         [14] get_luma               [19] ycc_to_rgb
-   [8] compute_ycc_cr         [15] main
-   [9] compute_ycc_y           [2] mcount_internal
+   [7] _IO_new_file_xsputn    [12] downsample_chroma       [3] main
+ [366] __libc_start_main       [5] fread                  [15] read_pixels_rgb
+   [1] check_height_width      [6] fwrite                  [9] resize_file
+  [10] compute_rgb_b           [2] get_chroma             [16] write_header
+   [8] compute_rgb_r          [13] get_image_info         [17] write_pixels_rgb
+  [11] compute_ycc_cb         [14] get_luma
