@@ -117,12 +117,12 @@ int main(int argc, char* argv[] )
     }
 
     // free memory
-    free(input_rgb_img->pixels);
-    free(output_ycc_img->pixels);
-    free(output_rgb_img->pixels);
-    free(input_rgb_img);
-    free(output_ycc_img);
-    free(output_rgb_img);
+    // free(input_rgb_img->pixels);
+    // free(output_ycc_img->pixels);
+    // free(output_rgb_img->pixels);
+    // free(input_rgb_img);
+    // free(output_ycc_img);
+    // free(output_rgb_img);
 
     // close all files
     fclose(in_fp);
