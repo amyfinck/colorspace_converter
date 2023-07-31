@@ -274,7 +274,6 @@ int main(int argc, char* argv[] )
     allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
 
     // Read pixels from input file
-    // read_pixels(header, input_rgb_img, in_fp);
     read_pixels_rgb(header, input_rgb_img, in_fp);
 
     // Write the headers of the output files
@@ -295,7 +294,8 @@ int main(int argc, char* argv[] )
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
     // write YCC values to RBG files
-    write_rgb_file(header, output_rgb_img, out_fp);
+    // write_rgb_file(header, output_rgb_img, out_fp);
+    write_pixels_rgb(header, output_rgb_img, out_fp);
     if(outputComponents == 1)
     {
         write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
