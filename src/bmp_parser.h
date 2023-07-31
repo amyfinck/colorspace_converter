@@ -33,20 +33,44 @@ void get_file_size(header_t *header, FILE *in_file)
 
 void get_file_offset(header_t *header, FILE *file)
 {
-    exit_on_error(fseek(file, 10, SEEK_SET) != 0, "Seeking offset position failed");
-    exit_on_error(fread(&header->offset, 4, 1, file) == 0, "Reading file offset failed");
+    if(fseek(file, 10, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking offset position failed\n");
+        exit(1);
+    }
+    if(fread(&header->offset, 4, 1, file) != 1)
+    {
+        printf("Error: Reading file offset failed\n");
+        exit(1);
+    }
 }
 
 void get_file_width(header_t *header, FILE *file)
 {
-    exit_on_error(fseek(file, 18, SEEK_SET) != 0, "Seeking width position failed");
-    exit_on_error(fread(&header->width, 4, 1, file) == 0, "Reading file width failed");
+    if(fseek(file, 18, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking width position failed\n");
+        exit(1);
+    }
+    if(fread(&header->width, 4, 1, file) != 1)
+    {
+        printf("Error: Reading file width failed\n");
+        exit(1);
+    }
 }
 
 void get_file_height(header_t *header, FILE *file)
 {
-    exit_on_error(fseek(file, 22, SEEK_SET) != 0, "Seeking height position failed");
-    exit_on_error(fread(&header->height, 4, 1, file) == 0, "Reading file height failed");
+    if(fseek(file, 22, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking height position failed\n");
+        exit(1);
+    }
+    if(fread(&header->height, 4, 1, file) != 1)
+    {
+        printf("Error: Reading file height failed\n");
+        exit(1);
+    }
 }
 
 void get_image_info(header_t *header, FILE* file)
@@ -64,7 +88,11 @@ void get_image_info(header_t *header, FILE* file)
 
 void read_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
 {
-    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    if(fseek(file, header->offset, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking pixel start position failed\n");
+        exit(1);
+    }
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
     for (row = 0; row < header->height; row++)
@@ -84,7 +112,11 @@ void read_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
 
 void write_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
 {
-    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    if(fseek(file, header->offset, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking pixel start position failed\n");
+        exit(1);
+    }
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
     for (row = 0; row < header->height; row++)
@@ -104,7 +136,11 @@ void write_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
 
 void write_pixels_luma(header_t *header, YCC_image_t *img, FILE *file)
 {
-    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    if(fseek(file, header->offset, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking pixel start position failed\n");
+        exit(1);
+    }
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
     for (row = 0; row < header->height; row++)
@@ -124,7 +160,11 @@ void write_pixels_luma(header_t *header, YCC_image_t *img, FILE *file)
 
 void write_pixels_cb(header_t *header, YCC_image_t *img, FILE *file)
 {
-    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    if(fseek(file, header->offset, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking pixel start position failed\n");
+        exit(1);
+    }
     uint32_t half_width = header->width / 2;
     uint32_t half_height = header->height / 2;
     uint32_t buffer_row_bytes = get_buffer_row_bytes(half_width);
@@ -147,7 +187,11 @@ void write_pixels_cb(header_t *header, YCC_image_t *img, FILE *file)
 
 void write_pixels_cr(header_t *header, YCC_image_t *img, FILE *file)
 {
-    exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
+    if(fseek(file, header->offset, SEEK_SET) != 0)
+    {
+        printf("Error: Seeking pixel start position failed\n");
+        exit(1);
+    }
     uint32_t half_width = header->width / 2;
     uint32_t half_height = header->height / 2;
     uint32_t buffer_row_bytes = get_buffer_row_bytes(half_width);

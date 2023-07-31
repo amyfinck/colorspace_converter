@@ -38,13 +38,4 @@ typedef struct header_t
     uint32_t file_size;
 } header_t;
 
-void exit_on_error(int condition, char *msg)
-{
-    if (condition)
-    {
-        printf("Error: %s\n", msg);
-        exit(1);
-    }
-}
-
 #endif //CONSTANTS
