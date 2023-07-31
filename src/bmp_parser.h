@@ -26,6 +26,37 @@ uint32_t get_buffer_row_bytes(uint32_t img_width)
     return row_byte_count - row_pixels_byte_count;
 }
 
+void get_image_info(header_t *header, FILE* file)
+{
+    // get file size
+    fseek(file, 0, SEEK_END);
+    header->file_size = ftell(file);
+
+    // get offset, width, and height
+    if (fseek(file, 10, SEEK_SET) != 0) {
+        printf("Error seeking to offset position\n"); exit(1);
+    }
+    fread(&header->offset, 4, 1, file);
+    if (fseek(file, 18, SEEK_SET) != 0){
+        printf("Error seeking to width position\n"); exit(1);
+    }
+    fread(&header->width, 4, 1, file);
+    if (fseek(file, 22, SEEK_SET) != 0) {
+        printf("Error seeking to offset position\n"); exit(1);
+    }
+    fread(&header->height, 4, 1, file);
+
+    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
+    if (bytes_per_row % 4 != 0)
+    {
+        header->padding= 4 - (bytes_per_row % 4);
+    }
+    else
+    {
+        header->padding = 0;
+    }
+}
+
 void read_rgb(RGB_image_t *in_img, FILE *in_file, uint32_t index)
 {
     fread(&in_img->pixels[index].B, 1, 1, in_file);

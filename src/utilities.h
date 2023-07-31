@@ -34,4 +34,22 @@ void check_height_width(uint32_t width, uint32_t height)
     exit_on_error(condition, "width and height must be divisible by 2");
 }
 
+void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
+{
+    // copy input file to RBG locations
+    char buffer[offset];
+    size_t bytesRead;
+    size_t totalBytesRead = 0;
+    fseek(reference_file, 0, SEEK_SET);
+
+    // copy over header
+    while (totalBytesRead < offset && (bytesRead = fread(buffer, 1, offset - totalBytesRead, reference_file)) > 0)
+    {
+        if( fwrite(buffer, 1, bytesRead, file_to_write) == -1) {
+            printf("Error writing to luma file\n"); exit(1);
+        }
+        totalBytesRead += bytesRead;
+    }
+}
+
 #endif
