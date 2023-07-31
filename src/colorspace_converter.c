@@ -49,42 +49,6 @@ void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
     }
 }
 
-void write_rgb_file(header_t *header, RGB_image_t *output_rgb_img, FILE* rgb_file)
-{
-    // calculate padding
-    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
-    if (bytes_per_row % 4 != 0)
-    {
-        uint32_t padding = 4 - (bytes_per_row % 4);
-        bytes_per_row += padding;
-        header->padding = padding;
-    }
-
-    uint32_t pixel_index = 0;
-    uint32_t y;
-    for(y = 0; y < header->height; y++)
-    {
-        uint32_t x;
-        for (x = 0; x < header->width; x++)
-        {
-            // Pixels are stored in BGR order
-            uint32_t pixel_offset = (y * bytes_per_row) + (x * 3);
-
-            // Write RBG file
-            if (fseek(rgb_file, header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); exit(1);
-            }
-            fwrite(&output_rgb_img->pixels[pixel_index].B, 1, 1, rgb_file);
-            fwrite(&output_rgb_img->pixels[pixel_index].G, 1, 1, rgb_file);
-            fwrite(&output_rgb_img->pixels[pixel_index].R, 1, 1, rgb_file);
-
-            pixel_index++;
-        }
-    }
-    uint8_t zero = 0;
-    fwrite(&zero, 1, header->padding, rgb_file);
-}
-
 void write_ycc_components(header_t *header, YCC_image_t *output_ycc_img, FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
 {
     // calculate padding
@@ -93,6 +57,7 @@ void write_ycc_components(header_t *header, YCC_image_t *output_ycc_img, FILE* l
     {
         uint32_t padding = 4 - (bytes_per_row % 4);
         bytes_per_row += padding;
+        header->padding = padding;
     }
 
     uint32_t pixel_index = 0;
@@ -271,7 +236,10 @@ int main(int argc, char* argv[] )
     rgb_pixels_file_handler(header, output_rgb_img, out_fp, write_rgb);
     if(outputComponents == 1)
     {
-        write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
+        // write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
+        ycc_pixels_file_handler(header, output_ycc_img, luma_fp, write_luma);
+        ycc_pixels_file_handler(header, output_ycc_img, cb_fp, write_cb);
+        ycc_pixels_file_handler(header, output_ycc_img, cr_fp, write_cr);
     }
 
     // free memory
