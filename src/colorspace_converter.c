@@ -108,14 +108,14 @@ int main(int argc, char* argv[] )
     downsample_chroma(header->height, header->width, output_ycc_img);
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
-    // // write YCC values to RBG files
-    // rgb_pixels_file_handler(header, output_rgb_img, out_fp, write_rgb);
-    // if(outputComponents == 1)
-    // {
-    //     ycc_pixels_file_handler(header, output_ycc_img, luma_fp, write_luma);
-    //     ycc_pixels_file_handler(header, output_ycc_img, cb_fp, write_cb);
-    //     ycc_pixels_file_handler(header, output_ycc_img, cr_fp, write_cr);
-    // }
+    // write YCC values to RBG files
+    rgb_pixels_file_handler(header, output_rgb_img, out_fp, write_rgb);
+    if(outputComponents == 1)
+    {
+        ycc_pixels_file_handler(header, output_ycc_img, luma_fp, write_luma);
+        ycc_pixels_file_handler(header, output_ycc_img, cb_fp, write_cb);
+        ycc_pixels_file_handler(header, output_ycc_img, cr_fp, write_cr);
+    }
 
     // free memory
     free(input_rgb_img->pixels);
