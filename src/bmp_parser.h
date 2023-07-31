@@ -26,11 +26,34 @@ uint32_t get_buffer_row_bytes(uint32_t img_width)
     return row_byte_count - row_pixels_byte_count;
 }
 
+uint32_t get_file_size(FILE *in_file)
+{
+    fseek(in_file, 0, SEEK_END);
+    return ftell(in_file);
+}
+
+void get_file_offset(header_t *header, FILE *file)
+{
+    exit_on_error(fseek(file, 10, SEEK_SET) != 0, "Seeking offset position failed");
+    exit_on_error(fread(&header->offset, 4, 1, file) == 0, "Reading file offset failed");
+}
+
+void get_file_width(header_t *header, FILE *file)
+{
+    exit_on_error(fseek(file, 18, SEEK_SET) != 0, "Seeking width position failed");
+    exit_on_error(fread(&header->width, 4, 1, file) == 0, "Reading file width failed");
+}
+
+void get_file_height(header_t *header, FILE *file)
+{
+    exit_on_error(fseek(file, 22, SEEK_SET) != 0, "Seeking height position failed");
+    exit_on_error(fread(&header->height, 4, 1, file) == 0, "Reading file height failed");
+}
+
 void get_image_info(header_t *header, FILE* file)
 {
     // get file size
-    fseek(file, 0, SEEK_END);
-    header->file_size = ftell(file);
+    header->file_size = get_file_size(file);
 
     // get offset, width, and height
     if (fseek(file, 10, SEEK_SET) != 0) {

@@ -5,17 +5,6 @@
 
 #define PIXEL_M 3
 
-uint32_t get_row_byte_count(uint32_t img_width)
-{
-    uint32_t row_bytes = img_width * PIXEL_M;
-    if (row_bytes % 4 != 0)
-    {
-        uint32_t padding = 4 - (row_bytes % 4);
-        row_bytes += padding;
-    }
-    return row_bytes;
-}
-
 void resize_file(FILE* file, uint32_t width, uint32_t height)
 {
     if (fseek(file, 18, SEEK_SET) != 0){
@@ -36,19 +25,14 @@ void check_height_width(uint32_t width, uint32_t height)
 
 void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
 {
-    // copy input file to RBG locations
     char buffer[offset];
-    size_t bytesRead;
-    size_t totalBytesRead = 0;
+    size_t bytes_read;
+    size_t total_bytes_read = 0;
     fseek(reference_file, 0, SEEK_SET);
-
-    // copy over header
-    while (totalBytesRead < offset && (bytesRead = fread(buffer, 1, offset - totalBytesRead, reference_file)) > 0)
+    while (total_bytes_read < offset && (bytes_read = fread(buffer, 1, offset - total_bytes_read, reference_file)) > 0)
     {
-        if( fwrite(buffer, 1, bytesRead, file_to_write) == -1) {
-            printf("Error writing to luma file\n"); exit(1);
-        }
-        totalBytesRead += bytesRead;
+        exit_on_error(fwrite(buffer, 1, bytes_read, file_to_write) == -1, "Writing to luma file failed");
+        total_bytes_read += bytes_read;
     }
 }
 
