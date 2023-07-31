@@ -35,7 +35,6 @@ void read_pixels(header_t *header, RGB_image_t *input_rgb_img, FILE* file)
 {
     // allocate memory for pixels
     header->pixel_count = 0;
-    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
     uint32_t bytes_per_row = get_row_byte_count(header->width);
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
@@ -256,6 +255,7 @@ int main(int argc, char* argv[] )
     // get relevant information from header
     get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
+    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
     read_pixels(header, input_rgb_img, in_fp);
 
     // Write the headers of the output files
