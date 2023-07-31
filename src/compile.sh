@@ -22,7 +22,7 @@ cp ./utilities.h /tmp/tmp_dir/
 # add more files as they are added to our project
 
 echo Compiling colorspace converter
-/opt/arm/4.3.2/bin/arm-linux-gcc -static -mfpu=neon -O3 /tmp/tmp_dir/colorspace_converter.c /tmp/tmp_dir/bmp_parser.c /tmp/tmp_dir/converters.c /tmp/tmp_dir/transformers.c cc.exe
+/opt/arm/4.3.2/bin/arm-linux-gcc -static -mfpu=neon -O3 -I/tmp/tmp_dir /tmp/tmp_dir/colorspace_converter.c /tmp/tmp_dir/bmp_parser.c /tmp/tmp_dir/converters.c /tmp/tmp_dir/transformers.c /tmp/tmp_dir/utilities.c -o cc.exe
 
 wait $process_id
 

@@ -19,9 +19,12 @@ cp ./transformers.h /tmp/tmp_dir/
 cp ./transformers.c /tmp/tmp_dir/
 
 cp ./utilities.h /tmp/tmp_dir/
+cp ./utilities.c /tmp/tmp_dir/
 
 echo Compiling unoptimized colorspace converter
-/opt/arm/4.3.2/bin/arm-linux-gcc -pg -static -mfpu=neon -O3 /tmp/tmp_dir/colorspace_converter.c /tmp/tmp_dir/bmp_parser.c /tmp/tmp_dir/converters.c /tmp/tmp_dir/transformers.c cc.exe
+
+/opt/arm/4.3.2/bin/arm-linux-gcc -pg -static -mfpu=neon -O3 -I /tmp/tmp_dir /tmp/tmp_dir/colorspace_converter.c /tmp/tmp_dir/bmp_parser.c /tmp/tmp_dir/converters.c /tmp/tmp_dir/transformers.c /tmp/tmp_dir/utilities.c -o cc.exe
+
 
 wait $process_id
 
