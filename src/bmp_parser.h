@@ -115,7 +115,7 @@ void write_pixels_cr(header_t *header, YCC_image_t *img, FILE *file)
     {
         for (column = 0; column < header->width / 2; column++)
         {
-            uint32_t index = row * header->width * 2 + column;
+            uint32_t index = 2 * (row * header->width + column);
             uint8_t base_color = 128;
             fwrite(&base_color, 1, 1, file);
             fwrite(&base_color, 1, 1, file);
