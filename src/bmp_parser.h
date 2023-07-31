@@ -109,7 +109,7 @@ void write_pixels_cb(header_t *header, YCC_image_t *img, FILE *file)
 void write_pixels_cr(header_t *header, YCC_image_t *img, FILE *file)
 {
     exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
-    uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width / 2);
+    uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
     for (row = 0; row < header->height / 2; row++)
     {
