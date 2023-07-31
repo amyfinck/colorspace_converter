@@ -114,8 +114,7 @@ int main(int argc, char* argv[] )
     }
 
     // Calculate YCC values for OutputImage
-    get_luma(header->pixel_count, input_rgb_img, output_ycc_img);
-    get_chroma(header->pixel_count, input_rgb_img, output_ycc_img);
+    rgb_to_ycc(header->pixel_count, input_rgb_img, output_ycc_img);
     downsample_chroma(header->height, header->width, output_ycc_img);
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 

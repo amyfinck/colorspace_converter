@@ -1,47 +1,19 @@
 #include "converters.h"
 
-/*
- * y = 16.0 + 0.257 R + 0.504 G + 0.098 B
- * 2^8 * 0.257 = 66
- * 2^8 * 0.504 = 129
- * 2^8 * 0.098 = 25
- */
-void get_luma(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img)
+void rgb_to_ycc(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img)
 {
     uint32_t i;
-    for(i = 0; i < pixel_count; i++)
+    for(i = pixel_count - 1; i != 0; i--)
     {
         uint8_t R = input_rgb_img->pixels[i].R;
         uint8_t G = input_rgb_img->pixels[i].G;
         uint8_t B = input_rgb_img->pixels[i].B;
         output_ycc_img->pixels[i].Y = compute_ycc_y(R, G, B);
-    }
-}
-
-/*
- * cb = 128.0 - 0.148 R - 0.291 G + 0.439 B
- * cr = 128.0 + 0.439 R - 0.368 G - 0.071 B
- * Both Cb and Cr are unsigned with value is unsigned from 0 to 255
- *
- * 0.148 * 2^8 = 38
- * 0.291 * 2^8 = 74
- * 0.439 * 2^8 = 112
- * 0.368 * 2^8 = 94
- * 0.071 * 2^8 = 18
- */
-void get_chroma(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img)
-{
-    uint32_t i;
-    for(i = 0; i < pixel_count; i++)
-    {
-        // Cb and Cr are signed from -128 to 127
-        uint8_t R = input_rgb_img->pixels[i].R;
-        uint8_t G = input_rgb_img->pixels[i].G;
-        uint8_t B = input_rgb_img->pixels[i].B;
         output_ycc_img->pixels[i].Cb = compute_ycc_cb(R, G, B);
         output_ycc_img->pixels[i].Cr = compute_ycc_cr(R, G, B);
     }
 }
+
 
 /*
  * R′ = 1.164(Y′−16) + 1.596(Cr−128)
@@ -63,9 +35,9 @@ void ycc_to_rgb(uint32_t pixel_count, RGB_image_t *output_rgb_img, YCC_image_t *
         uint8_t Cb = output_ycc_img->pixels[i].Cb;
         uint8_t Cr = output_ycc_img->pixels[i].Cr;
 
-        output_rgb_img->pixels[i].R = compute_rgb_r(Y, Cb, Cr);
-        output_rgb_img->pixels[i].G = compute_rgb_g(Y, Cb, Cr);
         output_rgb_img->pixels[i].B = compute_rgb_b(Y, Cb, Cr);
+        output_rgb_img->pixels[i].G = compute_rgb_g(Y, Cb, Cr);
+        output_rgb_img->pixels[i].R = compute_rgb_r(Y, Cb, Cr);
     }
 }
 
