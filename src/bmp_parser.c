@@ -113,6 +113,7 @@ void write_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
     uint32_t pixel_count = 0;
+    uint8_t is_width_odd = header->width % 2 != 0;
     for (row = 0; row < header->height; row++)
     {
         for (column = 0; column < header->width; column+=2)
@@ -131,7 +132,7 @@ void write_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
             pixel_count+=2;
         }
         // If the width is odd, read the last pixel in the row
-        if (header->width % 2 != 0)
+        if (is_width_odd)
         {
             uint32_t index = row * header->width + column;
             fread(&img->pixels[index].B, 1, 1, file);
@@ -156,6 +157,7 @@ void write_pixels_luma(header_t *header, YCC_image_t *img, FILE *file)
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
     uint32_t pixel_count = 0;
+    uint8_t is_width_odd = header->width % 2 != 0;
     for (row = 0; row < header->height; row++)
     {
         for (column = 0; column < header->width; column+=2)
@@ -174,7 +176,7 @@ void write_pixels_luma(header_t *header, YCC_image_t *img, FILE *file)
             pixel_count+=2;
         }
         // If the width is odd, read the last pixel in the row
-        if (header->width % 2 != 0)
+        if (is_width_odd)
         {
             uint32_t index = row * header->width + column;
             fwrite(&img->pixels[index].Y, 1, 1, file);
