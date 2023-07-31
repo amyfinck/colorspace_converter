@@ -1,11 +1,6 @@
 #include "colorspace_converter.h"
 
-header_t *header;
-RGB_image_t *input_rgb_img;
-YCC_image_t *output_ycc_img;
-RGB_image_t *output_rgb_img;
-
-void get_image_info(FILE* file)
+void get_image_info(header_t *header, FILE* file)
 {
     // get file size
     fseek(file, 0, SEEK_END);
@@ -36,7 +31,7 @@ void get_image_info(FILE* file)
     }
 }
 
-void read_pixels(FILE* file)
+void read_pixels(header_t *header, RGB_image_t *input_rgb_img, FILE* file)
 {
     // allocate memory for pixels
     header->pixel_count = 0;
@@ -67,17 +62,16 @@ void read_pixels(FILE* file)
     }
 }
 
-void write_header(FILE* file_to_write, FILE* reference_file)
+void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
 {
     // copy input file to RBG locations
-    uint32_t header_length = header->offset;
-    char buffer[header_length];
+    char buffer[offset];
     size_t bytesRead;
     size_t totalBytesRead = 0;
     fseek(reference_file, 0, SEEK_SET);
 
     // copy over header
-    while (totalBytesRead < header_length && (bytesRead = fread(buffer, 1, header_length - totalBytesRead, reference_file)) > 0)
+    while (totalBytesRead < offset && (bytesRead = fread(buffer, 1, offset - totalBytesRead, reference_file)) > 0)
     {
         if( fwrite(buffer, 1, bytesRead, file_to_write) == -1) {
             printf("Error writing to luma file\n"); exit(1);
@@ -86,7 +80,7 @@ void write_header(FILE* file_to_write, FILE* reference_file)
     }
 }
 
-void write_rgb_file(FILE* rgb_file)
+void write_rgb_file(header_t *header, RGB_image_t *output_rgb_img, FILE* rgb_file)
 {
     // calculate padding
     uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
@@ -122,7 +116,7 @@ void write_rgb_file(FILE* rgb_file)
     fwrite(&zero, 1, header->padding, rgb_file);
 }
 
-void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
+void write_ycc_components(header_t *header, YCC_image_t *output_ycc_img, FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
 {
     // calculate padding
     uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
@@ -199,6 +193,11 @@ void write_ycc_components(FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
 
 int main(int argc, char* argv[] )
 {
+    header_t *header;
+    RGB_image_t *input_rgb_img;
+    YCC_image_t *output_ycc_img;
+    RGB_image_t *output_rgb_img;
+
     int32_t outputComponents = 0;
 
     if (argc < 2) {
@@ -265,7 +264,6 @@ int main(int argc, char* argv[] )
         printf("Error creating RBG/%s\n", argv[1]); exit(1);
     }
     chdir(".."); chdir("..");
-
     
     // create image structs
     allocate_rgb_memory(&input_rgb_img);
@@ -274,17 +272,17 @@ int main(int argc, char* argv[] )
     allocate_header_memory(&header);
 
     // get relevant information from header
-    get_image_info(in_fp);
+    get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
-    read_pixels(in_fp);
+    read_pixels(header, input_rgb_img, in_fp);
 
     // Write the headers of the output files
-    write_header(out_fp, in_fp);
+    write_header(header->offset, out_fp, in_fp);
     if(outputComponents == 1)
     {
-        write_header(luma_fp, in_fp);
-        write_header(cr_fp, in_fp);
-        write_header(cb_fp, in_fp);
+        write_header(header->offset, luma_fp, in_fp);
+        write_header(header->offset, cr_fp, in_fp);
+        write_header(header->offset, cb_fp, in_fp);
         resize_file(cb_fp, header->width/2, header->height/2);
         resize_file(cr_fp, header->width/2, header->height/2);
     }
@@ -300,10 +298,10 @@ int main(int argc, char* argv[] )
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
     // write YCC values to RBG files
-    write_rgb_file(out_fp);
+    write_rgb_file(header, output_rgb_img, out_fp);
     if(outputComponents == 1)
     {
-        write_ycc_components(luma_fp, cb_fp, cr_fp);
+        write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
     }
 
     // free memory
