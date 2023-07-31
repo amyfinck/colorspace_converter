@@ -90,12 +90,12 @@ void write_pixels_cb(header_t *header, YCC_image_t *img, FILE *file)
     exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
-    uint8_t base_color = 128;
     for (row = 0; row < header->height; row++)
     {
         for (column = 0; column < header->width; column++)
         {
             uint32_t index = row * header->width + column;
+            uint8_t base_color = 128;
             fwrite(&img->pixels[index].Cb, 1, 1, file);
             fwrite(&base_color, 1, 1, file);
             fwrite(&base_color, 1, 1, file);
@@ -111,12 +111,12 @@ void write_pixels_cr(header_t *header, YCC_image_t *img, FILE *file)
     exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
-    uint8_t base_color = 128;
     for (row = 0; row < header->height; row++)
     {
         for (column = 0; column < header->width; column++)
         {
             uint32_t index = row * header->width + column;
+            uint8_t base_color = 128;
             fwrite(&base_color, 1, 1, file);
             fwrite(&base_color, 1, 1, file);
             fwrite(&img->pixels[index].Cr, 1, 1, file);
