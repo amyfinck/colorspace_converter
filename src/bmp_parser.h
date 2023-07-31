@@ -67,19 +67,38 @@ void read_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
     exit_on_error(fseek(file, header->offset, SEEK_SET) != 0, "Error: Seeking pixel start position failed");
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
+    uint32_t pixel_count = 0;
     for (row = 0; row < header->height; row++)
     {
-        for (column = 0; column < header->width; column++)
+        for (column = 0; column < header->width; column+=2)
+        {
+            uint32_t index = row * header->width + column;
+            uint32_t index2 = index + 1;
+
+            fread(&img->pixels[index].B, 1, 1, file);
+            fread(&img->pixels[index].G, 1, 1, file);
+            fread(&img->pixels[index].R, 1, 1, file);
+
+            fread(&img->pixels[index2].B, 1, 1, file);
+            fread(&img->pixels[index2].G, 1, 1, file);
+            fread(&img->pixels[index2].R, 1, 1, file);
+
+            pixel_count+=2;
+        }
+        // If the width is odd, read the last pixel in the row
+        if (header->width % 2 != 0)
         {
             uint32_t index = row * header->width + column;
             fread(&img->pixels[index].B, 1, 1, file);
             fread(&img->pixels[index].G, 1, 1, file);
             fread(&img->pixels[index].R, 1, 1, file);
-            if (column == header->width - 1 && buffer_row_bytes != 0)
-                fseek(file, buffer_row_bytes, SEEK_CUR);
-            ++header->pixel_count;
+            pixel_count++;
         }
+
+        if (buffer_row_bytes != 0)
+            fseek(file, buffer_row_bytes, SEEK_CUR);
     }
+    header->pixel_count = pixel_count;
 }
 
 void write_pixels_rgb(header_t *header, RGB_image_t *img, FILE *file)
