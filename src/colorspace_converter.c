@@ -49,82 +49,6 @@ void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
     }
 }
 
-void write_ycc_components(header_t *header, YCC_image_t *output_ycc_img, FILE* luma_fp, FILE* cb_fp, FILE* cr_fp)
-{
-    // calculate padding
-    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
-    if (bytes_per_row % 4 != 0)
-    {
-        uint32_t padding = 4 - (bytes_per_row % 4);
-        bytes_per_row += padding;
-        header->padding = padding;
-    }
-
-    uint32_t pixel_index = 0;
-    uint32_t y;
-    for(y = 0; y < header->height; y++)
-    {
-        uint32_t x;
-        for (x = 0; x < header->width; x++)
-        {
-            // Pixels are stored in BGR order
-            uint32_t pixel_offset = (y * bytes_per_row) + (x * 3);
-
-            // Write luma RBG file (grayscale)
-            if (fseek(luma_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); exit(1);
-            }
-            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
-            fwrite(&output_ycc_img->pixels[pixel_index].Y, 1, 1, luma_fp);
-
-            pixel_index++;
-        }
-    }
-    fseek(luma_fp, header->padding, SEEK_CUR);
-
-    bytes_per_row = header->width / 2 * 3; // 3 bytes per pixel
-    uint32_t chroma_padding = 0;
-    if (bytes_per_row % 4 != 0)
-    {
-        chroma_padding = 4 - (bytes_per_row % 4);
-        bytes_per_row += chroma_padding;
-    }
-
-    pixel_index = 0;
-    for(y = 0; y < header->height/2; y++)
-    {
-        uint32_t x;
-        for (x = 0; x < header->width/2; x++)
-        {
-            uint32_t pixel_offset = (y * bytes_per_row) + (x * 3);
-
-            // Convert Cb and Cr to unsigned for use in RGB representation
-            uint8_t baseColor = 128;
-            if (fseek(cb_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); exit(1);
-            }
-            fwrite(&output_ycc_img->pixels[pixel_index].Cb, 1, 1, cb_fp);
-            fwrite(&baseColor, 1, 1, cb_fp);
-            fwrite(&baseColor, 1, 1, cb_fp);
-
-            // Write red difference RBG file
-            if (fseek(cr_fp, header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); exit(1);
-            }
-            fwrite(&baseColor, 1, 1, cr_fp);
-            fwrite(&baseColor, 1, 1, cr_fp);
-            fwrite(&output_ycc_img->pixels[pixel_index].Cr, 1, 1, cr_fp);
-
-            pixel_index+=2;
-        }
-        pixel_index += header->width;
-    }
-    uint8_t zero = 0;
-    fwrite(&zero, 1, chroma_padding, cr_fp);
-    fwrite(&zero, 1, chroma_padding, cb_fp);
-}
-
 int main(int argc, char* argv[] )
 {
     header_t *header;
@@ -236,7 +160,6 @@ int main(int argc, char* argv[] )
     rgb_pixels_file_handler(header, output_rgb_img, out_fp, write_rgb);
     if(outputComponents == 1)
     {
-        // write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
         ycc_pixels_file_handler(header, output_ycc_img, luma_fp, write_luma);
         ycc_pixels_file_handler(header, output_ycc_img, cb_fp, write_cb);
         ycc_pixels_file_handler(header, output_ycc_img, cr_fp, write_cr);
