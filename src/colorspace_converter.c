@@ -298,7 +298,10 @@ int main(int argc, char* argv[] )
     write_pixels_rgb(header, output_rgb_img, out_fp);
     if(outputComponents == 1)
     {
-        write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
+        // write_ycc_components(header, output_ycc_img, luma_fp, cb_fp, cr_fp);
+        write_pixels_luma(header, output_ycc_img, luma_fp);
+        write_pixels_cb(header, output_ycc_img, cb_fp);
+        write_pixels_cr(header, output_ycc_img, cr_fp);
     }
 
     // free memory
