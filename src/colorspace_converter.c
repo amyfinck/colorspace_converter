@@ -39,26 +39,38 @@ void read_pixels(header_t *header, RGB_image_t *input_rgb_img, FILE* file)
     uint32_t pixel_offset;
     uint32_t pixel_index = 0;
 
-    uint32_t y;
-    for(y = 0; y < header->height; y++)
+    uint32_t y, x;
+    for (y = 0; y < header->height; y++)
     {
-        uint32_t x;
-        for(x = 0; x < header->width; x++)
+        for (x = 0; x < header->width; x++)
         {
-            pixel_offset = (y * bytes_per_row) + (x * 3);
-
-            // Pixels are stored in BGR order
-            if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
-                printf("Error seeking to pixel\n"); fclose(file); exit(1);
-            }
+            uint32_t index = y * header->width + x;
             fread(&input_rgb_img->pixels[pixel_index].B, 1, 1, file);
             fread(&input_rgb_img->pixels[pixel_index].G, 1, 1, file);
             fread(&input_rgb_img->pixels[pixel_index].R, 1, 1, file);
-
-            pixel_index++;
-            header->pixel_count++;
+            if (x == header->width - 1 && bytes_per_row != 0)
+                fseek(file, bytes_per_row, SEEK_CUR);
+            ++header->pixel_count;
         }
     }
+    // for(y = 0; y < header->height; y++)
+    // {
+    //     for(x = 0; x < header->width; x++)
+    //     {
+    //         pixel_offset = (y * bytes_per_row) + (x * 3);
+
+    //         // Pixels are stored in BGR order
+    //         if (fseek(file, (long)header->offset + pixel_offset, SEEK_SET) != 0) {
+    //             printf("Error seeking to pixel\n"); fclose(file); exit(1);
+    //         }
+    //         fread(&input_rgb_img->pixels[pixel_index].B, 1, 1, file);
+    //         fread(&input_rgb_img->pixels[pixel_index].G, 1, 1, file);
+    //         fread(&input_rgb_img->pixels[pixel_index].R, 1, 1, file);
+
+    //         pixel_index++;
+    //         header->pixel_count++;
+    //     }
+    // }
 }
 
 void write_rgb_file(header_t *header, RGB_image_t *output_rgb_img, FILE* rgb_file)
