@@ -274,7 +274,8 @@ int main(int argc, char* argv[] )
     allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
 
     // Read pixels from input file
-    read_pixels(header, input_rgb_img, in_fp);
+    // read_pixels(header, input_rgb_img, in_fp);
+    read_pixels_rgb(header, input_rgb_img, in_fp);
 
     // Write the headers of the output files
     write_header(header->offset, out_fp, in_fp);
