@@ -62,24 +62,6 @@ void read_pixels(header_t *header, RGB_image_t *input_rgb_img, FILE* file)
     }
 }
 
-void write_header(uint32_t offset, FILE* file_to_write, FILE* reference_file)
-{
-    // copy input file to RBG locations
-    char buffer[offset];
-    size_t bytesRead;
-    size_t totalBytesRead = 0;
-    fseek(reference_file, 0, SEEK_SET);
-
-    // copy over header
-    while (totalBytesRead < offset && (bytesRead = fread(buffer, 1, offset - totalBytesRead, reference_file)) > 0)
-    {
-        if( fwrite(buffer, 1, bytesRead, file_to_write) == -1) {
-            printf("Error writing to luma file\n"); exit(1);
-        }
-        totalBytesRead += bytesRead;
-    }
-}
-
 void write_rgb_file(header_t *header, RGB_image_t *output_rgb_img, FILE* rgb_file)
 {
     // calculate padding
