@@ -3,22 +3,25 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  Ts/call  Ts/call  name    
- 29.63      0.08     0.08                             read
- 18.52      0.13     0.05                             write
- 11.11      0.16     0.03                             fwrite
- 11.11      0.19     0.03                             llseek
-  7.41      0.21     0.02                             _IO_new_file_xsputn
-  3.70      0.22     0.01                             _IO_file_close
-  3.70      0.23     0.01                             _IO_file_seekoff
-  3.70      0.24     0.01                             _IO_file_write
-  3.70      0.25     0.01                             _IO_seekoff_unlocked
-  3.70      0.26     0.01                             fread
-  3.70      0.27     0.01                             new_do_write
-  0.00      0.27     0.00        1     0.00     0.00  get_image_info
-  0.00      0.27     0.00        1     0.00     0.00  get_ycc_pixels
-  0.00      0.27     0.00        1     0.00     0.00  main
-  0.00      0.27     0.00        1     0.00     0.00  write_header
-  0.00      0.27     0.00        1     0.00     0.00  ycc_to_rgb
+ 40.00      0.02     0.02                             write
+ 20.00      0.03     0.01                             _IO_file_xsgetn
+ 20.00      0.04     0.01                             _IO_new_file_xsputn
+ 20.00      0.05     0.01                             mcount_internal
+  0.00      0.05     0.00    10000     0.00     0.00  compute_rgb_b
+  0.00      0.05     0.00    10000     0.00     0.00  compute_rgb_g
+  0.00      0.05     0.00    10000     0.00     0.00  compute_rgb_r
+  0.00      0.05     0.00     9999     0.00     0.00  compute_ycc_cb
+  0.00      0.05     0.00     9999     0.00     0.00  compute_ycc_cr
+  0.00      0.05     0.00     9999     0.00     0.00  compute_ycc_y
+  0.00      0.05     0.00        1     0.00     0.00  check_height_width
+  0.00      0.05     0.00        1     0.00     0.00  downsample_chroma
+  0.00      0.05     0.00        1     0.00     0.00  get_image_info
+  0.00      0.05     0.00        1     0.00     0.00  main
+  0.00      0.05     0.00        1     0.00     0.00  read_pixels_rgb
+  0.00      0.05     0.00        1     0.00     0.00  rgb_to_ycc
+  0.00      0.05     0.00        1     0.00     0.00  write_header
+  0.00      0.05     0.00        1     0.00     0.00  write_pixels_rgb
+  0.00      0.05     0.00        1     0.00     0.00  ycc_to_rgb
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -56,60 +59,79 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 3.70% of 0.27 seconds
+granularity: each sample hit covers 4 byte(s) for 20.00% of 0.05 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     29.6    0.08    0.00                 read [1]
+[1]     40.0    0.02    0.00                 write [1]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     18.5    0.05    0.00                 write [2]
+[2]     20.0    0.01    0.00                 mcount_internal [2]
 -----------------------------------------------
                                                  <spontaneous>
-[3]     11.1    0.03    0.00                 fwrite [3]
+[3]     20.0    0.01    0.00                 _IO_file_xsgetn [3]
 -----------------------------------------------
                                                  <spontaneous>
-[4]     11.1    0.03    0.00                 llseek [4]
+[4]     20.0    0.01    0.00                 _IO_new_file_xsputn [4]
 -----------------------------------------------
-                                                 <spontaneous>
-[5]      7.4    0.02    0.00                 _IO_new_file_xsputn [5]
+                0.00    0.00   10000/10000       ycc_to_rgb [19]
+[5]      0.0    0.00    0.00   10000         compute_rgb_b [5]
 -----------------------------------------------
-                                                 <spontaneous>
-[6]      3.7    0.01    0.00                 fread [6]
+                0.00    0.00   10000/10000       ycc_to_rgb [19]
+[6]      0.0    0.00    0.00   10000         compute_rgb_g [6]
 -----------------------------------------------
-                                                 <spontaneous>
-[7]      3.7    0.01    0.00                 new_do_write [7]
+                0.00    0.00   10000/10000       ycc_to_rgb [19]
+[7]      0.0    0.00    0.00   10000         compute_rgb_r [7]
 -----------------------------------------------
-                                                 <spontaneous>
-[8]      3.7    0.01    0.00                 _IO_file_close [8]
+                0.00    0.00    9999/9999        rgb_to_ycc [16]
+[8]      0.0    0.00    0.00    9999         compute_ycc_cb [8]
 -----------------------------------------------
-                                                 <spontaneous>
-[9]      3.7    0.01    0.00                 _IO_file_seekoff [9]
+                0.00    0.00    9999/9999        rgb_to_ycc [16]
+[9]      0.0    0.00    0.00    9999         compute_ycc_cr [9]
 -----------------------------------------------
-                                                 <spontaneous>
-[10]     3.7    0.01    0.00                 _IO_file_write [10]
------------------------------------------------
-                                                 <spontaneous>
-[11]     3.7    0.01    0.00                 _IO_seekoff_unlocked [11]
+                0.00    0.00    9999/9999        rgb_to_ycc [16]
+[10]     0.0    0.00    0.00    9999         compute_ycc_y [10]
 -----------------------------------------------
                 0.00    0.00       1/1           main [14]
-[12]     0.0    0.00    0.00       1         get_image_info [12]
+[11]     0.0    0.00    0.00       1         check_height_width [11]
 -----------------------------------------------
                 0.00    0.00       1/1           main [14]
-[13]     0.0    0.00    0.00       1         get_ycc_pixels [13]
+[12]     0.0    0.00    0.00       1         downsample_chroma [12]
 -----------------------------------------------
-                0.00    0.00       1/1           __libc_start_main [669]
+                0.00    0.00       1/1           main [14]
+[13]     0.0    0.00    0.00       1         get_image_info [13]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_start_main [675]
 [14]     0.0    0.00    0.00       1         main [14]
-                0.00    0.00       1/1           get_image_info [12]
-                0.00    0.00       1/1           write_header [15]
-                0.00    0.00       1/1           get_ycc_pixels [13]
-                0.00    0.00       1/1           ycc_to_rgb [16]
+                0.00    0.00       1/1           get_image_info [13]
+                0.00    0.00       1/1           check_height_width [11]
+                0.00    0.00       1/1           read_pixels_rgb [15]
+                0.00    0.00       1/1           write_header [17]
+                0.00    0.00       1/1           rgb_to_ycc [16]
+                0.00    0.00       1/1           downsample_chroma [12]
+                0.00    0.00       1/1           ycc_to_rgb [19]
+                0.00    0.00       1/1           write_pixels_rgb [18]
 -----------------------------------------------
                 0.00    0.00       1/1           main [14]
-[15]     0.0    0.00    0.00       1         write_header [15]
+[15]     0.0    0.00    0.00       1         read_pixels_rgb [15]
 -----------------------------------------------
                 0.00    0.00       1/1           main [14]
-[16]     0.0    0.00    0.00       1         ycc_to_rgb [16]
+[16]     0.0    0.00    0.00       1         rgb_to_ycc [16]
+                0.00    0.00    9999/9999        compute_ycc_y [10]
+                0.00    0.00    9999/9999        compute_ycc_cb [8]
+                0.00    0.00    9999/9999        compute_ycc_cr [9]
+-----------------------------------------------
+                0.00    0.00       1/1           main [14]
+[17]     0.0    0.00    0.00       1         write_header [17]
+-----------------------------------------------
+                0.00    0.00       1/1           main [14]
+[18]     0.0    0.00    0.00       1         write_pixels_rgb [18]
+-----------------------------------------------
+                0.00    0.00       1/1           main [14]
+[19]     0.0    0.00    0.00       1         ycc_to_rgb [19]
+                0.00    0.00   10000/10000       compute_rgb_b [5]
+                0.00    0.00   10000/10000       compute_rgb_g [6]
+                0.00    0.00   10000/10000       compute_rgb_r [7]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -202,9 +224,10 @@ notice and this notice are preserved.
 
 Index by function name
 
-   [8] _IO_file_close          [3] fwrite                  [1] read
-   [9] _IO_file_seekoff       [12] get_image_info          [2] write
-  [10] _IO_file_write         [13] get_ycc_pixels         [15] write_header
-   [5] _IO_new_file_xsputn     [4] llseek                 [16] ycc_to_rgb
-  [11] _IO_seekoff_unlocked   [14] main
-   [6] fread                   [7] new_do_write
+   [3] _IO_file_xsgetn         [9] compute_ycc_cr         [16] rgb_to_ycc
+   [4] _IO_new_file_xsputn    [10] compute_ycc_y           [1] write
+  [11] check_height_width     [12] downsample_chroma      [17] write_header
+   [5] compute_rgb_b          [13] get_image_info         [18] write_pixels_rgb
+   [6] compute_rgb_g          [14] main                   [19] ycc_to_rgb
+   [7] compute_rgb_r           [2] mcount_internal
+   [8] compute_ycc_cb         [15] read_pixels_rgb
