@@ -80,11 +80,10 @@ int main(int argc, char* argv[] )
     allocate_ycc_memory(&output_ycc_img);
     allocate_header_memory(&header);
 
-    allocate_rgb_pixels_memory(header->height, header->width, &input_rgb_img->pixels);
-
     // get relevant information from header
     get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
+    allocate_rgb_pixels_memory(header->height, header->width, &input_rgb_img->pixels);
     rgb_pixels_file_handler(header, input_rgb_img, in_fp, read_rgb);
 
     // Write the headers of the output files
