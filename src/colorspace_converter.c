@@ -75,19 +75,29 @@ int main(int argc, char* argv[] )
     chdir(".."); chdir("..");
     
     // create image structs
-    allocate_header_memory(&header);
-    allocate_rgb_memory(&input_rgb_img);
-    allocate_rgb_memory(&output_rgb_img);
-    allocate_ycc_memory(&output_ycc_img);
+    header = (header_t *)malloc(sizeof(header_t));
+    input_rgb_img = (RGB_image_t *)malloc(sizeof(RGB_image_t));
+    output_ycc_img = (YCC_image_t *)malloc(sizeof(YCC_image_t));
+    output_rgb_img = (RGB_image_t *)malloc(sizeof(RGB_image_t));
+    if(header == NULL || input_rgb_img == NULL || output_ycc_img == NULL || output_rgb_img == NULL)
+    {
+        printf("Error: Malloc for structs failed\n");
+        exit(1);
+    }
 
     // get relevant information from header
     get_image_info(header, in_fp);
     check_height_width(header->width, header->height);
 
     // Allocate pixel memory
-    allocate_ycc_pixels_memory(header->height, header->width, output_ycc_img);
-    allocate_rgb_pixels_memory(header->height, header->width, output_rgb_img);
-    allocate_rgb_pixels_memory(header->height, header->width, input_rgb_img);
+    input_rgb_img->pixels = (RGB_pixel_t *)malloc(sizeof(RGB_image_t) * header->width * header->height);
+    output_ycc_img->pixels = (YCC_pixel_t *)malloc(sizeof(YCC_image_t) * header->width * header->height);
+    output_rgb_img->pixels = (RGB_pixel_t *)malloc(sizeof(RGB_image_t) * header->width * header->height);
+    if(input_rgb_img == NULL || output_ycc_img == NULL || output_rgb_img == NULL)
+    {
+        printf("Error: Malloc for structs failed\n");
+        exit(1);
+    }
 
     // Read pixels from input file
     read_pixels_rgb(header, input_rgb_img, in_fp);
@@ -104,13 +114,11 @@ int main(int argc, char* argv[] )
     }
 
     // Calculate YCC values for OutputImage
-    get_luma(header->pixel_count, input_rgb_img, output_ycc_img);
-    get_chroma(header->pixel_count, input_rgb_img, output_ycc_img);
+    rgb_to_ycc(header->pixel_count, input_rgb_img, output_ycc_img);
     downsample_chroma(header->height, header->width, output_ycc_img);
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
     // write YCC values to RBG files
-    // write_rgb_file(header, output_rgb_img, out_fp);
     write_pixels_rgb(header, output_rgb_img, out_fp);
     if(outputComponents == 1)
     {
@@ -121,6 +129,7 @@ int main(int argc, char* argv[] )
     }
 
     // free memory
+    free(header);
     free(input_rgb_img->pixels);
     free(output_ycc_img->pixels);
     free(output_rgb_img->pixels);

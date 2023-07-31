@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 typedef struct RGB_pixel_t
 {
@@ -37,14 +38,5 @@ typedef struct header_t
     uint32_t pixel_count;
     uint32_t file_size;
 } header_t;
-
-void exit_on_error(int condition, char *msg)
-{
-    if (condition)
-    {
-        printf("Error: %s\n", msg);
-        exit(1);
-    }
-}
 
 #endif //CONSTANTS
