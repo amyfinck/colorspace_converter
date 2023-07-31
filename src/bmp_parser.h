@@ -26,45 +26,6 @@ uint32_t get_buffer_row_bytes(uint32_t img_width)
     return row_byte_count - row_pixels_byte_count;
 }
 
-uint32_t get_file_size(FILE *in_file)
-{
-    fseek(in_file, 0, SEEK_END);
-    return ftell(in_file);
-}
-
-void get_file_offset(header_t *header, FILE *file)
-{
-    exit_on_error(fseek(file, 10, SEEK_SET) != 0, "Seeking offset position failed");
-    exit_on_error(fread(&header->offset, 4, 1, file) == 0, "Reading file offset failed");
-}
-
-void get_file_width(header_t *header, FILE *file)
-{
-    exit_on_error(fseek(file, 18, SEEK_SET) != 0, "Seeking width position failed");
-    exit_on_error(fread(&header->width, 4, 1, file) == 0, "Reading file width failed");
-}
-
-void get_file_height(header_t *header, FILE *file)
-{
-    exit_on_error(fseek(file, 22, SEEK_SET) != 0, "Seeking height position failed");
-    exit_on_error(fread(&header->height, 4, 1, file) == 0, "Reading file height failed");
-}
-
-void get_image_info(header_t *header, FILE* file)
-{
-    // get file size
-    header->file_size = get_file_size(file);
-    get_file_offset(header, file);
-    get_file_width(header, file);
-    get_file_height(header, file);
-
-    uint32_t bytes_per_row = header->width * 3; // 3 bytes per pixel
-    if (bytes_per_row % 4 != 0)
-        header->padding= 4 - (bytes_per_row % 4);
-    else
-        header->padding = 0;
-}
-
 void read_rgb(RGB_image_t *in_img, FILE *in_file, uint32_t index)
 {
     fread(&in_img->pixels[index].B, 1, 1, in_file);
