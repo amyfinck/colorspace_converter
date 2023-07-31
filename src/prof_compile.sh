@@ -6,7 +6,6 @@ echo Copying files to /tmp/tmp_dir/
 mkdir -p /tmp/tmp_dir/
 cp ./colorspace_converter.c /tmp/tmp_dir/
 cp ./colorspace_converter.h /tmp/tmp_dir/
-cp ./allocators.h /tmp/tmp_dir/
 cp ./bmp_parser.h /tmp/tmp_dir/
 cp ./bmp_parser.c /tmp/tmp_dir/
 cp ./constants.h /tmp/tmp_dir/
