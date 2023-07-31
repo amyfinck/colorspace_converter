@@ -156,7 +156,6 @@ int main(int argc, char* argv[] )
     ycc_to_rgb(header->pixel_count, output_rgb_img, output_ycc_img);
 
     // write YCC values to RBG files
-    // write_rgb_file(header, output_rgb_img, out_fp);
     rgb_pixels_file_handler(header, output_rgb_img, out_fp, write_rgb);
     if(outputComponents == 1)
     {
