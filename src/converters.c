@@ -43,6 +43,20 @@ void get_chroma(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *o
     }
 }
 
+void rgb_to_ycc(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img)
+{
+    uint32_t i;
+    for(i = 0; i < pixel_count; i++)
+    {
+        uint8_t R = input_rgb_img->pixels[i].R;
+        uint8_t G = input_rgb_img->pixels[i].G;
+        uint8_t B = input_rgb_img->pixels[i].B;
+        output_ycc_img->pixels[i].Y = compute_ycc_y(R, G, B);
+        output_ycc_img->pixels[i].Cb = compute_ycc_cb(R, G, B);
+        output_ycc_img->pixels[i].Cr = compute_ycc_cr(R, G, B);
+    }
+}
+
 /*
  * R′ = 1.164(Y′−16) + 1.596(Cr−128)
  * G′ = 1.164(Y′−16) − 0.813(Cr-128) − 0.391(Cb−128)
