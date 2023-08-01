@@ -103,7 +103,7 @@ void downsample_chroma(uint32_t height, uint32_t width, YCC_image_t *output_ycc_
             top_left = bottom_left + width;
             top_right = top_left + 1;
 
-            int32_t Cb_total = (int32_t)output_ycc_img->pixels[bottom_left].Cb + 
+            Cb_total = (int32_t)output_ycc_img->pixels[bottom_left].Cb + 
             (int32_t)output_ycc_img->pixels[bottom_right].Cb + 
             (int32_t)output_ycc_img->pixels[top_left].Cb + 
             (int32_t)output_ycc_img->pixels[top_right].Cb;
