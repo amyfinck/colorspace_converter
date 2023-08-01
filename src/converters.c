@@ -14,7 +14,6 @@ void rgb_to_ycc(header_t*  header, YCC_pixel_t *output_ycc_img, FILE* in_file)
 
     uint32_t buffer_row_bytes = header->padding;
     uint32_t row, column;
-    uint32_t pixel_count = 0;
     for (row = 0; row < header->height; row++)
     {
         for (column = 0; column < header->width; column+=2)
@@ -38,14 +37,12 @@ void rgb_to_ycc(header_t*  header, YCC_pixel_t *output_ycc_img, FILE* in_file)
             output_ycc_img[index2].Cb = compute_ycc_cb(R, G, B);
             output_ycc_img[index2].Cr = compute_ycc_cr(R, G, B);
 
-            pixel_count+=2;
         }
         if (buffer_row_bytes != 0)
         {
             fseek(in_file, buffer_row_bytes, SEEK_CUR);
         }
     }
-    header->pixel_count = pixel_count;
 }
 /*
  * R′ = 1.164(Y′−16) + 1.596(Cr−128)
