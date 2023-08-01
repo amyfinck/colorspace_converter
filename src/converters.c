@@ -38,7 +38,7 @@ void rgb_to_ycc(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *o
 void ycc_to_rgb(uint32_t pixel_count, RGB_image_t *output_rgb_img, YCC_image_t *output_ycc_img)
 {
     uint32_t i;
-    for(i = 0; i < pixel_count; i++)
+    for(i = 0; i < pixel_count; i+=2)
     {
         uint8_t Y = output_ycc_img->pixels[i].Y;
         uint8_t Cb = output_ycc_img->pixels[i].Cb;
@@ -48,13 +48,15 @@ void ycc_to_rgb(uint32_t pixel_count, RGB_image_t *output_rgb_img, YCC_image_t *
         output_rgb_img->pixels[i].G = compute_rgb_g(Y, Cb, Cr);
         output_rgb_img->pixels[i].R = compute_rgb_r(Y, Cb, Cr);
 
-        Y = output_ycc_img->pixels[i - 1].Y;
-        Cb = output_ycc_img->pixels[i - 1].Cb;
-        Cr = output_ycc_img->pixels[i - 1].Cr;
+        uint8_t index = i + 1;
 
-        output_rgb_img->pixels[i - 1].B = compute_rgb_b(Y, Cb, Cr);
-        output_rgb_img->pixels[i - 1].G = compute_rgb_g(Y, Cb, Cr);
-        output_rgb_img->pixels[i - 1].R = compute_rgb_r(Y, Cb, Cr);
+        Y = output_ycc_img->pixels[index].Y;
+        Cb = output_ycc_img->pixels[index].Cb;
+        Cr = output_ycc_img->pixels[index].Cr;
+
+        output_rgb_img->pixels[index].B = compute_rgb_b(Y, Cb, Cr);
+        output_rgb_img->pixels[index].G = compute_rgb_g(Y, Cb, Cr);
+        output_rgb_img->pixels[index].R = compute_rgb_r(Y, Cb, Cr);
     }
 }
 
