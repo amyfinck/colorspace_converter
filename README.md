@@ -6,7 +6,7 @@
 - `lftp -u user3,q6coHjd7P @arm`
 - `put cc.exe`
 - `put dir_structre.sh`
-- `put parrot100.bmp`, or your input file
+- `put /input/parrot100.bmp`, or your input file
 - `exit`
 - `telnet arm`
 - `user3`

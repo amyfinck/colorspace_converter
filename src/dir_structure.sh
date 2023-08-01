@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/sh
 process_id=$!
 
 mkdir -p ./input
