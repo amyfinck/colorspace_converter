@@ -12,22 +12,12 @@ typedef struct RGB_pixel_t
     uint8_t B;
 } RGB_pixel_t;
 
-typedef struct RGB_image_t
-{
-    RGB_pixel_t *pixels;
-} RGB_image_t;
-
 typedef struct YCC_pixel_t
 {
     uint8_t Y; // luma
     uint8_t Cb; // blue-difference
     uint8_t Cr; // red-difference
 } YCC_pixel_t;
-
-typedef struct YCC_image_t
-{
-    YCC_pixel_t *pixels;
-} YCC_image_t;
 
 typedef struct header_t
 {
