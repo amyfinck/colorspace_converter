@@ -1,6 +1,7 @@
 ## running on seng440 linux machine
 - `ssh seng440.ece.uvic.ca`
-- cd into repository / clone repository if you haven't already
+- cd into repository / clone this repository if you haven't already
+- cd into src/
 - `./compile.sh`
 - `lftp -u user3,q6coHjd7P @arm`
 - `put cc.exe`
@@ -10,15 +11,19 @@
 - `telnet arm`
 - `user3`
 - `q6coHjd7P`
-- If you haven't already, `./dir_structure.sh` to create directory structure
+- `./dir_structure.sh`
+    * This script creates the directory structure neccicary for the program to run
+    * If there is a problem with this code, create an `input` directory, as well as an `output` directory
+    * inside the `output` directory, create a `rgb` directory
 - `mv parrot100.bmp input`
+  - The code checks for the image in the input directory, so it is essential that it is moved here
 - `chmod +x cc.exe`
 - `./cc.exe <input_img>.bmp`
-- If you get a strange error, try deleting everything from the device and try again
-- You can also compile with the arm emulator `qemu-arm main.exe` directly on the machine, but this is only for debugging.
+- If you get an error, try deleting everything from the device and try again
+- You can also compile with the arm emulator `qemu-arm cc.exe` directly on the machine, but this is not reccomended
 
 ## profiling
-- instead of running `./compile.sh`, use `prof` 
+- instead of running `./compile.sh`, use `prof_compile.sh` 
 - After running on arm device, use `lftp` to get gmon.out
 - `gprof cc.exe gmon.out > profile.txt`
 
