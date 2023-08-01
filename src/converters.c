@@ -75,11 +75,10 @@ void ycc_to_rgb(uint32_t pixel_count, RGB_pixel_t *output_rgb_img, YCC_pixel_t *
 
 void downsample_chroma(uint32_t height, uint32_t width, YCC_pixel_t *output_ycc_img)
 {
-    // TODO this should probably be a scaled down image
     uint32_t y, x;
-    for(y = height - 1; y != 0; y-=2)
+    for(y = 0; y < height; y+=2)
     {
-        for(x = width - 1; x != 0; x-=2)
+        for(x = 0; x < width; x+=2)
         {
             uint32_t bottom_left = y * width + x;
             uint32_t bottom_right = bottom_left + 1;
