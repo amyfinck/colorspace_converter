@@ -118,12 +118,15 @@ void write_pixels_rgb(header_t *header, RGB_pixel_t *img, FILE *file)
     }
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
-    uint8_t is_width_odd = header->width % 2 != 0;
-    for (row = 0; row < header->height; row++)
+    register uint32_t width = header->width;
+    register uint32_t height = header->height;
+
+    uint8_t is_width_odd = width % 2 != 0;
+    for (row = 0; row < height; row++)
     {
-        for (column = 0; column < header->width; column+=2)
+        for (column = 0; column < width; column+=2)
         {
-            uint32_t index = row * header->width + column;
+            uint32_t index = row * width + column;
             uint32_t index2 = index + 1;
 
             fwrite(&img[index].B, 1, 1, file);
@@ -137,7 +140,7 @@ void write_pixels_rgb(header_t *header, RGB_pixel_t *img, FILE *file)
         // If the width is odd, read the last pixel in the row
         if (is_width_odd)
         {
-            uint32_t index = row * header->width + column;
+            uint32_t index = row * width + column;
             fwrite(&img[index].B, 1, 1, file);
             fwrite(&img[index].G, 1, 1, file);
             fwrite(&img[index].R, 1, 1, file);
@@ -157,12 +160,14 @@ void write_pixels_luma(header_t *header, YCC_pixel_t *img, FILE *file)
     }
     uint32_t buffer_row_bytes = get_buffer_row_bytes(header->width);
     uint32_t row, column;
-    uint8_t is_width_odd = header->width % 2 != 0;
-    for (row = 0; row < header->height; row++)
+    register uint32_t width = header->width;
+    register uint32_t height = header->height;
+    uint8_t is_width_odd = width % 2 != 0;
+    for (row = 0; row < height; row++)
     {
-        for (column = 0; column < header->width; column+=2)
+        for (column = 0; column < width; column+=2)
         {
-            uint32_t index = row * header->width + column;
+            uint32_t index = row * width + column;
             uint32_t index2 = index + 1;
 
             fwrite(&img[index].Y, 1, 1, file);
@@ -177,7 +182,7 @@ void write_pixels_luma(header_t *header, YCC_pixel_t *img, FILE *file)
         // If the width is odd, read the last pixel in the row
         if (is_width_odd)
         {
-            uint32_t index = row * header->width + column;
+            uint32_t index = row * width + column;
             fwrite(&img[index].Y, 1, 1, file);
             fwrite(&img[index].Y, 1, 1, file);
             fwrite(&img[index].Y, 1, 1, file);
@@ -195,15 +200,17 @@ void write_pixels_cb(header_t *header, YCC_pixel_t *img, FILE *file)
         printf("Error: Seeking pixel start position failed\n");
         exit(1);
     }
-    uint32_t half_width = header->width / 2;
-    uint32_t half_height = header->height / 2;
+    register uint32_t width = header->width;
+    register uint32_t height = header->height;
+    uint32_t half_width = width / 2;
+    uint32_t half_height = height / 2;
     uint32_t buffer_row_bytes = get_buffer_row_bytes(half_width);
     uint32_t row, column;
     for (row = 0; row < half_height; row++)
     {
         for (column = 0; column < half_width; column++)
         {
-            uint32_t index = 2 * (row * header->width + column);
+            uint32_t index = 2 * (row * width + column);
             uint8_t base_color = 128;
             fwrite(&img[index].Cb, 1, 1, file);
             fwrite(&base_color, 1, 1, file);
@@ -221,15 +228,17 @@ void write_pixels_cr(header_t *header, YCC_pixel_t *img, FILE *file)
         printf("Error: Seeking pixel start position failed\n");
         exit(1);
     }
-    uint32_t half_width = header->width / 2;
-    uint32_t half_height = header->height / 2;
+    register uint32_t width = header->width;
+    register uint32_t height = header->height;
+    uint32_t half_width = width / 2;
+    uint32_t half_height = height / 2;
     uint32_t buffer_row_bytes = get_buffer_row_bytes(half_width);
     uint32_t row, column;
     for (row = 0; row < half_height; row++)
     {
         for (column = 0; column < half_width; column++)
         {
-            uint32_t index = 2 * (row * header->width + column);
+            uint32_t index = 2 * (row * width + column);
             uint8_t base_color = 128;
             fwrite(&base_color, 1, 1, file);
             fwrite(&base_color, 1, 1, file);

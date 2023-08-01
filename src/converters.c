@@ -1,6 +1,6 @@
 #include "converters.h"
 
-void rgb_to_ycc(header_t*  header, YCC_pixel_t *output_ycc_img, FILE* in_file)
+void rgb_to_ycc(header_t* header, YCC_pixel_t *output_ycc_img, FILE* in_file)
 {
     if(fseek(in_file, header->offset, SEEK_SET) != 0)
     {
@@ -14,9 +14,12 @@ void rgb_to_ycc(header_t*  header, YCC_pixel_t *output_ycc_img, FILE* in_file)
 
     uint32_t buffer_row_bytes = header->padding;
     uint32_t row, column;
-    for (row = 0; row < header->height; row++)
+
+    register uint32_t width = header->width;
+    register uint32_t height = header->height;
+    for (row = 0; row < height; row++)
     {
-        for (column = 0; column < header->width; column+=2)
+        for (column = 0; column < width; column+=2)
         {
             uint32_t index = row * header->width + column;
             uint32_t index2 = index + 1;
