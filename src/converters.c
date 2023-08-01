@@ -1,16 +1,50 @@
 #include "converters.h"
 
-void rgb_to_ycc(uint32_t pixel_count, RGB_image_t *input_rgb_img, YCC_image_t *output_ycc_img)
+void rgb_to_ycc(header_t* header, YCC_pixel_t *output_ycc_img, FILE* in_file)
 {
-    uint32_t i;
-    for(i = pixel_count - 1; i != 0; i--)
+    if(fseek(in_file, header->offset, SEEK_SET) != 0)
     {
-        uint8_t R = input_rgb_img->pixels[i].R;
-        uint8_t G = input_rgb_img->pixels[i].G;
-        uint8_t B = input_rgb_img->pixels[i].B;
-        output_ycc_img->pixels[i].Y = compute_ycc_y(R, G, B);
-        output_ycc_img->pixels[i].Cb = compute_ycc_cb(R, G, B);
-        output_ycc_img->pixels[i].Cr = compute_ycc_cr(R, G, B);
+        printf("Error: Seeking pixel start position failed\n");
+        exit(1);
+    }
+
+    uint8_t R;
+    uint8_t G;
+    uint8_t B;
+
+    uint32_t buffer_row_bytes = header->padding;
+    uint32_t row, column;
+
+    register uint32_t width = header->width;
+    register uint32_t height = header->height;
+    for (row = 0; row < height; row++)
+    {
+        for (column = 0; column < width; column+=2)
+        {
+            uint32_t index = row * header->width + column;
+            uint32_t index2 = index + 1;
+
+            fread(&B, 1, 1, in_file);
+            fread(&G, 1, 1, in_file);
+            fread(&R, 1, 1, in_file);
+
+            output_ycc_img[index].Y = compute_ycc_y(R, G, B);
+            output_ycc_img[index].Cb = compute_ycc_cb(R, G, B);
+            output_ycc_img[index].Cr = compute_ycc_cr(R, G, B);
+
+            fread(&B, 1, 1, in_file);
+            fread(&G, 1, 1, in_file);
+            fread(&R, 1, 1, in_file);
+
+            output_ycc_img[index2].Y = compute_ycc_y(R, G, B);
+            output_ycc_img[index2].Cb = compute_ycc_cb(R, G, B);
+            output_ycc_img[index2].Cr = compute_ycc_cr(R, G, B);
+
+        }
+        if (buffer_row_bytes != 0)
+        {
+            fseek(in_file, buffer_row_bytes, SEEK_CUR);
+        }
     }
 }
 
