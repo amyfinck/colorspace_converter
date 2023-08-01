@@ -19,6 +19,7 @@ cp ./transformers.h /tmp/tmp_comp/
 cp ./transformers.c /tmp/tmp_comp/
 
 cp ./utilities.h /tmp/tmp_comp/
+cp ./utilities.c /tmp/tmp_comp/
 # add more files as they are added to our project
 
 echo Compiling colorspace converter
