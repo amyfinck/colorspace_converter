@@ -67,9 +67,8 @@ void downsample_chroma(uint32_t height, uint32_t width, YCC_image_t *output_ycc_
     for(y = 0; y < height; y+=2)
     {
         uint32_t x;
-        for(x = 0; x < width; x+=4)
+        for(x = 0; x < width; x+=2)
         {
-            // Unroll 1
             uint32_t bottom_left = y * width + x;
             uint32_t bottom_right = bottom_left + 1;
             uint32_t top_left = bottom_left + width;
@@ -88,36 +87,6 @@ void downsample_chroma(uint32_t height, uint32_t width, YCC_image_t *output_ycc_
             (int32_t)output_ycc_img->pixels[top_right].Cr;
 
             int8_t Cr_avg = (int8_t)(Cr_total / 4);
-
-            output_ycc_img->pixels[bottom_left].Cb = Cb_avg;
-            output_ycc_img->pixels[bottom_right].Cb = Cb_avg;
-            output_ycc_img->pixels[top_left].Cb = Cb_avg;
-            output_ycc_img->pixels[top_right].Cb = Cb_avg;
-
-            output_ycc_img->pixels[bottom_left].Cr = Cr_avg;
-            output_ycc_img->pixels[bottom_right].Cr = Cr_avg;
-            output_ycc_img->pixels[top_left].Cr = Cr_avg;
-            output_ycc_img->pixels[top_right].Cr = Cr_avg;
-
-            // Unroll 2
-            bottom_left = y * width + (x + 2);
-            bottom_right = bottom_left + 1;
-            top_left = bottom_left + width;
-            top_right = top_left + 1;
-
-            Cb_total = (int32_t)output_ycc_img->pixels[bottom_left].Cb + 
-            (int32_t)output_ycc_img->pixels[bottom_right].Cb + 
-            (int32_t)output_ycc_img->pixels[top_left].Cb + 
-            (int32_t)output_ycc_img->pixels[top_right].Cb;
-
-            Cb_avg = (int8_t)(Cb_total / 4);
-            
-            Cr_total = (int32_t)output_ycc_img->pixels[bottom_left].Cr + 
-            (int32_t)output_ycc_img->pixels[bottom_right].Cr + 
-            (int32_t)output_ycc_img->pixels[top_left].Cr + 
-            (int32_t)output_ycc_img->pixels[top_right].Cr;
-
-            Cr_avg = (int8_t)(Cr_total / 4);
 
             output_ycc_img->pixels[bottom_left].Cb = Cb_avg;
             output_ycc_img->pixels[bottom_right].Cb = Cb_avg;
